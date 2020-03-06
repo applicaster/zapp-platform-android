@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="<%=bundle_identifier%>">
+
+
+     <uses-feature
+        android:name="android.software.leanback"
+        android:required="true" />
+
+    <supports-screens
+        android:smallScreens="false"
+        android:normalScreens="false"
+        android:largeScreens="true"
+        android:xlargeScreens="true"
+        android:requiresSmallestWidthDp="506"
+        tools:replace="android:normalScreens"/>
+        
+    <uses-feature
+        android:name="android.hardware.wifi"
+        android:required="true" />
+
+    <uses-feature android:name="android.hardware.touchscreen"
+        android:required="false"/>
+    <uses-feature android:name="android.hardware.faketouch"
+        android:required="false"/>
+    <uses-feature android:name="android.hardware.telephony"
+        android:required="false"/>
+    <uses-feature android:name="android.hardware.camera"
+        android:required="false"/>
+    <uses-feature android:name="android.hardware.nfc"
+        android:required="false"/>
+    <uses-feature android:name="android.hardware.location.gps"
+        android:required="false"/>
+    <uses-feature android:name="android.hardware.microphone"
+        android:required="false"/>
+    <uses-feature android:name="android.hardware.sensor"
+        android:required="false"/>
+    <uses-feature android:name="android.hardware.screen.portrait" android:required="false"/>
+    <uses-feature android:name="android.hardware.screen.landscape" android:required="false"/>
+    <uses-feature android:name="android.hardware.type.television" android:required="true" />
+
+    <%= extra_permissions %>
+
+    <application
+        android:name="com.applicaster.componentsapp.CustomApp"
+        android:label="${app_name}"
+        android:allowBackup="false"
+        android:supportsRtl="<%= rtl %>"
+        android:icon="@mipmap/ic_launcher"
+        android:networkSecurityConfig="@xml/network_security_config"
+        tools:replace="label, icon, name, supportsRtl, android:allowBackup">
+
+        <!-- We remove the allowBackup as otherwise, if allowed, messes up with our shared prefs props !-->
+        
+        <activity
+            android:name="com.applicaster.componentsapp.TvIntroActivity"
+            android:banner="@drawable/tv_app_banner"
+            android:icon="@drawable/tv_app_banner"
+            android:label="${app_name}"
+            android:logo="@drawable/tv_app_banner"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+

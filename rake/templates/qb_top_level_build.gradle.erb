@@ -1,0 +1,93 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    ext.kotlin_version = '1.3.50'
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.3'
+        <%= gms_google_services_classpath %>
+        <%= strict_version_matcher_plugin_classpath %>
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+        maven { url 'https://maven.google.com' }
+        maven { url 'https://jitpack.io' }
+        maven {
+            credentials{
+                username System.getenv("MAVEN_USERNAME")
+                password System.getenv("MAVEN_PASSWORD")
+            }
+            url 'https://dl.bintray.com/applicaster-ltd/maven'
+        }
+        maven {
+            url "$rootDir/node_modules/react-native/android"
+        }
+        maven {
+            url "$rootDir/.m2"
+        }
+
+
+        <%= plugins_maven_repos %>
+    }
+}
+
+/**
+ * Auto-generated from .env build configuration.
+ */
+ext.dimensionsConfig = [
+    "platform": "<%= environment_flavor %>", // ["google", "amazon"]
+    "vendor": "<%= environment_store == 'amazon' ? 'amazon' : 'google' %>", // ["mobile", "tv"]
+]
+
+/**
+ * Order of dimensions is critical! platform > vendor > flavor
+ */
+ext.zappProductFlavors = [
+    mobile:     "platform",
+    tv:         "platform",
+    google:     "vendor",
+    amazon:     "vendor",
+]
+
+ext.zappProductFlavorsMap = {
+    zappProductFlavors.each { key, dim ->
+        "${key}" { dimension "${dim}" }
+    }
+}
+
+subprojects {
+    afterEvaluate {project ->
+        if (project.hasProperty("android")) {
+            android {
+                flavorDimensions dimensionsConfig.keySet() as String[]
+                productFlavors zappProductFlavorsMap
+            }
+
+            /**
+             * Reject all variants that are not relevant for the current build -
+             * you should be left with two only, debug and release.
+             * e.g.: "mobileGoogleDebug/Release" or "tvAmazonDebug/Release" etc.
+             */
+            android.variantFilter { variant ->
+                for (flavor in variant.getFlavors()) {
+                    if (flavor.name != dimensionsConfig[flavor.dimension]) {
+                        variant.setIgnore(true)
+                    }
+                }
+            }
+        }
+    }
+}

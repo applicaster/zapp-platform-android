@@ -1,0 +1,4 @@
+include ':app', ':android_generic_app' ,':applicaster-android-sdk', ':project-name',':project-for-@applicaster-name'
+project(':applicaster-android-sdk').projectDir= new File('android_generic_app/applicaster-android-sdk')
+project(':project-name').projectDir = new File('project-path')
+project(':project-for-@applicaster-name').projectDir = new File('project-path')

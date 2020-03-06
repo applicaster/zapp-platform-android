@@ -1,0 +1,56 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 
+    buildToolsVersion ""
+
+    defaultConfig {
+        applicationId "com.zapp"
+        minSdkVersion 
+        versionCode 1
+        versionName "1.0"
+        manifestPlaceholders = [
+          app_name: "zapp",
+          fb_app_id: "202232889873476",
+        ]
+    }
+
+    dexOptions {
+        jumboMode = true
+        preDexLibraries = false
+        javaMaxHeapSize "4g"
+    }
+
+    signingConfigs {
+      release {
+          storeFile file("../dist.keystore")
+          storePassword "123456"
+          keyAlias ""
+          keyPassword ""
+      }
+    }
+
+    buildTypes {
+
+      applicationVariants.all { variant ->
+        variant.generateBuildConfig.buildConfigPackageName = applicationId
+      }
+
+      debug {
+          minifyEnabled true
+          proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+      }
+
+      release {
+          minifyEnabled true
+          proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+          signingConfig signingConfigs.release
+      }
+    }
+}
+
+dependencies {
+    compile "com.applicaster:applicaster-modular-sdk:2.7.3"
+    
+}
+

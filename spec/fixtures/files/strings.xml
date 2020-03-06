@@ -1,0 +1,9 @@
+<resources>
+
+  <string name="app_name">zapp</string>   
+  <string name="fb_app_id">202232889873476</string>
+  <string name="scheme_url_prefix">zapp</string>
+
+  <string name="action_settings">Settings</string>
+
+</resources>

@@ -1,0 +1,198 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
+
+    compileOptions.encoding = 'ISO-8859-1'
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+
+    defaultConfig {
+        minSdkVersion MIN_SDK_VERSION
+        targetSdkVersion TARGET_SDK_VERSION
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        consumerProguardFiles 'proguard-project.txt'
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+        }
+    }
+
+    flavorDimensions "platform", "vendor"
+    productFlavors {
+        mobile {
+            dimension "platform"
+        }
+        tv {
+            dimension "platform"
+        }
+        google {
+            dimension "vendor"
+        }
+        amazon {
+            dimension "vendor"
+        }
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.6'
+}
+
+def getVersionName = { ->
+    if (project.hasProperty('versionName')) {
+        return "$versionName"
+    } else {
+        return null
+    }
+}
+
+dependencies {
+    // Check if an open SDK is defined - if not use the closed one.
+    if (!findProject(':applicaster-android-sdk')) {
+        // core is the same project as applicaster-android-sdk but uses a different flavor
+        api ("com.applicaster:applicaster-android-sdk-core:0.1.0") {
+            // we want to remove LQ for QB, so make sure no one could call it
+            exclude group: 'com.github.LiquidPlayer', module: 'LiquidCore'
+        }
+    }
+    else {
+        api (project(':applicaster-android-sdk')) {
+            // we want to remove LQ for QB, so make sure no one could call it
+            exclude group: 'com.github.LiquidPlayer', module: 'LiquidCore'
+        }
+    }
+
+    api "com.microsoft.appcenter:appcenter-distribute:2.3.0"
+    compileOnly 'javax.annotation:jsr250-api:1.0'
+
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:1.10.19'
+    testImplementation 'org.powermock:powermock-api-mockito:1.6.5'
+    testImplementation 'org.powermock:powermock-module-junit4:1.6.5'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:3.8.1'
+    testImplementation 'org.robolectric:robolectric:4.3'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}
+
+// -------- Development project for plugin developers -------
+
+apply plugin: 'maven-publish'
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId GROUP
+                def versionFromTag = getVersionName()
+                if (versionFromTag != null) {
+                    // There is a tag existing on the current commit - we can upload to Bintray
+                    version versionFromTag
+                    artifactId ARTIFACT_ID
+                    artifact "build/outputs/aar/" + ARTIFACT_FILE_NAME + "-release.aar"
+                    artifact androidJavadocsJar
+                    artifact androidSourcesJar
+                    pom.withXml {
+                        Node root = asNode()
+                        root.appendNode('name', ARTIFACT_ID)
+                        root.appendNode('description', POM_DESCRIPTION)
+                        root.appendNode('url', POM_URL)
+                        def issues = root.appendNode('issueManagement')
+                        issues.appendNode('system', 'github')
+                        issues.appendNode('url', ISSUE_URL)
+                        def scm = root.appendNode('scm')
+                        scm.appendNode('url', POM_SCM_URL)
+                        scm.appendNode('connection', POM_SCM_CONNECTION)
+                        scm.appendNode('developerConnection', POM_SCM_DEV_CONNECTION)
+                        def license = root.appendNode('licenses').appendNode('license')
+                        license.appendNode('name', POM_LICENCE_NAME)
+                        license.appendNode('url', POM_LICENCE_URL)
+                        license.appendNode('distribution', POM_LICENCE_DIST)
+                        def developer = root.appendNode('developers').appendNode('developer')
+                        developer.appendNode('id', POM_DEVELOPER_ID)
+                        developer.appendNode('name', POM_DEVELOPER_NAME)
+                        developer.appendNode('email', POM_DEVELOPER_EMAIL)
+                        def dependenciesNode = asNode().appendNode('dependencies')
+                        def allExportedDependencies =
+                                configurations.api.allDependencies +
+                                configurations.compile.allDependencies +
+                                configurations.mobileApi.allDependencies + 
+                                configurations.googleApi.allDependencies
+                        allExportedDependencies.each {
+                            if (!it.name.is('unspecified')) {
+                                def dependencyNode = dependenciesNode.appendNode('dependency')
+                                dependencyNode.appendNode('groupId', it.group)
+                                dependencyNode.appendNode('artifactId', it.name)
+                                dependencyNode.appendNode('version', it.version)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+task androidJavadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    excludes = ['**/*.kt']
+    failOnError false
+}
+task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+    classifier = 'javadoc'
+    excludes = ['**/*.kt']
+    from androidJavadocs.destinationDir
+}
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.sourceFiles
+}
+task androidJar(type: Jar) {
+    from 'build/intermediates/classes/release'
+}
+artifacts {
+    archives androidSourcesJar
+    archives androidJavadocsJar
+    archives androidJar
+}
+
+task symLinkAar {
+    doLast {
+        exec {
+            commandLine "ln", "-s", "-f",
+                    buildDir.toString() + "/outputs/aar/android_quickbrick_app-mobile-google-release.aar",
+                    "build/outputs/aar/android_generic_app-release.aar"
+        }
+    }
+}

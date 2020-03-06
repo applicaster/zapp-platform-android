@@ -1,0 +1,38 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        google()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.2.3'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+        maven {
+            credentials{
+                username System.getenv("BINTRAY_USER")
+                if(null == username || username.isEmpty()){
+                    throw new Exception("Missing environment variable: BINTRAY_USER")
+                }
+                password System.getenv("BINTRAY_API_KEY")
+                if(null == password || password.isEmpty()){
+                    throw new Exception("Missing environment variable: BINTRAY_API_KEY")
+                }
+            }
+            url 'https://dl.bintray.com/applicaster-ltd/maven'
+        }
+        google()
+    }
+}

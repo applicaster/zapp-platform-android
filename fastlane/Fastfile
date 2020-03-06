@@ -1,0 +1,136 @@
+# frozen_string_literal: true
+
+require_relative "../rake/lib/app_build_helper"
+require_relative "../rake/lib/app_center_helper"
+fastlane_require "active_support/core_ext/string"
+
+default_platform(:android)
+
+platform :android do
+  desc "Upload a debug version to the App Center"
+  lane :app_center_debug_upload do
+    app_center_prepare_apk("debug")
+  end
+
+  desc "Upload a release version to the App Center"
+  lane :app_center_release_upload do
+    app_center_prepare_apk("release")
+  end
+
+  desc "Build aab file"
+  lane :app_center_build_bundle do
+    bundle_build("release")
+  end
+
+  desc "Build and Upload an Android Bundle"
+  lane :app_center_release_bundle do
+    set_service_account_api_key
+    if store_exists?
+      build_type = "release"
+      bundle_build(build_type)
+      app_center_prepare_bundle(build_type)
+    else
+      raise "Store is not connected "\
+      "https://docs.microsoft.com/en-us/appcenter/distribution/stores/googleplay"
+    end
+  end
+
+  def apk_build(build_type)
+    gradle(task: "assemble#{ENV['flavor'].capitalize}#{build_type.capitalize}")
+  end
+
+  def bundle_build(build_type)
+    puts "Building bundle..."
+    gradle(task: "app:bundle#{ENV['flavor'].capitalize}#{build_type.capitalize}")
+  end
+
+  def app_center_prepare_apk(build_type)
+    apk_name = "app-#{ENV['flavor']}-#{build_type}.apk"
+    prefix_dir = "app/build/outputs"
+    sub_dir = "#{ENV['flavor']}/#{build_type}"
+    apk_dir = rename_file("#{prefix_dir}/apk/#{sub_dir}", apk_name, build_type, "apk")
+    mapping_dir = "#{prefix_dir}/mapping/#{sub_dir}/mapping.txt"
+
+    app_center_apk_upload(appcenter_app_name, mapping_dir, apk_dir)
+
+    store_results(build_type, lane_context[SharedValues::APPCENTER_BUILD_INFORMATION])
+  end
+
+  def app_center_prepare_bundle(build_type)
+    puts "Uploading bundle..."
+    aab_file = lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
+
+    app_center_bundle_upload(appcenter_app_name, aab_file)
+    store_results(build_type, lane_context[SharedValues::APPCENTER_BUILD_INFORMATION])
+  end
+
+  def app_center_apk_upload(appcenter_app_name, mapping_dir, apk_dir)
+    appcenter_upload(
+      api_token: ENV["APPCENTER_API_TOKEN"],
+      owner_name: ENV["APPCENTER_OWNER_NAME"],
+      app_name: appcenter_app_name,
+      app_display_name: ENV["app_name"],
+      upload_mapping_only: false,
+      mapping: mapping_dir,
+      file: apk_dir,
+      owner_type: "organization",
+      app_os: "Android",
+      app_platform: "Java",
+    )
+  end
+
+  def app_center_bundle_upload(appcenter_app_name, aab_dir)
+    appcenter_upload(
+      api_token: ENV["APPCENTER_API_TOKEN"],
+      owner_name: ENV["APPCENTER_OWNER_NAME"],
+      destination_type: "store",
+      destinations: "Alpha",
+      app_name: appcenter_app_name,
+      app_display_name: ENV["app_name"],
+      upload_mapping_only: false,
+      owner_type: "organization",
+      app_os: "Android",
+      app_platform: "Java",
+      file: aab_dir,
+    )
+  end
+
+  def rename_file(file_dir, file_name, build_type, extension)
+    name = ENV["bundle_identifier"].gsub(/[^a-zA-Z0-9]/, "_")
+    new_file_name = "#{name}-#{ENV['version_name']}-#{ENV['flavor']}-#{build_type}.#{extension}"
+    new_file = "#{file_dir}/#{new_file_name}"
+    old_file = "#{file_dir}/#{file_name}"
+    return new_file if File.file?("../#{new_file}")
+
+    puts "Renaming #{old_file} to #{new_file}"
+    File.rename("../#{old_file}", "../#{new_file}")
+    new_file
+  end
+
+  def store_results(build_type, response)
+    File.open("../#{build_type}_app_center.env", "ab") do |file|
+      file.puts("export #{build_type}_appcenter_install_url=\"#{response['install_url']}\"")
+      file.puts("export #{build_type}_appcenter_download_url=\"#{response['download_url']}\"")
+      file.puts("export #{build_type}_appcenter_release_id=\"#{response['id']}\"")
+      file.puts("export #{build_type}_appcenter_app_name=\"#{response['app_name']}\"")
+    end
+  end
+
+  def appcenter_app_name
+    appcenter_name = ENV["app_center_app_name"]
+    return appcenter_name if appcenter_name.present?
+    return ENV["bundle_identifier"].gsub(/[^a-zA-Z0-9]/, "_") if ENV["bundle_identifier"].present?
+
+    app_name.gsub(/\s/, "-")
+  end
+
+  def store_exists?
+    !AppCenterHelper.curl_get_app_stores(appcenter_app_name).blank?
+  end
+
+  def set_service_account_api_key
+    File.open("service_account_api_key.json", "ab") do |file|
+      file.puts(AppCenterHelper.curl_get_service_account_key)
+    end
+  end
+end

@@ -1,0 +1,3 @@
+include ':app', ':android_quickbrick_app' ,':project-name',':project-for-@applicaster-name'
+project(':project-name').projectDir = new File('project-path')
+project(':project-for-@applicaster-name').projectDir = new File('project-path')

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="GenericAppBaseTheme" parent="Theme.AppCompat.NoActionBar">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+        <item name="android:windowAnimationStyle">@android:style/Animation.Activity</item>
+    </style>
+
+    <!-- Application theme. -->
+    <style name="GenericAppTheme" parent="GenericAppBaseTheme">
+<!--        &lt;!&ndash; The color applied to framework controls in their activated (ex. checked, switch on) state&ndash;&gt;-->
+<!--        <item name="colorControlActivated">@color/theme_color_control_activated</item>-->
+<!--        &lt;!&ndash;The color applied to foreground imagery (ex. switch normal trail) &ndash;&gt;-->
+<!--        <item name="android:colorForeground">@color/theme_color_foreground</item>-->
+<!--        &lt;!&ndash; The color of the normal state switch thumb&ndash;&gt;-->
+<!--        <item name="colorSwitchThumbNormal">@color/theme_color_switch_thumb</item>-->
+    </style>
+
+    <style name="GenericAppTheme.Translucent">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    </style>
+
+    <style name="GenericAppTheme.FullScreen">
+        <item name="android:colorBackground">@color/black</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <!-- Tv -->
+    <style name="Theme.Browse.CustomStyle" parent="Theme.Leanback.Browse">
+<!--        <item name="rowHeaderStyle">@style/TvMenuItemStyle</item>-->
+<!--        <item name="android:windowBackground">@color/tv_app_background_color</item>-->
+    </style>
+
+    <style name="Theme.Leanback.AppBaseTheme" parent="Theme.Leanback">
+<!--        <item name="android:windowBackground">@color/tv_app_background_color</item>-->
+    </style>
+    <!--
+        Theme customizations available in newer API levels can go in
+        res/values-vXX/styles.xml, while customizations related to
+        backward-compatibility can go here.
+    -->
+
+</resources>

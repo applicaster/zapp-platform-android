@@ -1,0 +1,80 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  Exclude:
+    - .bundle/**/*
+    - vendor/bundle/**/*
+    - db/seeds.rb
+    - db/schema.rb
+    - bin/*
+    - Gemfile
+    - Capfile
+    - Rakefile
+    - config.ru
+    - config/boot.rb
+    - config/application.rb
+    - config/environment.rb
+    - config/deploy.rb
+    - config/deploy/*
+    - spec/spec_helper.rb
+    - tmp/**/*
+    - node_modules/**/*
+    - quick_brick/node_modules/**/*
+
+Metrics/LineLength:
+  Max: 100
+
+Naming/PredicateName:
+  NamePrefixBlacklist:
+    - is_
+
+Metrics/AbcSize:
+  Max: 25
+
+Metrics/MethodLength:
+  Max: 20
+
+Layout/DotPosition:
+  EnforcedStyle: leading
+
+Layout/AlignParameters:
+  EnforcedStyle: with_fixed_indentation
+
+Layout/MultilineOperationIndentation:
+  EnforcedStyle: indented
+
+Layout/IndentFirstHashElement:
+  EnforcedStyle: consistent
+
+Layout/SpaceBeforeFirstArg:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
+
+Style/BracesAroundHashParameters:
+  Enabled: false
+
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    '%': '{}'
+
+Style/CollectionMethods:
+  Enabled: true
+  PreferredMethods:
+    detect:
+    find_all:
+    inject: reduce
+    collect: map
+
+Style/Documentation:
+  Enabled: false

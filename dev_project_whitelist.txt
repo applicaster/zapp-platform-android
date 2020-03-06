@@ -1,0 +1,15 @@
+CHANGELOG.md
+Gemfile
+Gemfile.lock
+README.md
+build.gradle
+gradle.properties
+gradlew
+gradlew.bat
+package-lock.json
+settings.gradle
+.m2/
+app/
+gradle/
+fonts/
+node_modules/

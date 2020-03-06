@@ -1,0 +1,292 @@
+notify:
+  webhooks:
+    - url: https://zapp.applicaster.com/callbacks/build_status/circleci_builds
+
+version: 2
+jobs:
+  build:
+    working_directory: ~/zapp-platform-android
+    docker:
+      - image: applicaster/zapp-android-circleci-primary:0.3.0
+        environment:
+          ANDROID_HOME: /home/circleci/android-sdk
+          JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
+          CIRCLE_ARTIFACTS: /home/circleci/zapp-platform-android/artifacts
+          GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx6144M -XX:MaxPermSize=1024m -Xms512m -XX:+HeapDumpOnOutOfMemoryError"'
+          RAILS_ENV: test
+          RACK_ENV: test
+
+    resource_class: large
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          key: Zapp-Platform-Platform-Android-v1-{{ checksum "Gemfile.lock" }}
+
+      - run: bundle check --path=/usr/local/bundle || bundle install --jobs=4 --retry=3
+
+      - save_cache:
+          key: Zapp-Platform-Android-v1-{{ checksum "Gemfile.lock" }}
+          paths:
+            - /usr/local/bundle
+
+      - run:
+          name: Build App Specs
+          command: |
+            if [ "$CIRCLE_BRANCH" = "release" ] || [ "$triggered_by" = "zapp" ];
+            then
+              echo "skipping default rake task"
+            else
+              set -eo
+              bundle exec rake
+              git checkout .
+              git clean -f -d
+            fi
+
+      - run:
+          name: NPM Login
+          command: npx npm-shell-login
+
+      - run:
+          name: Check app name with App Center
+          command: |
+            if [ "$bundle_identifier" ]
+            then
+              bundle exec rake app_center:prepare_app_data[${bundle_identifier}]
+              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/app_data.env
+              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/app_data.env >> $BASH_ENV
+            else
+              echo "Skipping the step, no bundle_identifier available."
+            fi
+
+      - run:
+          name: Build App
+          command: bundle exec rake build_app
+
+      - run:
+          name: Build and Upload App Bundle
+          command: |
+            if [ "$with_release" = "true" ];
+            then
+              bundle exec fastlane app_center_build_bundle
+              if [ -z "$service_account_key_url"];
+              then
+                echo "Skipping bundle store distribution, service_account_key is empty"
+              else
+                bundle exec fastlane app_center_release_bundle
+              fi
+            else
+              echo "debug only, skipping release version"
+            fi
+          environment:
+            TERM: dumb
+
+      - run:
+          name: Build Unsigned .apk
+          command: |
+            if [ "$flavor" = "tv" ];
+            then
+              ./gradlew assembleTvDebug
+            else
+              ./gradlew assembleMobileDebug
+            fi
+            cp -r app/build/outputs $CIRCLE_ARTIFACTS
+          environment:
+            TERM: dumb
+
+      - run:
+          name: Publish success results to UI tests job
+          when: on_success
+          command: |
+            if [ "$CIRCLE_BRANCH" = "release" ] || [ "$triggered_by" = "zapp" ];
+            then
+              echo "Skipping UI Tests job"
+            else
+              bundle exec rake ui_tests:publish_build_status[true,app/build/outputs/apk/mobileGoogle/debug/app-mobile-google-debug.apk,false]
+            fi
+      - run:
+          name: App Center Upload Unsigned .apk
+          command: |
+            if [ -z "$flavor" ];
+            then
+              export flavor=mobile
+            fi
+            app_name_no_whitespaces=${bundle_identifier//[^a-zA-Z0-9]/_};
+            apk_path=app/build/outputs/apk/${flavor}/debug/app-${flavor}-debug.apk
+            cp ${apk_path} ${HOME}/${app_name_no_whitespaces}-debug.apk;
+            bundle exec fastlane app_center_debug_upload
+            echo "Debug distribution environment variables"
+            cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_app_center.env
+            cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_app_center.env >> $BASH_ENV
+            source $BASH_ENV
+          environment:
+            TERM: dumb
+
+      - run:
+          name: Build Signed .apk
+          command: |
+            if [ "$with_release" != "true" ];
+            then
+              echo "debug only, skipping release version"
+            else
+              if [ "$flavor" = "tv" ];
+              then
+                ./gradlew assembleTvRelease
+              else
+                export flavor=mobile
+                ./gradlew assembleMobileRelease
+              fi
+            fi
+          environment:
+            TERM: dumb
+
+      - run:
+          name: App Center Upload Signed .apk
+          command: |
+            if [ -z "$key_store_url" ];
+            then
+              echo "no release apk"
+            else
+              if [ -z "$flavor" ];
+              then
+                flavor=mobile
+              fi
+              name=${bundle_identifier};
+              app_name_no_whitespaces=${bundle_identifier//[^a-zA-Z0-9]/_};
+              apk_path=app/build/outputs/apk/${flavor}/release/app-${flavor}-release.apk
+              cp ${apk_path} ${HOME}/${app_name_no_whitespaces}.apk;
+              bundle exec fastlane app_center_release_upload
+              echo "Release distribution environment variables"
+              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/release_app_center.env
+              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/release_app_center.env >> $BASH_ENV
+            fi
+          environment:
+            TERM: dumb
+
+      - run:
+          name: Store results in Artifacts
+          command: |
+            cp -r app/build/outputs $CIRCLE_ARTIFACTS
+          environment:
+            TERM: dumb
+
+      - run:
+          name: Build closed project for plugin developers
+          command: |
+            if [ [ "$skip_build_dev_project" = false ] && [ [ "$build_dev_project" = true ] || [ "$triggered_by" != "zapp" ] ] ]; then
+
+              if [ -f "app/build/outputs/apk/mobileGoogle/debug/app-mobile-google-debug.apk" ]; then
+                  mkdir $HOME/zapp-platform-android/tmpUiTests
+                  mv app/build/outputs/apk/mobileGoogle/debug/app-mobile-google-debug.apk $HOME/zapp-platform-android/$tmpUiTests
+              fi
+
+              build_aar() {
+                echo "building $1"
+                cd "$@"
+                ./gradlew assembleRelease -PforceClosedDependencies -PversionName=100.0.0;
+                echo "linking $1"
+                ./gradlew symLinkAar;
+                echo "publishing locally $1"
+                ./gradlew publishToMavenLocal -PversionName=100.0.0 -PforceClosedDependencies
+                cd "$HOME/Zapp-Android"
+              }
+
+              ## Build AARs
+              build_aar android_quickbrick_app
+
+              ## Remove open code modules
+              sed -i "s|implementation project(':android_quickbrick_app')|g" app/build.gradle
+
+              ## Copy local maven into the project
+              mkdir .m2
+              mkdir .m2/com
+              cp -R ~/.m2/repository/com/applicaster .m2/com
+
+              echo 'Build debug dev-project apk for UI Tests'
+              ./gradlew assembleDebug
+
+              echo 'publish regular apk and dev-project apk to UI Tests'
+              bundle exec rake ui_tests:publish_build_status[true,$HOME/zapp-platform-android/$tmpUiTests/app-mobile-google-debug.apk,app/build/outputs/apk/mobileGoogle/debug/app-mobile-google-debug.apk]
+
+              if [ "$build_dev_project" = true ]; then
+                ## cleanups
+                ./gradlew clean
+
+                ## Zip the project
+                zip dev_project.zip -@r < dev_project_whitelist.txt
+
+                ## Upload
+                bundle exec rake zapp_sdks:upload_dev_project["$(pwd)/dev_project.zip"]
+              fi
+
+            else
+              echo "Skipping build closed project for plugin developers"
+            fi
+
+      - deploy:
+          name: Creating Zapp SDK
+          command: |
+            if [ "$triggered_by" = "zapp" ];
+            then
+              echo "Skipping SDK creation"
+            else
+              if [ -z "$CIRCLE_TAG" ];
+              then
+                echo "no tag passing branch name"
+                version=$CIRCLE_BRANCH
+              else
+                version=$CIRCLE_TAG
+              fi
+
+              bundle exec rake zapp_sdks:create[android,$version,$CIRCLE_PROJECT_REPONAME]
+              bundle exec rake zapp_sdks:publish_changelog[android,$version]
+            fi
+
+      - run:
+          name: Publish failure results to UI tests job
+          when: on_fail
+          command: |
+            if [ "$CIRCLE_BRANCH" = "release" ] || [ "$triggered_by" = "zapp" ];
+            then
+              echo "Skipping UI Tests job"
+            else
+              bundle exec rake ui_tests:publish_build_status[false,false,false]
+            fi
+
+      - store_artifacts:
+          path: artifacts
+
+      - run:
+          name: Notify Zapp with Success
+          command: |
+            if [ "$triggered_by" = "zapp" ];
+            then
+              bundle exec rake "zapp:notify_zapp_build[$version_id,\
+                success,\
+                $debug_appcenter_install_url,\
+                $debug_appcenter_download_url,\
+                $debug_appcenter_release_id,\
+                $debug_artifact_publish_time,\
+                $release_appcenter_install_url,\
+                $release_appcenter_download_url,\
+                $release_appcenter_release_id,\
+                $release_artifact_publish_time,\
+                $artifact_public_identifier,\
+                $CIRCLE_BUILD_URL,\
+                $CIRCLE_BUILD_NUM,\
+                $CIRCLE_PROJECT_REPONAME,\
+                $CIRCLE_SHA1,\
+                $CIRCLE_BRANCH]"
+            else
+              echo "skipping Zapp notification"
+            fi
+
+workflows:
+  version: 2
+  build_from_branch_and_tag:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/

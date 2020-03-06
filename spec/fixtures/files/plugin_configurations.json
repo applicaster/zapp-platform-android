@@ -1,0 +1,123 @@
+[
+  {
+    "plugin": {
+      "api": {
+        "class_name": "test-plugin-class1",
+        "proguard_rules": "-keep class com.test1 {*;}",
+        "resources": { "test_client_id": "test_client_token" }
+      },
+      "author_name": "test1",
+      "author_email": "test1@applicaster.com",
+      "manifest_version": "0.1.0",
+      "name": "Test1 plugin - android",
+      "description": "",
+      "type": "player",
+      "platform": "android",
+      "dependency_repository_url": [
+        "maven-test-repo-url1",
+        {
+          "url": "test-url",
+          "credentials": { "username": "user", "password": "pass" }
+        }
+      ],
+      "dependency_name": "com.applicaster:Test1",
+      "dependency_version": "0.1.0"
+    },
+    "configuration_json": {
+      "test_client_token": "c0ab1998efb2efb81315e1bee8f5d1ce",
+      "android_assets_bundle": "http://assets-production.applicaster.com/some-assets-zip-path.zip"
+    }
+  },
+  {
+    "plugin": {
+      "api": {
+        "class_name": "test-plugin-class2",
+        "proguard_rules": "-keep class com.test2 {*;}"
+      },
+      "author_name": "test2",
+      "author_email": "test2@applicaster.com",
+      "manifest_version": "0.1.0",
+      "name": "Test2 plugin - android",
+      "description": "",
+      "type": "player",
+      "platform": "android",
+      "dependency_repository_url": ["maven-test-repo-url2"],
+      "dependency_name": "com.applicaster:Test2",
+      "dependency_version": "0.1.0"
+    },
+    "configuration_json": {}
+  },
+  {
+    "plugin": {
+      "api": { "class_name": "class" },
+      "dependency_repository_url": [],
+      "author_name": "author",
+      "author_email": "test@applicaster.com",
+      "manifest_version": "0.1.0",
+      "name": "RN plugin with Native dependencies",
+      "description": "desc",
+      "identifier": "id",
+      "type": "player",
+      "platform": "android",
+      "min_zapp_sdk": "",
+      "dependency_name": "npm-package",
+      "dependency_version": "1.0",
+      "react_native": true,
+      "extra_dependencies": [
+        { "com.applicaster:React1": "1.0" },
+        { "com.applicaster:React2": "1.0" }
+      ],
+      "project_dependencies": [{ "project-name": "project-path" }],
+      "npm_dependencies": [
+        "npm-dep1@1.0",
+        "npm-dep2@1.0",
+        "@applicaster/npm-dep3@1.0"
+      ],
+      "react_packages": ["Package1", "Package2"]
+    }
+  },
+  {
+    "plugin": {
+      "api": {},
+      "author_name": "author",
+      "author_email": "test@applicaster.com",
+      "manifest_version": "0.1.0",
+      "dependency_name": "@applicaster/zapp-pipes-provider-general",
+      "identifier": "Applicaster dsp",
+      "type": "data_source_provider",
+      "platform": "android"
+    }
+  },
+  {
+    "plugin": {
+      "api": {},
+      "author_name": "author",
+      "author_email": "test@applicaster.com",
+      "manifest_version": "0.1.0",
+      "name": "RN plugin no dependencies",
+      "type": "general",
+      "platform": "android",
+      "identifier": "RN screen plugin",
+      "react_native": true,
+      "dependency_name": "screen-plugin"
+    }
+  },
+  {
+    "plugin": {
+      "api": {},
+      "dependency_name": "@applicaster/something",
+      "project_dependencies": [
+        { "project-for-@applicaster-name": "project-path" }
+      ],
+      "npm_dependencies": [
+        "npm-dep1@1.0",
+        "npm-dep2@1.0",
+        "@applicaster/npm-dep3@1.0"
+      ],
+      "identifier": "something",
+      "type": "general",
+      "react_native": true,
+      "platform": "android"
+    }
+  }
+]

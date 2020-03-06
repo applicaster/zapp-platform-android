@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.zapp">
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+    <application
+        android:name="com.applicaster.ui.application.BaseApplication"
+        android:label="${app_name}"
+        android:allowBackup="false"
+        android:supportsRtl="false"
+        android:icon="@mipmap/ic_launcher"
+        android:theme="@style/GenericAppTheme"
+        android:networkSecurityConfig="@xml/network_security_config"
+        tools:replace="label, icon, name, supportsRtl, android:theme, android:allowBackup">
+
+        <!-- We remove the allowBackup as otherwise, if allowed, messes up with our shared prefs props !-->
+
+        <activity
+            android:name="com.applicaster.ui.activities.MainActivity"
+            android:label="${app_name}"
+            android:configChanges="orientation|screenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="@string/scheme_url_prefix" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="http" android:host="www.example.com" android:pathPattern="video_*.mp4"/>
+                <data android:scheme="https" android:host="www.example.com" android:pathPattern="video_*.mp4"/>
+                <data android:scheme="http" android:host="www.example.com" android:pathPattern="article_*.mp4"/>
+                <data android:scheme="https" android:host="www.example.com" android:pathPattern="article_*.mp4"/>
+                <data android:scheme="http" android:host="wwww.example2.co.il" android:pathPattern="video_*.mp4"/>
+                <data android:scheme="https" android:host="wwww.example2.co.il" android:pathPattern="video_*.mp4"/>
+                <data android:scheme="http" android:host="wwww.example2.co.il" android:pathPattern="article_*.mp4"/>
+                <data android:scheme="https" android:host="wwww.example2.co.il" android:pathPattern="article_*.mp4"/>
+            </intent-filter>
+
+        </activity>
+
+    </application>
+</manifest>

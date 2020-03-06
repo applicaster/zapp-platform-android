@@ -1,0 +1,249 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
+
+    defaultConfig {
+        applicationId "<%= bundle_identifier %>"
+        minSdkVersion <%= min_sdk_version %>
+        targetSdkVersion 28
+        versionCode <%= build_version %>
+        versionName "<%= version_name %>"
+        manifestPlaceholders = [
+          app_name: "<%= app_name %>",
+          fb_app_id: "<%= fb_app_id %>",
+        ]
+        multiDexEnabled true
+        renderscriptSupportModeEnabled true
+
+        <% if quick_brick_enabled %>
+        // QuickBrick
+        // If running from local RN dev packager, set -PREACT_NATIVE_PACKAGER_ROOT=localhost:8081 in
+        // Preferences > Build, Execution, Development > Compiler > Command-line Options
+        resValue "string", "REACT_NATIVE_PACKAGER_ROOT", project.getProperties().get("REACT_NATIVE_PACKAGER_ROOT", "")
+        <% end %>
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    dexOptions {
+        jumboMode = true
+        preDexLibraries = false
+        javaMaxHeapSize "4g"
+    }
+
+    packagingOptions {
+        // Common
+        pickFirst 'META-INF/NOTICE.txt'
+        pickFirst 'META-INF/LICENSE.txt'
+        pickFirst 'META-INF/LICENSE'
+        pickFirst 'META-INF/ASL2.0'
+        pickFirst 'META-INF/NOTICE'
+        pickFirst 'META-INF/MANIFEST.MF'
+
+
+        // https://github.com/ReactiveX/RxJava/issues/4445
+        pickFirst 'META-INF/rxjava.properties'
+
+        exclude '**/libnode.so'
+        exclude '**/libliquidcore.so'
+
+        pickFirst 'META-INF/proguard/androidx-annotations.pro'
+    }
+
+    signingConfigs {
+      release {
+          storeFile file("../<%= key_store_file %>")
+          storePassword "<%= store_password %>"
+          keyAlias "<%= key_alias %>"
+          keyPassword "<%= key_password %>"
+      }
+    }
+
+    // supported architectures for abi / Android App Bundle
+    bundle {
+        language {
+            enableSplit = true
+        }
+        density {
+            enableSplit = true
+        }
+        abi {
+            enableSplit = true
+        }
+    }
+
+    buildTypes {
+      debug {
+          minifyEnabled false
+          proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+          signingConfig signingConfigs.debug
+      }
+      release {
+          minifyEnabled true
+          proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+          signingConfig signingConfigs.release
+      }
+    }
+
+    /**
+     * See top-level build.gradle for:
+     * - Dimension configuration of the specific build
+     * - All product flavors mapping
+     */
+    flavorDimensions dimensionsConfig.keySet() as String[]
+
+    productFlavors zappProductFlavorsMap
+}
+
+/*
+ * Create alias for the generated mobile flavors combination,
+ * to keep backward compatibility without modifying CircleCI code.
+ * e.g.: "apk/mobile/app-mobile-debug.apk" will actually point to "apk/mobileGoogle/debug/app-mobile-google-debug.apk"
+ */
+ext.createMobileShortcut = { runtimeBuildType ->
+    if (dimensionsConfig.platform == 'mobile') {
+        def vendor = dimensionsConfig.vendor ? dimensionsConfig.vendor : ''
+        def mobilePath = "app/build/outputs/apk/mobile/" + runtimeBuildType
+        def apkPath = mobilePath + "/app-mobile-" + runtimeBuildType + ".apk"
+        def compatibilityApkPath = "app/build/outputs/apk/app-mobile-" + runtimeBuildType + ".apk"
+        def mobileApk = new File(apkPath)
+        if (!mobileApk.exists()) {
+            new File(mobilePath).mkdirs()
+            def baseDirectory = System.getProperty("user.dir")
+            def existingApkPath = baseDirectory + '/app/build/outputs/apk/mobile' + vendor.capitalize() + '/' + runtimeBuildType + '/app-mobile-' + vendor + '-' + runtimeBuildType + '.apk'
+            ['ln', '-s', existingApkPath, apkPath].execute().waitFor()
+            ['ln', '-s', existingApkPath, compatibilityApkPath].execute().waitFor()
+            new File("app/build/outputs/mapping/mobile/" + runtimeBuildType).mkdirs()
+            def existingMappingFile = baseDirectory + '/app/build/outputs/mapping/mobile' + vendor.capitalize() + '/' + runtimeBuildType + '/mapping.txt'
+            if (new File(existingMappingFile).exists()) {
+                ['ln', '-s', mappingFile, 'app/build/outputs/mapping/mobile/' + runtimeBuildType + '/mapping.txt'].execute().waitFor()
+            }
+            else {
+                // debug build is not obfuscated, mo mapping
+                ['touch', 'app/build/outputs/mapping/mobile/' + runtimeBuildType + '/mapping.txt'].execute().waitFor()
+            }
+        }
+    }
+}
+
+/**
+ * Create alias for the generated tv flavors combination, see example in createMobileShortcut
+ */
+ext.createTvShortcut = { runtimeBuildType ->
+    if (dimensionsConfig.platform == 'tv') {
+        def vendor = dimensionsConfig.vendor
+        def flavor = dimensionsConfig.flavor
+        def tvPath = "app/build/outputs/apk/tv/" + runtimeBuildType
+        def apkPath = tvPath + "/app-tv-" + runtimeBuildType + ".apk"
+        def tvApk = new File(apkPath)
+        if (!tvApk.exists()) {
+            new File(tvPath).mkdirs()
+            ['ln', '-s', System.getProperty("user.dir") + '/app/build/outputs/apk/tv' + vendor.capitalize() + flavor.capitalize() + '/' + runtimeBuildType + '/app-tv-' + vendor + '-' + flavor + '-' + runtimeBuildType + '.apk', apkPath].execute().waitFor()
+            new File("app/build/outputs/mapping/tv/" + runtimeBuildType).mkdirs()
+            ['ln', '-s', System.getProperty("user.dir") + '/app/build/outputs/mapping/tv' + vendor.capitalize() + flavor.capitalize() + '/' + runtimeBuildType + '/mapping.txt', 'app/build/outputs/mapping/tv/' + runtimeBuildType + '/mapping.txt'].execute().waitFor()
+        }
+    }
+}
+
+ext.dimensionedBuildTaskName = { suffix ->
+    def capitalizedDimensions = dimensionsConfig.inject([]) { r, v -> r << v.value.capitalize() }.join("")
+    'assemble' + capitalizedDimensions + suffix.capitalize()
+}
+
+ext.dimensionedBundleTaskName = { suffix ->
+    def capitalizedDimensions = dimensionsConfig.inject([]) { r, v -> r << v.value.capitalize() }.join("")
+    'bundle' + capitalizedDimensions + suffix.capitalize()
+}
+
+/**
+ * Create alias for the generated bundle flavors combination, see example in createMobileShortcut
+*/
+ext.createBundleShortcut = { runtimeBuildType ->
+    def platform = dimensionsConfig.platform
+    def vendor = dimensionsConfig.vendor
+    def flavor = dimensionsConfig.flavor
+    def mobilePath = "app/build/outputs/bundle/" + platform + "/" + runtimeBuildType
+    def apkPath = mobilePath + "/" + android.defaultConfig.applicationId.replaceAll('\\.', '-') + "-" + android.defaultConfig.versionName + "-" + platform + "-release" + ".aab"
+    def mobileApk = new File(apkPath)
+    if (!mobileApk.exists()) {
+        new File(mobilePath).mkdirs()
+        def baseDirectory = System.getProperty("user.dir")
+        def existingApkPath = baseDirectory + '/app/build/outputs/bundle/' + platform + vendor.capitalize() + flavor.capitalize() + runtimeBuildType.capitalize() + '/app.aab'
+        ['mv', existingApkPath, apkPath].execute().waitFor()
+    }
+}
+
+/**
+ * Helper closure for creating paths - no more slash bugs
+ */
+ext.combinePaths = { paths ->
+    if (paths in String) paths = [paths] // be nice and return a proper path also with a single String
+    def file = new File("")
+    paths.each { path ->
+        file = new File(file.getPath(), path)
+    }
+    file.getPath()
+}
+
+
+task assembleMobileDebug() {
+    dependsOn dimensionedBuildTaskName('debug')
+    doLast {
+      createMobileShortcut('debug')
+    }
+}
+
+task assembleMobileRelease() {
+    dependsOn dimensionedBuildTaskName('release')
+    doLast {
+      createMobileShortcut('release')
+    }
+}
+
+task assembleTvDebug() {
+    dependsOn dimensionedBuildTaskName('debug')
+    doLast {
+      createTvShortcut('debug')
+    }
+}
+
+task assembleTvRelease() {
+    dependsOn dimensionedBuildTaskName('release')
+    doLast {
+      createTvShortcut('release')
+    }
+}
+
+task bundleMobileRelease() {
+    dependsOn dimensionedBundleTaskName('release')
+    doLast {
+        createBundleShortcut('release')
+    }
+}
+
+task bundleTvRelease() {
+    dependsOn dimensionedBundleTaskName('release')
+    doLast {
+        createBundleShortcut('release')
+    }
+}
+
+if (System.getenv("CIRCLECI")) {
+    android.signingConfigs.debug.storeFile = file("../debug.keystore")
+}
+
+dependencies {
+<%= plugins_dependencies %>
+    implementation project(':android_quickbrick_app')
+    <%= project_gradle_dependencies %>
+}
+<%= gms_plugin %>

@@ -1,0 +1,5 @@
+{
+  "smartphone":{"settings_category_text":{"color":"#ff000000","font":"Roboto-Regular","font_size":"15"},"dimen":{"dimension":"20"}},
+  "tablet":{"settings_category_text":{"color":"#ff000000","font":"Roboto-Regular","font_size":"15"},"dimen":{"dimension":"20"}},
+  "android_tv":{"settings_category_text_tv":{"color":"#ff000000","font":"Roboto-Regular","font_size":"25"},"dimen":{"dimension":"20"}}
+}
