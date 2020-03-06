@@ -58,23 +58,9 @@ In order to build the application successfully, you will need to setup certain e
 
 **_IMPORTAT NOTE_** - **Mac OS** users have a little bit of pain to suffer here. The normal way to setup this variables would be to set them up in your `.bash_profile` or `.zshrc` files. The problem is that Mac OS has a restriction in which GUI application's can't have access directly to your env variables setup there, therefore Android Studio won't have access to your maven credentials when trying to build the app with Gradle, making it impossible to pull the required dependencies. In order to solve this issue, a couple of options are avaiable. Refer to this [Mac OS and Enviromental variables issues](https://github.com/applicaster/Zapp-Android/wiki/Mac-OS-and-environmental-variables-issues) page for more info.
 
-#### Create a new personal `ZAPP_TOKEN`
+#### Set up a new personal `ZAPP_TOKEN`
 
-Set `ZAPP_TOKEN` environment variable. In case you don't have an access token just yet, follow these steps:
-
-1. Login to [Accounts](https://accounts.applicaster.com/).
-
-2. On the top bar, click in **Users** section.
-
-3. Once inside the **Users** section, on the right hand side you will find a Filters box. Under the email field, enter your Applicaster's email in order to find your own user.
-
-4. Click in the **info** button under the column **Actions**.
-
-5. Under the section **Access Tokens**, simply click the **Add** button.
-
-6. Give your new token an amazing name and create it.
-
-7. Finally, inside the token list, find your newly created token and press the "info" button to reveal it.
+Set the `ZAPP_TOKEN` environment variable. Contact Applicaster support to obtain one.
 
 #### Set Up Bintray Variables
 
@@ -110,10 +96,10 @@ The .env file, is just a configuration file which contains all the useful inform
 In this case, instead of manually having to follow the steps required in the section above, you can provide Rake the **version id** of the application/version you are trying to build.
 
 ```bash
-bundle exec rake prepare_workspace VERSION=cb74ad9b-1b6b-4c92-8a29-fe61625242ba
+bundle exec rake prepare_workspace VERSION=4c98ce2f-e495-4e4c-802a-c24713233865
 ```
 
-**NOTE:** Remember, that **VERSION** is not the semantic versioning number (e.g. 1.0.3) but actually the hash unique identifier of a specific combination of application/build. (e.g. cb74ad9b-1b6b-4c92-8a29-fe61625242ba)
+**NOTE:** Remember, that **VERSION** is not the semantic versioning number (e.g. 1.0.3) but actually the hash unique identifier of a specific combination of application/build. (e.g. 4c98ce2f-e495-4e4c-802a-c24713233865)
 
 **PRO TIP:** Follow steps 1 to 3 from the section above. Once you are in the screen with all the builds information, click on the application version number (e.g. 1.0.3) under the **Version** column and the **VERSION** id will appear.
 
