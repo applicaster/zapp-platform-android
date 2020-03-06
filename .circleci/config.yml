@@ -7,7 +7,7 @@ jobs:
   build:
     working_directory: ~/zapp-platform-android
     docker:
-      - image: applicaster/zapp-android-circleci-primary:0.3.0
+      - image: applicaster/zapp-platform-android-circleci-primary:0.1.0
         environment:
           ANDROID_HOME: /home/circleci/android-sdk
           JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
@@ -22,7 +22,7 @@ jobs:
       - checkout
 
       - restore_cache:
-          key: Zapp-Platform-Platform-Android-v1-{{ checksum "Gemfile.lock" }}
+          key: Zapp-Platform-Android-v1-{{ checksum "Gemfile.lock" }}
 
       - run: bundle check --path=/usr/local/bundle || bundle install --jobs=4 --retry=3
 

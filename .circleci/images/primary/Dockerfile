@@ -63,11 +63,12 @@ RUN sdkmanager \
 
 RUN rm -rf /usr/local/bin/node
 
+RUN mkdir -p /usr/local/nvm
 ENV NVM_DIR /usr/local/nvm
-ENV NODE_VERSION 8.9.0
+ENV NODE_VERSION 12.16.1
 
 # Install nvm with node and npm
-RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.33.6/install.sh | bash \
+RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.35.3/install.sh | bash \
     && . $NVM_DIR/nvm.sh \
     && nvm install $NODE_VERSION \
     && nvm alias default $NODE_VERSION \
