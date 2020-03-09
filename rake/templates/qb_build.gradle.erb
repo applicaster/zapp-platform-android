@@ -125,7 +125,7 @@ ext.createMobileShortcut = { runtimeBuildType ->
             new File("app/build/outputs/mapping/mobile/" + runtimeBuildType).mkdirs()
             def existingMappingFile = baseDirectory + '/app/build/outputs/mapping/mobile' + vendor.capitalize() + '/' + runtimeBuildType + '/mapping.txt'
             if (new File(existingMappingFile).exists()) {
-                ['ln', '-s', mappingFile, 'app/build/outputs/mapping/mobile/' + runtimeBuildType + '/mapping.txt'].execute().waitFor()
+                ['ln', '-s', existingMappingFile, 'app/build/outputs/mapping/mobile/' + runtimeBuildType + '/mapping.txt'].execute().waitFor()
             }
             else {
                 // debug build is not obfuscated, mo mapping
@@ -169,15 +169,14 @@ ext.dimensionedBundleTaskName = { suffix ->
 */
 ext.createBundleShortcut = { runtimeBuildType ->
     def platform = dimensionsConfig.platform
-    def vendor = dimensionsConfig.vendor
-    def flavor = dimensionsConfig.flavor
+    def vendor = dimensionsConfig.vendor ? dimensionsConfig.vendor : ''
     def mobilePath = "app/build/outputs/bundle/" + platform + "/" + runtimeBuildType
     def apkPath = mobilePath + "/" + android.defaultConfig.applicationId.replaceAll('\\.', '-') + "-" + android.defaultConfig.versionName + "-" + platform + "-release" + ".aab"
     def mobileApk = new File(apkPath)
     if (!mobileApk.exists()) {
         new File(mobilePath).mkdirs()
         def baseDirectory = System.getProperty("user.dir")
-        def existingApkPath = baseDirectory + '/app/build/outputs/bundle/' + platform + vendor.capitalize() + flavor.capitalize() + runtimeBuildType.capitalize() + '/app.aab'
+        def existingApkPath = baseDirectory + '/app/build/outputs/bundle/' + platform + vendor.capitalize() + runtimeBuildType.capitalize() + '/app.aab'
         ['mv', existingApkPath, apkPath].execute().waitFor()
     }
 }
