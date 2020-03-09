@@ -7,9 +7,11 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.OrientationEventListener;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
+import androidx.core.view.ViewCompat;
 
 import com.applicaster.ui.interfaces.HostActivityBase;
 import com.applicaster.ui.interfaces.IUILayerManager;
@@ -196,6 +198,8 @@ public class MainActivity extends HostActivityBase {
      */
     private void setSplashAndApplicationPreloaderView() {
         setContentView(OSUtil.getLayoutResourceIdentifier(INTRO_LAYOUT));
+        View root = getWindow().getDecorView().getRootView();
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> insets.consumeSystemWindowInsets());
     }
 
     /**

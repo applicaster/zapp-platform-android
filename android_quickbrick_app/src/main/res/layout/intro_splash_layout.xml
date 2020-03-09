@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/splash_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/splash_background_color">
+    android:fitsSystemWindows="false">
 
     <ImageView
         android:id="@+id/splash_image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:contentDescription="@string/app_name"
         android:src="@drawable/splash_logo" />
 
@@ -17,8 +17,7 @@
         android:id="@+id/progress_bar"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
+        android:layout_gravity="bottom|center"
         android:layout_marginBottom="50dp" />
 
-</RelativeLayout>
+</FrameLayout>
