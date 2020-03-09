@@ -72,10 +72,13 @@ dependencies {
     // Check if an open SDK is defined - if not use the closed one.
     if (!findProject(':applicaster-android-sdk')) {
         // core is the same project as applicaster-android-sdk but uses a different flavor
-        api ("com.applicaster:applicaster-android-sdk-core:0.1.0") {
+        api ("com.applicaster:applicaster-android-sdk:5.0.3") {
             // we want to remove LQ for QB, so make sure no one could call it
-            exclude group: 'com.github.LiquidPlayer', module: 'LiquidCore'
+            // todo: keep it for now or release wont build
+            //exclude group: 'com.github.LiquidPlayer', module: 'LiquidCore'
+            exclude group: 'com.applicaster', module: 'react-native'
         }
+        api "com.facebook.react:react-native:+"
     }
     else {
         api (project(':applicaster-android-sdk')) {
