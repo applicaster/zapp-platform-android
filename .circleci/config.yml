@@ -267,10 +267,12 @@ jobs:
                 $debug_appcenter_install_url,\
                 $debug_appcenter_download_url,\
                 $debug_appcenter_release_id,\
+                $debug_appcenter_app_name,\
                 $debug_artifact_publish_time,\
                 $release_appcenter_install_url,\
                 $release_appcenter_download_url,\
                 $release_appcenter_release_id,\
+                $release_appcenter_app_name,\
                 $release_artifact_publish_time,\
                 $artifact_public_identifier,\
                 $CIRCLE_BUILD_URL,\
