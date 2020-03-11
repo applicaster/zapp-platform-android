@@ -1,5 +1,27 @@
 # Changelog
 
+
+## 20.0.0 (March 11, 2020)
+First official release.
+
+#### Minimum Android OS supported: 4.4.x
+#### React Native version: 0.59.10
+#### Gradle version: 5.6.4
+#### Android Studio Gradle Plugin version: 3.5.3
+#### QuickBrick version: v2.3.0
+#### Applicaster Android SDK version: 5.0.3
+
+### Improvements:
+- CI optimization [bdcba0](https://github.com/applicaster/zapp-platform-android/commit/bdcba015c30f6d65446864f124d54f8239340e4b)
+- New intro design [bf82b2](https://github.com/applicaster/zapp-platform-android/commit/bf82b23183d4ce0c5911991b6f2cc965f480f218)
+
+### Changes:
+- Switch back to Applicaster Android SDK from Core SDK dependency [fdb59e](https://github.com/applicaster/zapp-android-platform/commit/fdb59e86395f02df164579a18dc358b5bf6605fd)
+
+### Fixes:
+- CI Bundle build fixed [1025e0](https://github.com/applicaster/zapp-platform-android/commit/1025e047f3f580baa1e1955106da7c907daee57f)
+- CI AppCenter build fix merged from ZappAndroid [4aa00f](https://github.com/applicaster/zapp-android-platform/commit/4aa00fa8177dce451c3b66faea5fe0cfe82de654)
+
 ## 20.0.0-alpha (March 6, 2020)
 Initial alpha release.
 
@@ -7,5 +29,5 @@ Initial alpha release.
 #### React Native version: 0.59.10
 #### Gradle version: 5.6.4
 #### Android Studio Gradle Plugin version: 3.5.3
-#### QuickBrick version: v2.2.2
+#### QuickBrick version: v2.3.0
 #### Applicaster Core SDK version: 0.1.0
