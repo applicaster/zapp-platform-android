@@ -10,6 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:scaleType="center"
         android:contentDescription="@string/app_name"
         android:src="@drawable/splash_logo" />
 
