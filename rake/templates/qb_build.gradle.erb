@@ -140,16 +140,21 @@ ext.createMobileShortcut = { runtimeBuildType ->
  */
 ext.createTvShortcut = { runtimeBuildType ->
     if (dimensionsConfig.platform == 'tv') {
-        def vendor = dimensionsConfig.vendor
-        def flavor = dimensionsConfig.flavor
+        def vendor = dimensionsConfig.vendor ? dimensionsConfig.vendor : ''
         def tvPath = "app/build/outputs/apk/tv/" + runtimeBuildType
         def apkPath = tvPath + "/app-tv-" + runtimeBuildType + ".apk"
         def tvApk = new File(apkPath)
         if (!tvApk.exists()) {
             new File(tvPath).mkdirs()
-            ['ln', '-s', System.getProperty("user.dir") + '/app/build/outputs/apk/tv' + vendor.capitalize() + flavor.capitalize() + '/' + runtimeBuildType + '/app-tv-' + vendor + '-' + flavor + '-' + runtimeBuildType + '.apk', apkPath].execute().waitFor()
+            ['ln', '-s', System.getProperty("user.dir") + '/app/build/outputs/apk/tv' + vendor.capitalize() + '/' + runtimeBuildType + '/app-tv-' + vendor + '-' + runtimeBuildType + '.apk', apkPath].execute().waitFor()
             new File("app/build/outputs/mapping/tv/" + runtimeBuildType).mkdirs()
-            ['ln', '-s', System.getProperty("user.dir") + '/app/build/outputs/mapping/tv' + vendor.capitalize() + flavor.capitalize() + '/' + runtimeBuildType + '/mapping.txt', 'app/build/outputs/mapping/tv/' + runtimeBuildType + '/mapping.txt'].execute().waitFor()
+            def existingMappingFile = System.getProperty("user.dir") + '/app/build/outputs/mapping/tv' + vendor.capitalize() + '/' + runtimeBuildType + '/mapping.txt'
+            if (new File(existingMappingFile).exists()) {
+                ['ln', '-s', existingMappingFile, 'app/build/outputs/mapping/tv/' + runtimeBuildType + '/mapping.txt'].execute().waitFor()
+            }
+            else {
+                ['touch', 'app/build/outputs/mapping/tv/' + runtimeBuildType + '/mapping.txt'].execute().waitFor()
+            }
         }
     }
 }
