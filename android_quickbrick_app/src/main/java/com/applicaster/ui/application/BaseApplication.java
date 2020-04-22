@@ -11,6 +11,7 @@ import com.applicaster.session.SessionStorage;
 import com.applicaster.storage.LocalStorage;
 import com.applicaster.storage.SharedPreferencesRepository;
 import com.applicaster.util.APDebugUtil;
+import com.applicaster.util.AppContext;
 import com.applicaster.util.AppData;
 import com.applicaster.util.ErrorMonitoringUtil;
 import com.applicaster.util.OSUtil;
@@ -23,9 +24,8 @@ public class BaseApplication
 
     @Override
     public void onCreate() {
-        CustomApplication.setContext(this);
         super.onCreate();
-
+        AppContext.set(this);
         initAppData();
         ErrorMonitoringUtil.initPlugins(this);
         initLocale();
@@ -35,7 +35,7 @@ public class BaseApplication
         APDebugUtil.OnApplicationLoaded(this);
         reportAppPresented();
 
-        PushManager.initPushProviders(CustomApplication.getAppContext());
+        PushManager.initPushProviders(this);
     }
 
     private void initAppData() {
