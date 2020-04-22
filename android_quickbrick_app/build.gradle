@@ -70,7 +70,7 @@ def getVersionName = { ->
 
 dependencies {
     // Check if an open SDK is defined - if not use the closed one.
-    if (!findProject(':applicaster-android-sdk')) {
+    if (!findProject(':applicaster-android-sdk') || project.hasProperty('forceClosedDependencies')) {
         // core is the same project as applicaster-android-sdk but uses a different flavor
         api ("com.applicaster:applicaster-android-sdk-core:5.1.0") {
             exclude group: 'com.applicaster', module: 'react-native'
@@ -194,7 +194,7 @@ task symLinkAar {
         exec {
             commandLine "ln", "-s", "-f",
                     buildDir.toString() + "/outputs/aar/android_quickbrick_app-mobile-google-release.aar",
-                    "build/outputs/aar/android_generic_app-release.aar"
+                    "build/outputs/aar/android_quickbrick_app-release.aar"
         }
     }
 }

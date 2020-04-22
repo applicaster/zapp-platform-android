@@ -174,7 +174,7 @@ jobs:
       - run:
           name: Build closed project for plugin developers
           command: |
-            if [ [ "$skip_build_dev_project" = false ] && [ [ "$build_dev_project" = true ] || [ "$triggered_by" != "zapp" ] ] ]; then
+            if [ "$build_dev_project" = true ] || [ "$triggered_by" != "zapp" ]; then
 
               if [ -f "app/build/outputs/apk/mobileGoogle/debug/app-mobile-google-debug.apk" ]; then
                   mkdir $HOME/zapp-platform-android/tmpUiTests
@@ -189,14 +189,14 @@ jobs:
                 ./gradlew symLinkAar;
                 echo "publishing locally $1"
                 ./gradlew publishToMavenLocal -PversionName=100.0.0 -PforceClosedDependencies
-                cd "$HOME/Zapp-Android"
+                cd "$HOME/zapp-platform-android"
               }
 
               ## Build AARs
               build_aar android_quickbrick_app
 
               ## Remove open code modules
-              sed -i "s|implementation project(':android_quickbrick_app')|g" app/build.gradle
+              sed -i "s|implementation project(':android_quickbrick_app')|api 'com.applicaster:android_quickbrick_app:100.0.0'|g" app/build.gradle
 
               ## Copy local maven into the project
               mkdir .m2
