@@ -163,6 +163,10 @@ class TemplateHelper
     ENV["purchase_enabled"] == "true" || false
   end
 
+  def s3_hostname
+    ENV["s3_hostname"]
+  end
+
   def plugins_dependencies
     PluginsHelper.plugins_dependencies
   end
