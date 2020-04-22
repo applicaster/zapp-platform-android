@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 public interface IUILayerManager {
 
-    boolean isInitialized();
+    boolean isReady();
 
     void setEventsListener(StatusListener listener);
 

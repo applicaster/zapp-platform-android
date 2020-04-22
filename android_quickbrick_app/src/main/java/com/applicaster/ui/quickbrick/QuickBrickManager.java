@@ -55,7 +55,7 @@ public class QuickBrickManager implements
     private boolean initialized;
 
     @Override
-    public boolean isInitialized() {
+    public boolean isReady() {
         return initialized;
     }
 
