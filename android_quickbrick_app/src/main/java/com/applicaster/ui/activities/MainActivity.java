@@ -56,14 +56,13 @@ public class MainActivity extends HostActivityBase {
         playVideoIntroIfPresent();
         // todo: show debug setup dialog here
         loadData();
-        // todo: check if it can run in BG
-        new Handler().post(this::initializeUILayer);
+        initializeUILayer();
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if(null != uiLayer && uiLayer.isInitialized()) {
+        if(null != uiLayer && uiLayer.isReady()) {
             Uri uri = UrlSchemeUtil.getUrlSchemeData(intent);
             if (null != uri) {
                 uiLayer.handleURL(uri.toString());
@@ -106,7 +105,7 @@ public class MainActivity extends HostActivityBase {
                 int from = OrientationUtils.INSTANCE.jsOrientationMapper(lastKnownRotation);
                 lastKnownRotation = normalisedOrientation;
                 int to = OrientationUtils.INSTANCE.jsOrientationMapper(normalisedOrientation);
-                if (uiLayer != null && uiLayer.isInitialized()) {
+                if (uiLayer != null && uiLayer.isReady()) {
                     uiLayer.orientationChange(from, to);
                 }
             }
@@ -121,7 +120,7 @@ public class MainActivity extends HostActivityBase {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         boolean shouldOverrideKeyDownEvent = false;
-        if (uiLayer != null && uiLayer.isInitialized()) {
+        if (uiLayer != null && uiLayer.isReady()) {
             shouldOverrideKeyDownEvent = uiLayer.onKeyDown(keyCode, event);
         }
         return shouldOverrideKeyDownEvent || super.onKeyDown(keyCode, event);
@@ -132,7 +131,7 @@ public class MainActivity extends HostActivityBase {
      */
     @Override
     public void onBackPressed() {
-        if (uiLayer != null && uiLayer.isInitialized()) {
+        if (uiLayer != null && uiLayer.isReady()) {
             uiLayer.onBackPressed();
         } else {
             super.onBackPressed();
@@ -145,7 +144,7 @@ public class MainActivity extends HostActivityBase {
     @Override
     protected void onResume() {
         super.onResume();
-        if (uiLayer != null && uiLayer.isInitialized()) uiLayer.onResume();
+        if (uiLayer != null) uiLayer.onResume();
     }
 
     /**
@@ -156,7 +155,7 @@ public class MainActivity extends HostActivityBase {
     protected void onPause() {
         super.onPause();
         AppData.persistAppData(this);
-        if (uiLayer != null && uiLayer.isInitialized())uiLayer.onPause();
+        if (uiLayer != null) uiLayer.onPause();
     }
 
     /**
