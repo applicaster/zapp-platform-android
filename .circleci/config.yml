@@ -196,7 +196,7 @@ jobs:
               build_aar android_quickbrick_app
 
               ## Remove open code modules
-              sed -i "s|implementation project(':android_quickbrick_app')|api 'com.applicaster:android_quickbrick_app:100.0.0'|g" app/build.gradle
+              sed -i "s|implementation (project(':android_quickbrick_app'))|api ('com.applicaster:android_quickbrick_app:100.0.0')|g" app/build.gradle
 
               ## Copy local maven into the project
               mkdir .m2
