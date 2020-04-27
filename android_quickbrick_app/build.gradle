@@ -86,6 +86,8 @@ dependencies {
 
     tvApi 'androidx.leanback:leanback:1.0.0'
 
+    api "androidx.coordinatorlayout:coordinatorlayout:1.1.0"
+
     api "com.microsoft.appcenter:appcenter-distribute:2.3.0"
     compileOnly 'javax.annotation:jsr250-api:1.0'
 
