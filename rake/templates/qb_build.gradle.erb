@@ -247,7 +247,9 @@ if (System.getenv("CIRCLECI")) {
 
 dependencies {
 <%= plugins_dependencies %>
-    implementation project(':android_quickbrick_app')
+    implementation (project(':android_quickbrick_app')) {
+       exclude group: 'com.applicaster', module: 'react-native'
+    }
     <%= project_gradle_dependencies %>
 }
 <%= gms_plugin %>

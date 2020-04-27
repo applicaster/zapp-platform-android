@@ -70,12 +70,9 @@ def getVersionName = { ->
 
 dependencies {
     // Check if an open SDK is defined - if not use the closed one.
-    if (!findProject(':applicaster-android-sdk')) {
+    if (!findProject(':applicaster-android-sdk') || project.hasProperty('forceClosedDependencies')) {
         // core is the same project as applicaster-android-sdk but uses a different flavor
-        api ("com.applicaster:applicaster-android-sdk:5.0.3") {
-            // we want to remove LQ for QB, so make sure no one could call it
-            // todo: keep it for now or release wont build
-            //exclude group: 'com.github.LiquidPlayer', module: 'LiquidCore'
+        api ("com.applicaster:applicaster-android-sdk-core:5.1.0") {
             exclude group: 'com.applicaster', module: 'react-native'
         }
         api "com.facebook.react:react-native:+"
@@ -86,6 +83,10 @@ dependencies {
             exclude group: 'com.github.LiquidPlayer', module: 'LiquidCore'
         }
     }
+
+    tvApi 'androidx.leanback:leanback:1.0.0'
+
+    api "androidx.coordinatorlayout:coordinatorlayout:1.1.0"
 
     api "com.microsoft.appcenter:appcenter-distribute:2.3.0"
     compileOnly 'javax.annotation:jsr250-api:1.0'
@@ -195,7 +196,7 @@ task symLinkAar {
         exec {
             commandLine "ln", "-s", "-f",
                     buildDir.toString() + "/outputs/aar/android_quickbrick_app-mobile-google-release.aar",
-                    "build/outputs/aar/android_generic_app-release.aar"
+                    "build/outputs/aar/android_quickbrick_app-release.aar"
         }
     }
 }
