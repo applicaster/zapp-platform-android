@@ -197,20 +197,6 @@ public class MainActivity extends HostActivityBase {
      */
     private void setSplashAndApplicationPreloaderView() {
         setContentView(OSUtil.getLayoutResourceIdentifier(INTRO_LAYOUT));
-        // Into screen is ignoring insets and fills the entire screen
-        // to match OS theme behavior on Activity launch
-        // After the launch we let the system handle in in a normal way
-        View root = getWindow().getDecorView().getRootView();
-        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
-            if (preloadStateManager.isPreloadComplete()) {
-                v.setPadding(
-                        insets.getSystemWindowInsetLeft(),
-                        insets.getSystemWindowInsetTop(),
-                        insets.getSystemWindowInsetRight(),
-                        insets.getSystemWindowInsetBottom());
-            }
-            return insets.consumeSystemWindowInsets();
-        });
     }
 
     /**
