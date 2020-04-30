@@ -36,7 +36,7 @@
     </style>
 
     <style name="GenericAppTheme.MainActivity" parent="GenericAppTheme">
-        <item name="android:windowBackground">@drawable/intro_bg_drawable</item>
+        <item name="android:colorBackground">@color/app_background</item>
     </style>
 
 </resources>
