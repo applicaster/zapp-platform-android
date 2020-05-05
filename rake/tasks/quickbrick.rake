@@ -12,11 +12,11 @@ namespace :quickbrick do
     # Take version from ENV, fallback to version from .env file
     version_id = ENV["VERSION"].presence || ENV["version_id"]
 
-    puts "run zapplicaster-cli prepare".cyan
-    SystemHelper.run("yarn quick-brick:prepare #{version_id}")
+    # puts "run zapplicaster-cli prepare".cyan
+    # SystemHelper.run("yarn quick-brick:prepare #{version_id}")
 
-    puts "generate minified js bundle for quickbrick and copy to assets folder".cyan
-    SystemHelper.run("yarn quick-brick:build")
+    # puts "generate minified js bundle for quickbrick and copy to assets folder".cyan
+    # SystemHelper.run("yarn quick-brick:build")
 
     PluginsHelper.add_react_native_dependency
   end

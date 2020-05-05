@@ -4,7 +4,7 @@
     package="${applicationId}">
 
     <application>
-        <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" tools:node="remove" />
+        <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
     </application>
 </manifest>
 
