@@ -1,8 +1,8 @@
 package com.applicaster.ui.quickbrick;
 
-import androidx.annotation.NonNull;
-
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.applicaster.plugin_manager.PluginManager;
 import com.applicaster.reactnative.APReactNativeBridgePackage;
@@ -10,6 +10,7 @@ import com.applicaster.reactnative.AnalyticsBridgePackage;
 import com.applicaster.reactnative.AppDataProviderPackage;
 import com.applicaster.reactnative.utils.PackagesExtractor;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.shell.MainPackageConfig;
 import com.facebook.react.shell.MainReactPackage;
 import com.reactnativecommunity.netinfo.NetInfoPackage;
 
@@ -99,9 +100,10 @@ class ReactPackagesManager {
      * If you choose to not use this method and use the setter instead,
      * make sure to add the required {@link MainReactPackage}.
      * Also, it would be hard not to use the crucial {@link APReactNativeBridgePackage}
-     */
-    public void initializeDefaultPackages() {
-        defaultPackages.add(new MainReactPackage()); // Never a bad idea to have it on the top
+     * @param config
+    */
+    public void initializeDefaultPackages(MainPackageConfig config) {
+        defaultPackages.add(new MainReactPackage(config)); // Never a bad idea to have it on the top
         defaultPackages.add(new AppDataProviderPackage()); // This is actually the video player (!!)
         defaultPackages.add(new APReactNativeBridgePackage()); // Crucial for all interactions with native code at app level)
         defaultPackages.add(new AnalyticsBridgePackage());

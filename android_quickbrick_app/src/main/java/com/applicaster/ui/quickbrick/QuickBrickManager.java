@@ -17,7 +17,9 @@ import com.applicaster.ui.interfaces.IUILayerManager;
 import com.applicaster.ui.quickbrick.listeners.QuickBrickCommunicationListener;
 import com.applicaster.util.APDebugUtil;
 import com.applicaster.util.APLogger;
+import com.applicaster.util.AppContext;
 import com.applicaster.util.OSUtil;
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.ReactRootView;
@@ -27,11 +29,11 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.shell.MainPackageConfig;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 
 public class QuickBrickManager implements
         IUILayerManager,
@@ -51,6 +53,7 @@ public class QuickBrickManager implements
     private String debugPackagerRoot;
     private Long lastRefreshTap = System.currentTimeMillis();
     private ReactPackagesManager reactPackagesManager;
+    private QuickBrickMemoryPressureListener memoryPressureListener = new QuickBrickMemoryPressureListener();
 
     private boolean blockTVKeyEmit = true;
 
@@ -237,6 +240,7 @@ public class QuickBrickManager implements
         try {
             reactInstanceManager = getReactInstanceManager();
             reactInstanceManager.addReactInstanceEventListener(this);
+            reactInstanceManager.getMemoryPressureRouter().addMemoryPressureListener(memoryPressureListener);
             initializeFlipper(application, reactInstanceManager);
             reactInstanceManager.createReactContextInBackground();
         } catch (Exception e) {
@@ -318,7 +322,12 @@ public class QuickBrickManager implements
      * including those extracted from the plugins configuration.
      */
     private ReactInstanceManagerBuilder getQuickBrickReactManagerBuilder() {
-        reactPackagesManager.initializeDefaultPackages();
+        MainPackageConfig.Builder builder = new MainPackageConfig.Builder();
+        ImagePipelineConfig imgConfig = ImagePipelineConfig.newBuilder(AppContext.get())
+                .setMemoryTrimmableRegistry(memoryPressureListener)
+                .build();
+        builder.setFrescoConfig(imgConfig);
+        reactPackagesManager.initializeDefaultPackages(builder.build());
         reactPackagesManager.initializePackagesFromPlugins();
         reactPackagesManager.addExtraPackage(new QuickBrickCommunicationReactPackage(this)); // specific to QuickBrick interactions)
 
