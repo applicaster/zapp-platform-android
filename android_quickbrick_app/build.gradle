@@ -83,6 +83,8 @@ dependencies {
             exclude group: 'com.github.LiquidPlayer', module: 'LiquidCore'
         }
     }
+    // use JSC engine for RN
+    implementation 'org.webkit:android-jsc:+'
 
     tvApi 'androidx.leanback:leanback:1.0.0'
 
