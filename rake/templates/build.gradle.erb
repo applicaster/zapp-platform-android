@@ -104,10 +104,6 @@ android {
     productFlavors zappProductFlavorsMap
 }
 
-
-ext.react = [enableHermes: true]
-def enableHermes = ext.react.get("enableHermes", true);
-
 /*
  * Create alias for the generated mobile flavors combination,
  * to keep backward compatibility without modifying CircleCI code.
