@@ -9,10 +9,10 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import com.applicaster.reactnative.utils.DataUtils;
 import com.applicaster.ui.interfaces.HostActivityBase;
 import com.applicaster.ui.interfaces.IUILayerManager;
 import com.applicaster.ui.quickbrick.listeners.QuickBrickCommunicationListener;
-import com.applicaster.reactnative.utils.DataUtils;
 import com.applicaster.util.APDebugUtil;
 import com.applicaster.util.OSUtil;
 import com.facebook.react.ReactInstanceManager;
@@ -234,6 +234,7 @@ public class QuickBrickManager implements
             reactInstanceManager = getReactInstanceManager();
             reactInstanceManager.addReactInstanceEventListener(this);
             reactInstanceManager.createReactContextInBackground();
+            onResume(); // hack since RN needs this event to return onReady
         } catch (Exception e) {
             if (listener != null) listener.onError(e);
         }
