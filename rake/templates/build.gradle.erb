@@ -239,11 +239,5 @@ dependencies {
 <%= plugins_dependencies %>
     implementation project(':android_generic_app')
     <%= project_gradle_dependencies %>
-
-    def hermesPath = "../node_modules/hermes-engine/android/";
-    debugImplementation files(hermesPath + "hermes-debug.aar")
-    releaseImplementation files(hermesPath + "hermes-release.aar")
-
-
 }
 <%= gms_plugin %>
