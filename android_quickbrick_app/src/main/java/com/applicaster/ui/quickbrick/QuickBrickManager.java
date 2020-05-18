@@ -8,11 +8,12 @@ import android.view.KeyEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
 
+import com.applicaster.reactnative.utils.DataUtils;
 import com.applicaster.ui.interfaces.HostActivityBase;
 import com.applicaster.ui.interfaces.IUILayerManager;
 import com.applicaster.ui.quickbrick.listeners.QuickBrickCommunicationListener;
-import com.applicaster.reactnative.utils.DataUtils;
 import com.applicaster.util.APDebugUtil;
 import com.applicaster.util.OSUtil;
 import com.facebook.react.ReactInstanceManager;
@@ -301,10 +302,14 @@ public class QuickBrickManager implements
         reactPackagesManager.initializePackagesFromPlugins();
         reactPackagesManager.addExtraPackage(new QuickBrickCommunicationReactPackage(this)); // specific to QuickBrick interactions)
 
+        Lifecycle.State currentState = rootActivity.getLifecycle().getCurrentState();
+
         return ReactInstanceManager.builder()
             .setApplication(application)
+            .setCurrentActivity(rootActivity)
             .addPackages(reactPackagesManager.getAllReactPackages()) // packages: default, from plugins, extras
-            .setInitialLifecycleState(LifecycleState.BEFORE_RESUME);
+            .setInitialLifecycleState(Lifecycle.State.RESUMED == currentState
+                    ? LifecycleState.RESUMED : LifecycleState.BEFORE_RESUME);
     }
 
     /**
