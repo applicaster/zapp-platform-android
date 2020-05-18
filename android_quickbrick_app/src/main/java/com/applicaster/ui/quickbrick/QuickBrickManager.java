@@ -1,6 +1,7 @@
 package com.applicaster.ui.quickbrick;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -15,6 +16,7 @@ import com.applicaster.ui.interfaces.HostActivityBase;
 import com.applicaster.ui.interfaces.IUILayerManager;
 import com.applicaster.ui.quickbrick.listeners.QuickBrickCommunicationListener;
 import com.applicaster.util.APDebugUtil;
+import com.applicaster.util.APLogger;
 import com.applicaster.util.OSUtil;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
@@ -29,6 +31,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 
 public class QuickBrickManager implements
         IUILayerManager,
@@ -234,9 +237,26 @@ public class QuickBrickManager implements
         try {
             reactInstanceManager = getReactInstanceManager();
             reactInstanceManager.addReactInstanceEventListener(this);
+            initializeFlipper(application, reactInstanceManager);
             reactInstanceManager.createReactContextInBackground();
         } catch (Exception e) {
             if (listener != null) listener.onError(e);
+        }
+    }
+
+    private void initializeFlipper(Context context, ReactInstanceManager reactInstanceManager) {
+        if (!APDebugUtil.getIsInDebugMode()) {
+            return;
+        }
+        /*
+         We use reflection here to pick up the class that initializes
+         Flipper, since Flipper library is not available in release mode
+        */
+        try {
+            Class<?> aClass = Class.forName("com.applicaster.reactnative.flipper.ReactNativeFlipper");
+            aClass.getMethod("initializeFlipper", Context.class, ReactInstanceManager.class).invoke(null, context, reactInstanceManager);
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            APLogger.error(TAG, "Failed to initialize Flipper", e);
         }
     }
 
