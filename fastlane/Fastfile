@@ -96,9 +96,12 @@ platform :android do
     )
   end
 
-  def rename_file(file_dir, file_name, build_type, extension)
+  def rename_file(file_dir, file_name, build_type, ext)
     name = ENV["bundle_identifier"].gsub(/[^a-zA-Z0-9]/, "_")
-    new_file_name = "#{name}-#{ENV['version_name']}-#{ENV['flavor']}-#{build_type}.#{extension}"
+
+    new_file_name =
+      "#{name}-#{ENV['version_name']}-#{ENV['build_version']}-#{ENV['flavor']}-#{build_type}.#{ext}"
+
     new_file = "#{file_dir}/#{new_file_name}"
     old_file = "#{file_dir}/#{file_name}"
     return new_file if File.file?("../#{new_file}")
