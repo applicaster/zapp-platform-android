@@ -14,11 +14,13 @@
 - Project now uses lightweight Core Applicaster Android SDK [#8](https://github.com/applicaster/zapp-platform-android/pull/8)
 - Main activity now has singleTask flag for better deep linking experience [#17](https://github.com/applicaster/zapp-platform-android/pull/17)
 - QuickBrick version updated to v3.0.1 [#18](https://github.com/applicaster/zapp-platform-android/pull/18)
+- Build version added to the apk file name published to app center [#19](https://github.com/applicaster/zapp-platform-android/pull/19)
 
 ### Changes:
 - App bundle can be build even if store is not connected in MS AppCenter [#4](https://github.com/applicaster/zapp-platform-android/pull/4)
 - Custom s3 host can be defined [#5](https://github.com/applicaster/zapp-platform-android/pull/5)
 - QuickBrick initialization delayed until plugins remote configuration is loaded [#16](https://github.com/applicaster/zapp-platform-android/pull/17)
+- AndroidX SwipeRefreshLayout dependency added [#20](https://github.com/applicaster/zapp-platform-android/pull/20)
 
 ### Fixes:
 - Screen insets fixed [#1](https://github.com/applicaster/zapp-platform-android/pull/1) [#2](https://github.com/applicaster/zapp-platform-android/pull/2)
