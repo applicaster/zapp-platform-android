@@ -95,6 +95,10 @@ dependencies {
     api "com.microsoft.appcenter:appcenter-distribute:2.3.0"
     compileOnly 'javax.annotation:jsr250-api:1.0'
 
+    implementation(project(':react-native-netinfo')) {
+        exclude group: 'com.facebook.react', module: 'react-native'
+    }
+
     debugImplementation('com.facebook.flipper:flipper:0.35.0') {
         exclude group:'com.facebook.fbjni'
     }

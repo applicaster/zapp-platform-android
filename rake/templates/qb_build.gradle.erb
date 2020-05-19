@@ -246,10 +246,6 @@ if (System.getenv("CIRCLECI")) {
 }
 
 dependencies {
-    implementation(project(':react-native-netinfo')) {
-        exclude group: 'com.facebook.react', module: 'react-native'
-    }
-
 <%= plugins_dependencies %>
     implementation (project(':android_quickbrick_app')) {
        exclude group: 'com.applicaster', module: 'react-native'
