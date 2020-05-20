@@ -16,6 +16,7 @@ import com.applicaster.util.AppData;
 import com.applicaster.util.ErrorMonitoringUtil;
 import com.applicaster.util.OSUtil;
 import com.applicaster.util.StringUtil;
+import com.facebook.soloader.SoLoader;
 
 import java.util.Locale;
 
@@ -25,6 +26,7 @@ public class BaseApplication
     @Override
     public void onCreate() {
         super.onCreate();
+        SoLoader.init(this, /* native exopackage */ false);
         AppContext.set(this);
         initAppData();
         ErrorMonitoringUtil.initPlugins(this);
