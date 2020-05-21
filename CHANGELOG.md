@@ -1,7 +1,7 @@
 # Changelog
 
 
-## 20.1.0 (May 20, 2020)
+## 20.1.0 (May 21, 2020)
 
 #### Minimum Android OS supported: 4.4.x
 #### React Native version: 0.59.10
