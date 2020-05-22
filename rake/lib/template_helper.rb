@@ -5,6 +5,7 @@ require "erb"
 require "dependency_helper"
 require "android_manifest_helper"
 require "yaml"
+require "workspace_helper"
 
 class TemplateHelper
   include DependencyHelper
@@ -126,9 +127,7 @@ class TemplateHelper
   end
 
   def rounded_icon_exists
-    Dir.glob("app/src/main/res/mipmap-*").any? do |dir|
-      File.exist?("#{dir}/ic_launcher_foreground.png")
-    end
+    WorkspaceHelper.rounded_icon_exists?
   end
 
   def rounded_icon
