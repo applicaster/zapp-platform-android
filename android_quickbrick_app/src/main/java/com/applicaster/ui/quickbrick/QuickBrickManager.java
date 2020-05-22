@@ -15,10 +15,13 @@ import com.applicaster.reactnative.utils.DataUtils;
 import com.applicaster.ui.interfaces.HostActivityBase;
 import com.applicaster.ui.interfaces.IUILayerManager;
 import com.applicaster.ui.quickbrick.listeners.QuickBrickCommunicationListener;
+import com.applicaster.ui.quickbrick.listeners.QuickBrickMemoryPressureListener;
 import com.applicaster.util.APDebugUtil;
 import com.applicaster.util.APLogger;
 import com.applicaster.util.AppContext;
 import com.applicaster.util.OSUtil;
+import com.facebook.common.util.ByteConstants;
+import com.facebook.imagepipeline.cache.MemoryCacheParams;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
@@ -34,6 +37,7 @@ import com.facebook.react.shell.MainPackageConfig;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 
 public class QuickBrickManager implements
         IUILayerManager,
@@ -325,6 +329,12 @@ public class QuickBrickManager implements
         MainPackageConfig.Builder builder = new MainPackageConfig.Builder();
         ImagePipelineConfig imgConfig = ImagePipelineConfig.newBuilder(AppContext.get())
                 .setMemoryTrimmableRegistry(memoryPressureListener)
+                .setBitmapMemoryCacheParamsSupplier(() -> new MemoryCacheParams(
+                        256 * ByteConstants.MB,
+                        Integer.MAX_VALUE,
+                        Integer.MAX_VALUE,
+                        Integer.MAX_VALUE,
+                        Integer.MAX_VALUE))
                 .build();
         builder.setFrescoConfig(imgConfig);
         reactPackagesManager.initializeDefaultPackages(builder.build());
