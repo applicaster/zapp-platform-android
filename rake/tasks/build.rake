@@ -78,6 +78,7 @@ task copy_static_files: :dotenv do
     "rake/static_files/network_security_config.xml",
     "app/src/main/res/xml/network_security_config.xml",
   )
+
   if WorkspaceHelper.rounded_icon_exists?
     puts "Rounded icon found, adding drawable...".cyan
     FileUtils.mkdir_p "app/src/main/res/mipmap-anydpi-v26/"
