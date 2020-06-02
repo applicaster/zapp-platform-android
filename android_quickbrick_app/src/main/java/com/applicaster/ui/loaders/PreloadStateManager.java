@@ -10,12 +10,10 @@ public class PreloadStateManager {
     public enum PreloadStep {
         LOAD_DATA,
         VIDEO_INTRO,
-        UI_LAYER
     }
     private final String TAG = getClass().getSimpleName();
     private boolean loadDataComplete;
     private boolean videoIntroComplete;
-    private boolean uiReadyToShow;
 
     /**
      * Set a {@link PreloadStep} flag to true.
@@ -30,9 +28,6 @@ public class PreloadStateManager {
             case VIDEO_INTRO:
                 videoIntroComplete = true;
                 break;
-            case UI_LAYER:
-                uiReadyToShow = true;
-                break;
             default:
                 break;
         }
@@ -42,6 +37,6 @@ public class PreloadStateManager {
      * @return Are all the preload steps marked as ready/complete?
      */
     public boolean isPreloadComplete() {
-        return loadDataComplete && videoIntroComplete && uiReadyToShow;
+        return loadDataComplete && videoIntroComplete;
     }
 }

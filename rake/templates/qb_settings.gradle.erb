@@ -1,2 +1,3 @@
-include ':app', ':android_quickbrick_app' <%= project_dependencies_names %>
+include ':app', ':android_quickbrick_app', ':react-native-netinfo' <%= project_dependencies_names %>
+project(':react-native-netinfo').projectDir = new File('node_modules/@react-native-community/netinfo/android')
 <%= project_dependencies_paths %>

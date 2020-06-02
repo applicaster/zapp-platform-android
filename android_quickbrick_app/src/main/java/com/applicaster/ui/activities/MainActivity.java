@@ -54,7 +54,6 @@ public class MainActivity extends HostActivityBase {
         playVideoIntroIfPresent();
         // todo: show debug setup dialog here
         loadData();
-        initializeUILayer();
     }
 
     @Override
@@ -215,14 +214,7 @@ public class MainActivity extends HostActivityBase {
         preloadStateManager.setStepComplete(step);
 
         if (preloadStateManager.isPreloadComplete()) {
-            runOnUiThread(() -> {
-                uiLayer.onResume(); // This placement is intentional! can only be run inside a UI thread.
-                setContentView(uiLayer.getRootView()); // simplistic approach, replace whole intro layout with RN layout
-                Uri uri = UrlSchemeUtil.getUrlSchemeData(getIntent());
-                if(null != uri) {
-                    uiLayer.handleURL(uri.toString());
-                }
-            });
+            runOnUiThread(this::initializeUILayer);
         }
     }
 
@@ -270,8 +262,16 @@ public class MainActivity extends HostActivityBase {
         uiLayer.setEventsListener(new IUILayerManager.StatusListener() {
             @Override
             public void onReady() {
-                initOrientationListener();
-                preloadStepComplete(PreloadStep.UI_LAYER);
+                if(isFinishing()) {
+                    return;
+                }
+                runOnUiThread(() -> {
+                    initOrientationListener();
+                    setContentView(uiLayer.getRootView()); // simplistic approach, replace whole intro layout with RN layout
+                    Uri uri = UrlSchemeUtil.getUrlSchemeData(getIntent());
+                    if(null != uri) {
+                        uiLayer.handleURL(uri.toString());
+                    }});
             }
 
             @Override
