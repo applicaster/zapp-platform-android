@@ -19,7 +19,7 @@ task generate_plugins: :dotenv do
 
   plugins_json.each do |plugin_configuration|
     plugin = plugin_configuration["plugin"]
-    next unless plugin["platform"].try(:include?, "android")
+    next unless plugin["platform"].try(:match?, /amazon|android/)
 
     if plugin_configuration["configuration_json"].present?
       AppBuildHelper.expand_assets(
