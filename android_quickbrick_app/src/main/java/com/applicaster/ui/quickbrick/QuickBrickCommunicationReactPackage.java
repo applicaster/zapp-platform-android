@@ -1,5 +1,6 @@
 package com.applicaster.ui.quickbrick;
 
+import com.applicaster.ui.quickbrick.components.ChildrenFocusDeactivatorManager;
 import com.applicaster.ui.quickbrick.listeners.QuickBrickCommunicationListener;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
@@ -9,7 +10,6 @@ import com.facebook.react.uimanager.ViewManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 class QuickBrickCommunicationReactPackage implements ReactPackage {
@@ -22,7 +22,10 @@ class QuickBrickCommunicationReactPackage implements ReactPackage {
     @NotNull
     @Override
     public List<ViewManager> createViewManagers(@NotNull ReactApplicationContext reactContext) {
-        return Collections.emptyList();
+        List<ViewManager> modules = new ArrayList<>();
+        modules.add(new ChildrenFocusDeactivatorManager(reactContext));
+
+        return modules;
     }
 
     @NotNull
