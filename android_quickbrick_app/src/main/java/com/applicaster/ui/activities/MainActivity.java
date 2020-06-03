@@ -59,6 +59,10 @@ public class MainActivity extends HostActivityBase {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        Uri data = intent.getData();
+        setIntent(intent);
+        APLogger.info(TAG, "New Intent received with data:" +
+                (null != data ? data.toString() : "null"));
         if(null != uiLayer && uiLayer.isReady()) {
             Uri uri = UrlSchemeUtil.getUrlSchemeData(intent);
             if (null != uri) {
@@ -270,6 +274,7 @@ public class MainActivity extends HostActivityBase {
                     setContentView(uiLayer.getRootView()); // simplistic approach, replace whole intro layout with RN layout
                     Uri uri = UrlSchemeUtil.getUrlSchemeData(getIntent());
                     if(null != uri) {
+                        APLogger.info(TAG, "Passing URI to UI Layer:" + uri.toString());
                         uiLayer.handleURL(uri.toString());
                     }});
             }

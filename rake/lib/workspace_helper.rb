@@ -52,4 +52,10 @@ class WorkspaceHelper
   def self.quickbrick?
     ENV["quick_brick_enabled"] == "true"
   end
+
+  def self.rounded_icon_exists?
+    Dir.glob("app/src/main/res/mipmap-*").any? do |dir|
+      File.exist?("#{dir}/ic_launcher_foreground.png")
+    end
+  end
 end

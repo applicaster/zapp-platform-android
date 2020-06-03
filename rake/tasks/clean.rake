@@ -16,6 +16,7 @@ task clean: :dotenv do
   FileUtils.rm_rf("app/src/main/res/drawable-xhdpi")
   FileUtils.rm_rf("app/src/main/res/drawable-xxhdpi")
   FileUtils.rm_rf("app/src/main/res/drawable")
+  FileUtils.rm_rf("app/src/main/res/mipmap-anydpi-v26")
 
   FileUtils.rm_f("styles.json")
   FileUtils.rm_f("remote_configurations.json")

@@ -1,6 +1,33 @@
 # Changelog
 
 
+## 20.1.0 (May 21, 2020)
+
+#### Minimum Android OS supported: 4.4.x
+#### React Native version: 0.59.10
+#### Gradle version: 5.6.4
+#### Android Studio Gradle Plugin version: 3.5.3
+#### QuickBrick version: v3.0.1
+#### Applicaster Android SDK Core version: 5.1.0
+
+### Improvements:
+- Project now uses lightweight Core Applicaster Android SDK [#8](https://github.com/applicaster/zapp-platform-android/pull/8)
+- Main activity now has singleTask flag for better deep linking experience [#17](https://github.com/applicaster/zapp-platform-android/pull/17)
+- QuickBrick version updated to v3.0.1 [#18](https://github.com/applicaster/zapp-platform-android/pull/18)
+- Build version added to the apk file name published to app center [#19](https://github.com/applicaster/zapp-platform-android/pull/19)
+
+### Changes:
+- App bundle can be build even if store is not connected in MS AppCenter [#4](https://github.com/applicaster/zapp-platform-android/pull/4)
+- Custom s3 host can be defined [#5](https://github.com/applicaster/zapp-platform-android/pull/5)
+- QuickBrick initialization delayed until plugins remote configuration is loaded [#16](https://github.com/applicaster/zapp-platform-android/pull/17)
+- AndroidX SwipeRefreshLayout dependency added [#20](https://github.com/applicaster/zapp-platform-android/pull/20)
+
+### Fixes:
+- Screen insets fixed [#1](https://github.com/applicaster/zapp-platform-android/pull/1) [#2](https://github.com/applicaster/zapp-platform-android/pull/2)
+- Symlinks for tv apk and mapping where not created properly [#3](https://github.com/applicaster/zapp-platform-android/pull/3)
+- React native initialization fail for Zapp builds fixed [#7](https://github.com/applicaster/zapp-platform-android/pull/7)
+- Intro layout fixed [#10](https://github.com/applicaster/zapp-platform-android/pull/10)
+
 ## 20.0.0 (March 11, 2020)
 First official release.
 
