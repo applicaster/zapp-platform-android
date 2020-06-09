@@ -10,7 +10,9 @@ import com.applicaster.plugin_manager.push_plugin.PushManager;
 import com.applicaster.session.SessionStorage;
 import com.applicaster.storage.LocalStorage;
 import com.applicaster.storage.SharedPreferencesRepository;
+import com.applicaster.ui.BuildConfig;
 import com.applicaster.util.APDebugUtil;
+import com.applicaster.util.APLogger;
 import com.applicaster.util.AppContext;
 import com.applicaster.util.AppData;
 import com.applicaster.util.ErrorMonitoringUtil;
@@ -21,6 +23,8 @@ import java.util.Locale;
 
 public class BaseApplication
         extends Application {
+
+    private static final String TAG = "BaseApplication";
 
     @Override
     public void onCreate() {
@@ -44,7 +48,14 @@ public class BaseApplication
             AppData.setProperty(APProperties.URL_SCHEME_PREFIX, getString(OSUtil.getStringResourceIdentifier("scheme_url_prefix")));
         }
         catch (Exception e) {
-            Log.e(CustomApplication.class.getSimpleName(), "add scheme_url_prefix to strings.xml");
+            APLogger.error(TAG, "add scheme_url_prefix to strings.xml");
+        }
+        // fix up store for Amazon FireTV until we have better solution on the SDK level
+        if(!AppData.getApplicationStore().toString().equals(BuildConfig.FLAVOR_vendor)) {
+            APLogger.warn(TAG, "AppData Store property did not match build config and was overridden from "
+                    + AppData.getApplicationStore().toString() +
+                    " to " + BuildConfig.FLAVOR_vendor);
+            AppData.setApplicationStore(AppData.ApplicationStore.valueOf(BuildConfig.FLAVOR_vendor));
         }
     }
 
