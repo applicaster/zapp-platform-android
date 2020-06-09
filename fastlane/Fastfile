@@ -75,7 +75,7 @@ platform :android do
     sub_dir = "#{ENV['flavor']}/#{build_type}"
 
     {
-      apk_dir: rename_file("#{prefix_dir}/apk/#{sub_dir}", apk_name, build_type, "apk"),
+      apk_dir: copy_file("#{prefix_dir}/apk/#{sub_dir}", apk_name, build_type, "apk"),
       mapping_dir: "#{prefix_dir}/mapping/#{sub_dir}/mapping.txt",
     }
   end
@@ -90,14 +90,14 @@ platform :android do
       path: zapp_build_path,
       upload_metadata: true,
       html_in_folder: true,
-      version_file_name: "#{zapp_build_path}/version_distribution.json",
+      version_file_name: "#{zapp_build_path}version_distribution.json",
     )
   end
 
   def zapp_build_path
     "zapp/accounts/#{ENV['accounts_account_id']}/apps/"\
       "#{ENV['bundle_identifier']}/#{ENV['store']}/#{ENV['version_name']}/builds/"\
-      "#{ENV['build_version']}"
+      "#{ENV['build_version']}/"
   end
 
   def app_center_prepare_bundle(build_type)
@@ -139,7 +139,7 @@ platform :android do
     )
   end
 
-  def rename_file(file_dir, file_name, build_type, ext)
+  def copy_file(file_dir, file_name, build_type, ext)
     name = ENV["bundle_identifier"].gsub(/[^a-zA-Z0-9]/, "_")
 
     new_file_name =
@@ -149,8 +149,8 @@ platform :android do
     old_file = "#{file_dir}/#{file_name}"
     return new_file if File.file?("../#{new_file}")
 
-    puts "Renaming #{old_file} to #{new_file}"
-    File.rename("../#{old_file}", "../#{new_file}")
+    puts "copying #{old_file} to #{new_file}"
+    FileUtils.cp_r("../#{old_file}", "../#{new_file}", remove_destination: true)
     new_file
   end
 
