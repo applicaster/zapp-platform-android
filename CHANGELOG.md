@@ -10,6 +10,7 @@
 #### QuickBrick version: v3.0.3
 #### Applicaster Android SDK Core version: 6.1.1
 
+
 ### Improvements:
 - Push notifications can be now disabled for current device [#1407](https://github.com/applicaster/applicaster-android-sdk/pull/1407) [#1412](https://github.com/applicaster/applicaster-android-sdk/pull/1412)
 
@@ -25,6 +26,7 @@
 - Lost focus issue when app is returning from the background on TV is fixed [#25](https://github.com/applicaster/zapp-platform-android/pull/25)
 - DeepLink for push notifications from UrbanAirship fixed [#26](https://github.com/applicaster/zapp-platform-android/pull/26)
 - GPS feature flag removed from TV manifest [#27](https://github.com/applicaster/zapp-platform-android/pull/27)
+- Application data constants fixed for Amazon Fire TV [#34](https://github.com/applicaster/zapp-platform-android/pull/34)
 - PlayerPluginManager events fixed [#1408](https://github.com/applicaster/applicaster-android-sdk/pull/1408)
 
 
