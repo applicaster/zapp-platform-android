@@ -90,6 +90,7 @@ platform :android do
       path: zapp_build_path,
       upload_metadata: true,
       html_in_folder: true,
+      html_template_path: "rake/templates/s3_apk.html.erb",
       version_file_name: "#{zapp_build_path}version_distribution.json",
     )
   end
