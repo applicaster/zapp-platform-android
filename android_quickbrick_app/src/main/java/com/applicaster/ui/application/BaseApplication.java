@@ -51,11 +51,12 @@ public class BaseApplication
             APLogger.error(TAG, "add scheme_url_prefix to strings.xml");
         }
         // fix up store for Amazon FireTV until we have better solution on the SDK level
-        if(!AppData.getApplicationStore().toString().equals(BuildConfig.FLAVOR_vendor)) {
+        if(BuildConfig.FLAVOR_vendor.equals("amazon") &&
+                AppData.ApplicationStore.android == AppData.getApplicationStore()) {
             APLogger.warn(TAG, "AppData Store property did not match build config and was overridden from "
                     + AppData.getApplicationStore().toString() +
-                    " to " + BuildConfig.FLAVOR_vendor);
-            AppData.setApplicationStore(AppData.ApplicationStore.valueOf(BuildConfig.FLAVOR_vendor));
+                    " to " + AppData.ApplicationStore.amazon.toString());
+            AppData.setApplicationStore(AppData.ApplicationStore.amazon);
         }
     }
 
