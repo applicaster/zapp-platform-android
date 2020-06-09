@@ -364,20 +364,38 @@ workflows:
           type: approval
           requires:
             - build
+          filters:
+            tags:
+              only: /.*/
       - create_android_mobile_sdk:
           requires:
             - hold_create_android_mobile_sdk
+          filters:
+            tags:
+              only: /.*/
       - hold_create_android_tv_sdk:
           type: approval
           requires:
             - build
+          filters:
+            tags:
+              only: /.*/
       - create_android_tv_sdk:
           requires:
             - hold_create_android_tv_sdk
+          filters:
+            tags:
+              only: /.*/
       - hold_create_amazon_fire_tv_sdk:
           type: approval
           requires:
             - build
+          filters:
+            tags:
+              only: /.*/
       - create_amazon_fire_tv_sdk:
           requires:
             - hold_create_amazon_fire_tv_sdk
+          filters:
+            tags:
+              only: /.*/
