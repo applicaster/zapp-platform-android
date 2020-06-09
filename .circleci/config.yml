@@ -355,12 +355,16 @@ workflows:
           filters:
             tags:
               only: /.*/
+            branches:
+              ignore: /.*/
       - create_android_mobile_sdk:
           requires:
             - hold_create_android_mobile_sdk
           filters:
             tags:
               only: /.*/
+            branches:
+              ignore: /.*/
       - hold_create_android_tv_sdk:
           type: approval
           requires:
@@ -368,12 +372,16 @@ workflows:
           filters:
             tags:
               only: /.*/
+            branches:
+              ignore: /.*/
       - create_android_tv_sdk:
           requires:
             - hold_create_android_tv_sdk
           filters:
             tags:
               only: /.*/
+            branches:
+              ignore: /.*/
       - hold_create_amazon_fire_tv_sdk:
           type: approval
           requires:
@@ -381,9 +389,13 @@ workflows:
           filters:
             tags:
               only: /.*/
+            branches:
+              ignore: /.*/
       - create_amazon_fire_tv_sdk:
           requires:
             - hold_create_amazon_fire_tv_sdk
           filters:
             tags:
               only: /.*/
+            branches:
+              ignore: /.*/
