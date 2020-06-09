@@ -1,11 +1,8 @@
-notify:
-  webhooks:
-    - url: https://zapp.applicaster.com/callbacks/build_status/circleci_builds
-
-version: 2
-jobs:
-  build:
-    working_directory: ~/zapp-platform-android
+references:
+  workspace_root: &workspace_root ~/zapp-platform-android
+  container_config: &container_config
+    working_directory: *workspace_root
+    resource_class: large
     docker:
       - image: applicaster/zapp-platform-android-circleci-primary:0.1.0
         environment:
@@ -16,20 +13,30 @@ jobs:
           RAILS_ENV: test
           RACK_ENV: test
 
-    resource_class: large
+  gems_cache_key: &gems_cache_key Zapp-Platform-Android-v1-{{ checksum "Gemfile.lock" }}
+
+  restore_gems: &restore_gems
+    restore_cache:
+      keys:
+        - *gems_cache_key
+
+  save_gems: &save_gems
+    save_cache:
+      key: *gems_cache_key
+      paths:
+        - /usr/local/bundle
+
+version: 2
+jobs:
+  build:
+    <<: *container_config
 
     steps:
       - checkout
-
-      - restore_cache:
-          key: Zapp-Platform-Android-v1-{{ checksum "Gemfile.lock" }}
+      - *restore_gems
 
       - run: bundle check --path=/usr/local/bundle || bundle install --jobs=4 --retry=3
-
-      - save_cache:
-          key: Zapp-Platform-Android-v1-{{ checksum "Gemfile.lock" }}
-          paths:
-            - /usr/local/bundle
+      - *save_gems
 
       - run:
           name: Build App Specs
@@ -238,25 +245,6 @@ jobs:
               echo "Skipping build closed project for plugin developers"
             fi
 
-      - deploy:
-          name: Creating Zapp SDK
-          command: |
-            if [ "$triggered_by" = "zapp" ];
-            then
-              echo "Skipping SDK creation"
-            else
-              if [ -z "$CIRCLE_TAG" ];
-              then
-                echo "no tag passing branch name"
-                version=$CIRCLE_BRANCH
-              else
-                version=$CIRCLE_TAG
-              fi
-
-              bundle exec rake zapp_sdks:create[android,$version,$CIRCLE_PROJECT_REPONAME]
-              bundle exec rake zapp_sdks:publish_changelog[android,$version]
-            fi
-
       - run:
           name: Publish failure results to UI tests job
           when: on_fail
@@ -298,6 +286,72 @@ jobs:
               echo "skipping Zapp notification"
             fi
 
+  create_android_mobile_sdk:
+    <<: *container_config
+    steps:
+      - checkout
+      - *restore_gems
+
+      - run: bundle check --path=/usr/local/bundle || bundle install --jobs=4 --retry=3
+      - *save_gems
+      - run:
+          name: Creating Zapp SDK
+          command: |
+            if [ -z "$CIRCLE_TAG" ];
+            then
+              echo "no tag passing branch name"
+              version=$CIRCLE_BRANCH
+            else
+              version=$CIRCLE_TAG
+            fi
+
+            bundle exec rake zapp_sdks:create[android_for_quickbrick,$version,$CIRCLE_PROJECT_REPONAME]
+            bundle exec rake zapp_sdks:publish_changelog[android_for_quickbrick,$version]
+
+  create_android_tv_sdk:
+    <<: *container_config
+    steps:
+      - checkout
+      - *restore_gems
+
+      - run: bundle check --path=/usr/local/bundle || bundle install --jobs=4 --retry=3
+      - *save_gems
+      - run:
+          name: Creating Zapp SDK
+          command: |
+            if [ -z "$CIRCLE_TAG" ];
+            then
+              echo "no tag passing branch name"
+              version=$CIRCLE_BRANCH
+            else
+              version=$CIRCLE_TAG
+            fi
+
+            bundle exec rake zapp_sdks:create[android_tv_for_quickbrick,$version,$CIRCLE_PROJECT_REPONAME]
+            bundle exec rake zapp_sdks:publish_changelog[android_tv_for_quickbrick,$version]
+
+  create_amazon_fire_tv_sdk:
+    <<: *container_config
+    steps:
+      - checkout
+      - *restore_gems
+
+      - run: bundle check --path=/usr/local/bundle || bundle install --jobs=4 --retry=3
+      - *save_gems
+      - run:
+          name: Creating Zapp SDK
+          command: |
+            if [ -z "$CIRCLE_TAG" ];
+            then
+              echo "no tag passing branch name"
+              version=$CIRCLE_BRANCH
+            else
+              version=$CIRCLE_TAG
+            fi
+
+            bundle exec rake zapp_sdks:create[android_for_quickbrick,$version,$CIRCLE_PROJECT_REPONAME]
+            bundle exec rake zapp_sdks:publish_changelog[amazon_fire_tv_for_quickbrick,$version]
+
 workflows:
   version: 2
   build_from_branch_and_tag:
@@ -306,3 +360,24 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - hold_create_android_mobile_sdk:
+          type: approval
+          requires:
+            - build
+      - create_android_mobile_sdk:
+          requires:
+            - hold_create_android_mobile_sdk
+      - hold_create_android_tv_sdk:
+          type: approval
+          requires:
+            - build
+      - create_android_tv_sdk:
+          requires:
+            - hold_create_android_tv_sdk
+      - hold_create_amazon_fire_tv_sdk:
+          type: approval
+          requires:
+            - build
+      - create_amazon_fire_tv_sdk:
+          requires:
+            - hold_create_amazon_fire_tv_sdk
