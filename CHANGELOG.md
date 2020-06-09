@@ -1,6 +1,35 @@
 # Changelog
 
 
+## 20.2.0 (June 9, 2020)
+
+#### Minimum Android OS supported: 4.4.x
+#### React Native version: 0.59.10
+#### Gradle version: 5.6.4
+#### Android Studio Gradle Plugin version: 3.5.3
+#### QuickBrick version: v3.0.3
+#### Applicaster Android SDK Core version: 6.1.1
+
+
+### Improvements:
+- Push notifications can be now disabled for current device [#1407](https://github.com/applicaster/applicaster-android-sdk/pull/1407) [#1412](https://github.com/applicaster/applicaster-android-sdk/pull/1412)
+
+### Changes:
+- Applicaster Android SDK Core updated to version 6.1.1 [#23](https://github.com/applicaster/zapp-platform-android/pull/23)
+- Default QuickBrick version updated to version 3.0.3 [#28](https://github.com/applicaster/zapp-platform-android/pull/28)
+- com.google.ads.interactivemedia.v3:interactivemedia downgraded to 3.11.3 [#1410](https://github.com/applicaster/applicaster-android-sdk/pull/1410)
+- kotlinx-coroutines-android updated to the latest version 1.3.6 [#1404](https://github.com/applicaster/applicaster-android-sdk/pull/1404)
+
+### Fixes:
+- Support for round launcher icons fixed [#21](https://github.com/applicaster/zapp-platform-android/pull/21)
+- Zapp builds for Amazon Fire TV fixed [#24](https://github.com/applicaster/zapp-platform-android/pull/24)
+- Lost focus issue when app is returning from the background on TV is fixed [#25](https://github.com/applicaster/zapp-platform-android/pull/25)
+- DeepLink for push notifications from UrbanAirship fixed [#26](https://github.com/applicaster/zapp-platform-android/pull/26)
+- GPS feature flag removed from TV manifest [#27](https://github.com/applicaster/zapp-platform-android/pull/27)
+- Application data constants fixed for Amazon Fire TV [#34](https://github.com/applicaster/zapp-platform-android/pull/34)
+- PlayerPluginManager events fixed [#1408](https://github.com/applicaster/applicaster-android-sdk/pull/1408)
+
+
 ## 20.1.0 (May 21, 2020)
 
 #### Minimum Android OS supported: 4.4.x
