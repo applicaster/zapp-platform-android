@@ -92,7 +92,13 @@ jobs:
               ./gradlew assembleMobileDebug
             fi
             cp -r app/build/outputs $CIRCLE_ARTIFACTS
-            bundle exec fastlane s3_debug_upload
+
+            if [ "$triggered_by" = "zapp" ];
+            then
+              bundle exec fastlane s3_debug_upload
+            else
+              echo "Skip upload to s3"
+            fi
           environment:
             TERM: dumb
 
@@ -139,7 +145,12 @@ jobs:
                 ./gradlew assembleMobileRelease
               fi
             fi
-            bundle exec fastlane s3_release_upload
+            if [ "$triggered_by" = "zapp" ];
+            then
+              bundle exec fastlane s3_release_upload
+            else
+              echo "Skip upload to s3"
+            fi
           environment:
             TERM: dumb
 

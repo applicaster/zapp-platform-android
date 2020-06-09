@@ -16,7 +16,7 @@ platform :android do
   desc "Upload release version to the S3"
   lane :s3_release_upload do
     build_type = "release"
-    s3_upload_apk("build_type")
+    s3_upload_apk(build_type)
   end
 
   desc "Upload a debug version to the App Center"
@@ -84,7 +84,7 @@ platform :android do
     aws_s3(
       access_key: ENV["AWS_ACCESS_KEY"],
       secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"],
-      bucket: ENV["S3_BUCKET_NAME"]
+      bucket: ENV["S3_BUCKET_NAME"],
       region: ENV["AWS_REGION"],
       apk: apk_hash(build_type)[:apk_dir],
       path: zapp_build_path,
