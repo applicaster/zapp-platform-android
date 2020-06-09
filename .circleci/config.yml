@@ -15,6 +15,12 @@ references:
 
   gems_cache_key: &gems_cache_key Zapp-Platform-Android-v1-{{ checksum "Gemfile.lock" }}
 
+  install_gems: &install_gems
+    run:
+      name: Install Ruby gems
+      command: |
+        bundle check --path=/usr/local/bundle || bundle install --jobs=4 --retry=3
+
   restore_gems: &restore_gems
     restore_cache:
       keys:
@@ -26,6 +32,21 @@ references:
       paths:
         - /usr/local/bundle
 
+  create_zapp_sdk: &create_zapp_sdk
+    run:
+      name: Creating Zapp SDK
+      command: |
+        if [ -z "$CIRCLE_TAG" ];
+        then
+          echo "no tag passing branch name"
+          version=$CIRCLE_BRANCH
+        else
+          version=$CIRCLE_TAG
+        fi
+        echo "Creating SDK for platform:$ZAPP_SDK_PLATFORM"
+        bundle exec rake zapp_sdks:create[$ZAPP_SDK_PLATFORM,$version,$CIRCLE_PROJECT_REPONAME]
+        bundle exec rake zapp_sdks:publish_changelog[$ZAPP_SDK_PLATFORM,$version]
+
 version: 2
 jobs:
   build:
@@ -34,8 +55,7 @@ jobs:
     steps:
       - checkout
       - *restore_gems
-
-      - run: bundle check --path=/usr/local/bundle || bundle install --jobs=4 --retry=3
+      - *install_gems
       - *save_gems
 
       - run:
@@ -288,69 +308,37 @@ jobs:
 
   create_android_mobile_sdk:
     <<: *container_config
+    environment:
+      ZAPP_SDK_PLATFORM: android_for_quickbrick
     steps:
       - checkout
       - *restore_gems
-
-      - run: bundle check --path=/usr/local/bundle || bundle install --jobs=4 --retry=3
+      - *install_gems
       - *save_gems
-      - run:
-          name: Creating Zapp SDK
-          command: |
-            if [ -z "$CIRCLE_TAG" ];
-            then
-              echo "no tag passing branch name"
-              version=$CIRCLE_BRANCH
-            else
-              version=$CIRCLE_TAG
-            fi
-
-            bundle exec rake zapp_sdks:create[android_for_quickbrick,$version,$CIRCLE_PROJECT_REPONAME]
-            bundle exec rake zapp_sdks:publish_changelog[android_for_quickbrick,$version]
+      - *create_zapp_sdk
 
   create_android_tv_sdk:
     <<: *container_config
+    environment:
+      ZAPP_SDK_PLATFORM: android_tv_for_quickbrick
+
     steps:
       - checkout
       - *restore_gems
-
-      - run: bundle check --path=/usr/local/bundle || bundle install --jobs=4 --retry=3
+      - *install_gems
       - *save_gems
-      - run:
-          name: Creating Zapp SDK
-          command: |
-            if [ -z "$CIRCLE_TAG" ];
-            then
-              echo "no tag passing branch name"
-              version=$CIRCLE_BRANCH
-            else
-              version=$CIRCLE_TAG
-            fi
-
-            bundle exec rake zapp_sdks:create[android_tv_for_quickbrick,$version,$CIRCLE_PROJECT_REPONAME]
-            bundle exec rake zapp_sdks:publish_changelog[android_tv_for_quickbrick,$version]
+      - *create_zapp_sdk
 
   create_amazon_fire_tv_sdk:
     <<: *container_config
+    environment:
+      ZAPP_SDK_PLATFORM: amazon_fire_tv_for_quickbrick
     steps:
       - checkout
       - *restore_gems
-
-      - run: bundle check --path=/usr/local/bundle || bundle install --jobs=4 --retry=3
+      - *install_gems
       - *save_gems
-      - run:
-          name: Creating Zapp SDK
-          command: |
-            if [ -z "$CIRCLE_TAG" ];
-            then
-              echo "no tag passing branch name"
-              version=$CIRCLE_BRANCH
-            else
-              version=$CIRCLE_TAG
-            fi
-
-            bundle exec rake zapp_sdks:create[android_for_quickbrick,$version,$CIRCLE_PROJECT_REPONAME]
-            bundle exec rake zapp_sdks:publish_changelog[amazon_fire_tv_for_quickbrick,$version]
+      - *create_zapp_sdk
 
 workflows:
   version: 2
