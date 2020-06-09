@@ -144,12 +144,13 @@ jobs:
                 export flavor=mobile
                 ./gradlew assembleMobileRelease
               fi
-            fi
-            if [ "$triggered_by" = "zapp" ];
-            then
-              bundle exec fastlane s3_release_upload
-            else
-              echo "Skip upload to s3"
+
+              if [ "$triggered_by" = "zapp" ];
+              then
+                bundle exec fastlane s3_release_upload
+              else
+                echo "Skip upload to s3"
+              fi
             fi
           environment:
             TERM: dumb
