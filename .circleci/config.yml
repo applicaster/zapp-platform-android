@@ -83,7 +83,7 @@ jobs:
             TERM: dumb
 
       - run:
-          name: Build Unsigned .apk
+          name: Build and upload Unsigned .apk
           command: |
             if [ "$flavor" = "tv" ];
             then
@@ -92,6 +92,13 @@ jobs:
               ./gradlew assembleMobileDebug
             fi
             cp -r app/build/outputs $CIRCLE_ARTIFACTS
+
+            if [ "$triggered_by" = "zapp" ];
+            then
+              bundle exec fastlane s3_debug_upload
+            else
+              echo "Skip upload to s3"
+            fi
           environment:
             TERM: dumb
 
@@ -124,7 +131,7 @@ jobs:
             TERM: dumb
 
       - run:
-          name: Build Signed .apk
+          name: Build and upload Signed .apk
           command: |
             if [ "$with_release" != "true" ];
             then
@@ -136,6 +143,13 @@ jobs:
               else
                 export flavor=mobile
                 ./gradlew assembleMobileRelease
+              fi
+
+              if [ "$triggered_by" = "zapp" ];
+              then
+                bundle exec fastlane s3_release_upload
+              else
+                echo "Skip upload to s3"
               fi
             fi
           environment:
