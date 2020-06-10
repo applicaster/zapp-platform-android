@@ -17,7 +17,7 @@
 ### Changes:
 - Applicaster Android SDK Core updated to version 6.1.1 [#23](https://github.com/applicaster/zapp-platform-android/pull/23)
 - Default QuickBrick version updated to version 3.0.3 [#28](https://github.com/applicaster/zapp-platform-android/pull/28)
-- com.google.ads.interactivemedia.v3:interactivemedia downgraded to 3.11.3 [#1410](https://github.com/applicaster/applicaster-android-sdk/pull/1410)
+- com.google.ads.interactivemedia.v3:interactivemedia downgraded to 3.11.3 as last version that can play IMA properly in ExoPlayer [#1410](https://github.com/applicaster/applicaster-android-sdk/pull/1410)
 - kotlinx-coroutines-android updated to the latest version 1.3.6 [#1404](https://github.com/applicaster/applicaster-android-sdk/pull/1404)
 
 ### Fixes:
