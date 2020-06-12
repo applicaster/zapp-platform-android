@@ -48,13 +48,15 @@ RUN sdkmanager \
     "build-tools;28.0.3" \
     "build-tools;29.0.0" \
     "build-tools;29.0.1" \
-    "build-tools;29.0.2"
+    "build-tools;29.0.2" \
+    "build-tools;29.0.3"
 
 RUN sdkmanager \
     "platforms;android-25" \
     "platforms;android-26" \
     "platforms;android-27" \
-    "platforms;android-28"
+    "platforms;android-28" \
+    "platforms;android-29"
 
 RUN sdkmanager \
     "extras;android;m2repository" \
