@@ -4,7 +4,7 @@ references:
     working_directory: *workspace_root
     resource_class: large
     docker:
-      - image: applicaster/zapp-platform-android-circleci-primary:0.1.0
+      - image: applicaster/zapp-platform-android-circleci-primary:1.0.0
         environment:
           ANDROID_HOME: /home/circleci/android-sdk
           JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
