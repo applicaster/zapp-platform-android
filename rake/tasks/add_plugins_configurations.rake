@@ -78,8 +78,9 @@ task generate_plugins: :dotenv do
     unless plugin["project_dependencies"].nil?
       plugin["project_dependencies"].each do |dependency|
         project_gradle_dependencies <<
-          "implementation (project(':#{dependency.keys.first}')) {\n"\
+          "\timplementation (project(':#{dependency.keys.first}')) {\n"\
         "\t\texclude group: 'com.applicaster', module: 'applicaster-android-sdk'\n"\
+        "\t\texclude group: 'com.applicaster', module: 'applicaster-android-sdk-core'\n"\
         "\t}"
       end
 

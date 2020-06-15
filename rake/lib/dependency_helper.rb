@@ -11,9 +11,9 @@ module DependencyHelper
   end
 
   def transitive_excluded_projects
-    "\n\t\texclude group:\
-    \'com.applicaster\', module: 'applicaster-android-sdk\'\n\t\texclude group:\
-    \'com.applicaster\', module: 'zapp-root-android\'\n\t"
+    "\n\t\texclude group:\'com.applicaster\', module: 'applicaster-android-sdk\'\
+    \n\t\texclude group:\'com.applicaster\', module: 'applicaster-android-sdk-core\'\
+    \n\t\texclude group:\'com.applicaster\', module: 'zapp-root-android\'\n\t"
   end
   module_function :transitive_excluded_projects
 end
