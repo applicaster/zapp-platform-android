@@ -80,6 +80,7 @@ task generate_plugins: :dotenv do
         project_gradle_dependencies <<
           "implementation (project(':#{dependency.keys.first}')) {\n"\
         "\t\texclude group: 'com.applicaster', module: 'applicaster-android-sdk'\n"\
+        "\t\texclude group: 'com.applicaster', module: 'applicaster-android-sdk-core'\n"\
         "\t}"
       end
 
