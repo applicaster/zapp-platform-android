@@ -20,7 +20,7 @@
 - React Native version updated to 0.62.2 [#12](https://github.com/applicaster/zapp-platform-android/pull/12)
 - Updated Android API level and build tools 29.0.3 [#29](https://github.com/applicaster/zapp-platform-android/pull/29)
 - Applicaster Android SDK Core updated to version 6.2.0 [#38](https://github.com/applicaster/zapp-platform-android/pull/38)
-- Both core and non0core Applicaster Android SDK gradle dependencies are properly handled now [#39](https://github.com/applicaster/zapp-platform-android/pull/39)
+- Both core and non-core Applicaster Android SDK gradle dependencies are properly handled now [#39](https://github.com/applicaster/zapp-platform-android/pull/39)
 - Default QuickBrick version updated to version 4.0.0 [#41](https://github.com/applicaster/zapp-platform-android/pull/41)
 
 
