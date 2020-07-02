@@ -340,6 +340,18 @@ jobs:
       - *save_gems
       - *create_zapp_sdk
 
+  create_legacy_android_sdk:
+    <<: *container_config
+    environment:
+      ZAPP_SDK_PLATFORM: android
+    steps:
+      - checkout
+      - *restore_gems
+      - *install_gems
+      - *save_gems
+      - *create_zapp_sdk
+
+
 workflows:
   version: 2
   build_from_branch_and_tag:
@@ -394,6 +406,23 @@ workflows:
       - create_amazon_fire_tv_sdk:
           requires:
             - hold_create_amazon_fire_tv_sdk
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+      - hold_create_legacy_android_sdk:
+          type: approval
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+      - create_legacy_android_sdk:
+          requires:
+            - hold_create_legacy_android_sdk
           filters:
             tags:
               only: /.*/
