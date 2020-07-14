@@ -12,6 +12,7 @@ import com.applicaster.reactnative.utils.PackagesExtractor;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.reactnativecommunity.netinfo.NetInfoPackage;
+import com.reactnativecommunity.viewpager.RNCViewPagerPackage;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -102,6 +103,7 @@ class ReactPackagesManager {
      */
     public void initializeDefaultPackages() {
         defaultPackages.add(new MainReactPackage()); // Never a bad idea to have it on the top
+        defaultPackages.add(new RNCViewPagerPackage());
         defaultPackages.add(new AppDataProviderPackage()); // This is actually the video player (!!)
         defaultPackages.add(new APReactNativeBridgePackage()); // Crucial for all interactions with native code at app level)
         defaultPackages.add(new AnalyticsBridgePackage());
