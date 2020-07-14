@@ -1,4 +1,5 @@
-include ':app', ':android_generic_app' ,':applicaster-android-sdk', ':project-name',':project-for-@applicaster-name'
+include ':app', ':android_generic_app',':applicaster-android-sdk',':project-name',':@react-native-community_viewpager',':project-for-@applicaster-name'
 project(':applicaster-android-sdk').projectDir= new File('android_generic_app/applicaster-android-sdk')
+project(':react-native-netinfo').projectDir = new File('node_modules/@react-native-community/netinfo/android')
 project(':project-name').projectDir = new File('project-path')
 project(':project-for-@applicaster-name').projectDir = new File('project-path')
