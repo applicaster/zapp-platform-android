@@ -100,6 +100,8 @@ dependencies {
         exclude group: 'com.facebook.react', module: 'react-native'
     }
 
+    implementation project(':@react-native-community_viewpager')
+
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
     }
