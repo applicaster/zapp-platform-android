@@ -1,4 +1,4 @@
-include ':app', ':android_quickbrick_app', ':react-native-netinfo', ':react-native-community_viewpager', ':project-name', ':project-for-@applicaster-name'
+include ':app', ':android_quickbrick_app', ':react-native-netinfo', ':react-native-community_viewpager' ,':project-name',':project-for-@applicaster-name'
 project(':react-native-netinfo').projectDir = new File('node_modules/@react-native-community/netinfo/android')
 project(':react-native-community_viewpager').projectDir = new File('node_modules/@react-native-community/viewpager/android')
 project(':project-name').projectDir = new File('project-path')
