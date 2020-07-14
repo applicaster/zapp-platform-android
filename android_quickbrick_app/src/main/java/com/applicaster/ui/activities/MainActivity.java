@@ -8,14 +8,18 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.OrientationEventListener;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
 
+import com.applicaster.plugin_manager.PluginManager;
+import com.applicaster.plugin_manager.hook.ApplicationLoaderHookUpI;
 import com.applicaster.ui.interfaces.HostActivityBase;
 import com.applicaster.ui.interfaces.IUILayerManager;
 import com.applicaster.ui.loaders.PreloadStateManager;
 import com.applicaster.ui.loaders.PreloadStateManager.PreloadStep;
 import com.applicaster.ui.quickbrick.QuickBrickManager;
+import com.applicaster.ui.utils.HookExecutor;
 import com.applicaster.ui.utils.OrientationUtils;
 import com.applicaster.util.APLogger;
 import com.applicaster.util.AppData;
@@ -26,6 +30,7 @@ import com.applicaster.util.ui.ApplicationPreloader;
 import com.applicaster.util.ui.PreloaderListener;
 import com.applicaster.zapp.quickbrick.loader.DataLoader;
 
+import java.util.List;
 import java.util.Stack;
 
 import rx.android.schedulers.AndroidSchedulers;
@@ -51,9 +56,8 @@ public class MainActivity extends HostActivityBase {
         preloadStateManager = new PreloadStateManager();
         setAppOrientation();
         setSplashAndApplicationPreloaderView();
-        playVideoIntroIfPresent();
         // todo: show debug setup dialog here
-        loadData();
+        executeOnStartupHooks(this::startLoading);
     }
 
     @Override
@@ -69,6 +73,11 @@ public class MainActivity extends HostActivityBase {
                 uiLayer.handleURL(uri.toString());
             }
         }
+    }
+
+    private void startLoading() {
+        playVideoIntroIfPresent();
+        loadData();
     }
 
     private void loadData() {
@@ -218,7 +227,31 @@ public class MainActivity extends HostActivityBase {
         preloadStateManager.setStepComplete(step);
 
         if (preloadStateManager.isPreloadComplete()) {
-            runOnUiThread(this::initializeUILayer);
+            runOnUiThread(this::executeOnApplicationReadyHooks);
+        }
+    }
+
+    private void executeOnStartupHooks(@NonNull Runnable continuation) {
+        List<ApplicationLoaderHookUpI> hookPluginList = PluginManager.getInstance().getHookPluginList();
+        if (hookPluginList == null || hookPluginList.isEmpty()) {
+            continuation.run();
+        } else {
+            new HookExecutor(this,
+                    hookPluginList,
+                    () -> runOnUiThread(continuation),
+                    false);
+        }
+    }
+
+    private void executeOnApplicationReadyHooks() {
+        List<ApplicationLoaderHookUpI> hookPluginList = PluginManager.getInstance().getHookPluginList();
+        if (hookPluginList == null || hookPluginList.isEmpty()) {
+            initializeUILayer();
+        } else {
+            new HookExecutor(this,
+                    hookPluginList,
+                    () -> runOnUiThread(this::initializeUILayer),
+                    true);
         }
     }
 

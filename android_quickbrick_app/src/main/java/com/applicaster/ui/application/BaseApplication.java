@@ -4,7 +4,6 @@ import android.app.Application;
 import android.util.Log;
 
 import com.applicaster.app.APProperties;
-import com.applicaster.app.CustomApplication;
 import com.applicaster.audience.AudienceHelper;
 import com.applicaster.plugin_manager.push_plugin.PushManager;
 import com.applicaster.session.SessionStorage;
