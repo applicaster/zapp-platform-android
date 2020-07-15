@@ -72,7 +72,7 @@ dependencies {
     // Check if an open SDK is defined - if not use the closed one.
     if (!findProject(':applicaster-android-sdk') || project.hasProperty('forceClosedDependencies')) {
         // core is the same project as applicaster-android-sdk but uses a different flavor
-        api ("com.applicaster:applicaster-android-sdk-core:6.2.0") {
+        api ("com.applicaster:applicaster-android-sdk-core:6.2.1") {
             exclude group: 'com.applicaster', module: 'react-native'
         }
         api "com.facebook.react:react-native:+"
