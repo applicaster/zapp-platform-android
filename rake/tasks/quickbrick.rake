@@ -15,9 +15,23 @@ namespace :quickbrick do
     puts "run zapplicaster-cli prepare".cyan
     SystemHelper.run("yarn quick-brick:prepare #{version_id}")
 
-    puts "generate minified js bundle for quickbrick and copy to assets folder".cyan
-    SystemHelper.run("yarn quick-brick:build")
+    build_rn_bundle if should_build_rn_bundle
 
     PluginsHelper.add_react_native_dependency
   end
+end
+
+def build_rn_bundle(minified = true)
+  build_script = "yarn quick-brick:build"
+  build_script << "debug" unless minified
+
+  puts "generate js bundle for quickbrick and copy to assets folder".cyan
+  puts "Bundle is #{minified ? '' : 'not '}minified"
+  SystemHelper.run(build_script)
+end
+
+def should_build_rn_bundle
+  # this is where we can check the flag from build params to know if we
+  # should build the rn bundle or not
+  true
 end
