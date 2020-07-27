@@ -26,7 +26,7 @@ def build_rn_bundle
     ENV["SKIP_BUNDLE_MINIFICATION"].presence || ENV["skip_bundle_minification"]
 
   build_script = "yarn quick-brick:build"
-  build_script << ":debug" if skip_bundle_minification
+  build_script = "#{build_script}:debug" if skip_bundle_minification
 
   puts "generate js bundle for quickbrick and copy to assets folder".cyan
   puts "Bundle is #{skip_bundle_minification ? 'not ' : ''}minified"
