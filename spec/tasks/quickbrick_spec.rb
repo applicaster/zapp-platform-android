@@ -27,7 +27,6 @@ RSpec.describe "quickbrick:create", type: :rake do
       ENV["REACT_NATIVE_PACKAGER_ROOT"] = "http://localhost:8081"
     end
 
-
     after do
       RSpec::Mocks.space.proxy_for(SystemHelper).reset
     end
