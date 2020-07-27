@@ -8,6 +8,10 @@ RSpec.describe "quickbrick:create", type: :rake do
       ENV["VERSION"] = "ABCD-1234"
     end
 
+    after do
+      RSpec::Mocks.space.proxy_for(SystemHelper).reset
+    end
+
     it "calls quick-brick:prepare and quick-brick:build with matching version" do
       expect(SystemHelper).to receive(:run)
         .with(/yarn quick-brick:(?:prepare ABCD-1234|build).*/).twice
@@ -21,6 +25,11 @@ RSpec.describe "quickbrick:create", type: :rake do
       Rake::Task["quickbrick:create"].reenable
       ENV["VERSION"] = "ABCD-1234"
       ENV["REACT_NATIVE_PACKAGER_ROOT"] = "http://localhost:8081"
+    end
+
+
+    after do
+      RSpec::Mocks.space.proxy_for(SystemHelper).reset
     end
 
     it "calls prepare script but not build" do
@@ -42,6 +51,10 @@ RSpec.describe "quickbrick:create", type: :rake do
       Rake::Task["quickbrick:create"].reenable
       ENV["VERSION"] = "ABCD-1234"
       ENV["SKIP_BUNDLE_MINIFICATION"] = "true"
+    end
+
+    after do
+      RSpec::Mocks.space.proxy_for(SystemHelper).reset
     end
 
     it "calls quick-brick:prepare and quick-brick:build:debug with matching version" do
