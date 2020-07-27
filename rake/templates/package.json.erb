@@ -9,7 +9,7 @@
   <% if quick_brick_enabled %>"scripts": {
     "quick-brick:start": "cd quick_brick && yarn start",
     "quick-brick:build": "cd quick_brick && yarn build:android && cd .. && yarn quick-brick:copy-bundle",
-    "quick-brick-build:debug": "cd quick_brick && yarn build:android:debug && cd .. && yarn quick-brick:copy-bundle",
+    "quick-brick:build:debug": "cd quick_brick && yarn build:android:debug && cd .. && yarn quick-brick:copy-bundle",
     "quick-brick:copy-bundle": "cp ./quick_brick/android/main.* ./app/src/mobileGoogle/assets",
     "quick-brick:prepare": "node_modules/.bin/zapplicaster-cli prepare --yarn"
   },<% end %>
