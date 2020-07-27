@@ -23,7 +23,7 @@ end
 
 def build_rn_bundle
   skip_bundle_minification =
-    ENV["SKIP_BUNDLE_MINIFICATION"].presence || ENV["skip_bundle_minification"]
+    ENV["skip_bundle_minification"].presence || ENV["skip_bundle_minification"]
 
   build_script = "yarn quick-brick:build"
   build_script = "#{build_script}:debug" if skip_bundle_minification
@@ -34,5 +34,5 @@ def build_rn_bundle
 end
 
 def skip_rn_bundle_build
-  ENV["REACT_NATIVE_PACKAGER_ROOT"].presence || ENV["react_native_packager_root"].presence
+  ENV["react_native_packager_root"].presence
 end
