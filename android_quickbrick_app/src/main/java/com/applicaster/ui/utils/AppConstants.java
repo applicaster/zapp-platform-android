@@ -27,6 +27,8 @@ public class AppConstants {
     private static final String INITIAL_PROPS = "initialProps";
     private static final String API_SECRET_KEY = "apiSecretKey";
     private static final String ZAPP_VERSION = "versionName";
+    private static final String DEVICE_ID = "deviceId";
+    private static final String RIVERS_ID = "riversConfigurationId";
 
     public static Map<String, Object> generateMap(Context context) {
         Map<String, Object> constants = new HashMap<>();
@@ -37,6 +39,8 @@ public class AppConstants {
         constants.put(INITIAL_PROPS,        InitialProperties.getBundle(context));
         constants.put(API_SECRET_KEY,       AppData.getProperty(APProperties.API_KEY));
         constants.put(ZAPP_VERSION,         OSUtil.getZappAppVersion());
+        constants.put(DEVICE_ID,            OSUtil.getDeviceIdentifier(context));
+        constants.put(RIVERS_ID,            AppData.getProperty(RIVERS_ID));
         return constants;
     }
 }
