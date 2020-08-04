@@ -71,7 +71,7 @@ class TemplateHelper
   def bucket_id
     ENV["bucket_id"]
   end
-  
+
   def rivers_configuration_id
     ENV["rivers_configuration_id"]
   end
