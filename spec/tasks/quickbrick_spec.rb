@@ -20,11 +20,11 @@ RSpec.describe "quickbrick:create", type: :rake do
     end
   end
 
-  context "with REACT_NATIVE_PACKAGER_ROOT option" do
+  context "with react_native_packager_root option" do
     before do
       Rake::Task["quickbrick:create"].reenable
       ENV["VERSION"] = "ABCD-1234"
-      ENV["REACT_NATIVE_PACKAGER_ROOT"] = "http://localhost:8081"
+      ENV["react_native_packager_root"] = "http://localhost:8081"
     end
 
     after do
@@ -49,7 +49,7 @@ RSpec.describe "quickbrick:create", type: :rake do
     before do
       Rake::Task["quickbrick:create"].reenable
       ENV["VERSION"] = "ABCD-1234"
-      ENV["SKIP_BUNDLE_MINIFICATION"] = "true"
+      ENV["skip_bundle_minification"] = "true"
     end
 
     after do

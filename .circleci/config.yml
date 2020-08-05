@@ -112,11 +112,20 @@ jobs:
       - run:
           name: Build and upload Unsigned .apk
           command: |
+
+            if [ -z "$react_native_packager_root" ];
+            then
+              CFLAG=""
+            else
+              HOST_URL=$react_native_packager_root
+              CFLAG="-PREACT_NATIVE_PACKAGER_ROOT=${HOST_URL}"
+            fi
+
             if [ "$flavor" = "tv" ];
             then
-              ./gradlew assembleTvDebug
+              ./gradlew assembleTvDebug ${CFLAG}
             else
-              ./gradlew assembleMobileDebug
+              ./gradlew assembleMobileDebug ${CFLAG}
             fi
             cp -r app/build/outputs $CIRCLE_ARTIFACTS
 
@@ -350,7 +359,6 @@ jobs:
       - *install_gems
       - *save_gems
       - *create_zapp_sdk
-
 
 workflows:
   version: 2

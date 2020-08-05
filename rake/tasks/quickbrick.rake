@@ -34,5 +34,5 @@ def build_rn_bundle
 end
 
 def skip_rn_bundle_build
-  ENV["REACT_NATIVE_PACKAGER_ROOT"].presence || ENV["react_native_packager_root"].presence
+  ENV["react_native_packager_root"].presence
 end
