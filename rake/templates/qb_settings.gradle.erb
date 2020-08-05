@@ -1,4 +1,5 @@
-include ':app', ':android_quickbrick_app', ':react-native-netinfo', ':react-native-community_viewpager' <%= project_dependencies_names %>
+include ':app', ':android_quickbrick_app', ':react-native-netinfo', ':react-native-community_viewpager', ':react-native-linear-gradient' <%= project_dependencies_names %>
 project(':react-native-netinfo').projectDir = new File('node_modules/@react-native-community/netinfo/android')
 project(':react-native-community_viewpager').projectDir = new File('node_modules/@react-native-community/viewpager/android')
+project(':react-native-linear-gradient').projectDir = new File('node_modules/react-native-linear-gradient/android')
 <%= project_dependencies_paths %>

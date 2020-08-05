@@ -13,6 +13,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.reactnativecommunity.netinfo.NetInfoPackage;
 import com.reactnativecommunity.viewpager.RNCViewPagerPackage;
+import com.BV.LinearGradient.LinearGradientPackage;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -108,6 +109,7 @@ class ReactPackagesManager {
         defaultPackages.add(new APReactNativeBridgePackage()); // Crucial for all interactions with native code at app level)
         defaultPackages.add(new AnalyticsBridgePackage());
         defaultPackages.add(new NetInfoPackage());
+        defaultPackages.add(new LinearGradientPackage());
     }
 
     /**
