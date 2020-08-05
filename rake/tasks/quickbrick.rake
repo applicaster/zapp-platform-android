@@ -23,7 +23,7 @@ end
 
 def build_rn_bundle
   skip_bundle_minification =
-    ENV["skip_bundle_minification"].presence || ENV["skip_bundle_minification"]
+    ENV["SKIP_BUNDLE_MINIFICATION"].to_s == "true" || ENV["skip_bundle_minification"].to_s == "true"
 
   build_script = "yarn quick-brick:build"
   build_script = "#{build_script}:debug" if skip_bundle_minification
