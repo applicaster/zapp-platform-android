@@ -29,3 +29,7 @@
   **[] $VALUES;
   public *;
 }
+
+## react-native-linear-gradient
+
+-keep class com.BV.LinearGradient.** { *; }
