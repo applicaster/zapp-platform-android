@@ -15,7 +15,7 @@ import com.reactnativecommunity.netinfo.NetInfoPackage;
 import com.reactnativecommunity.viewpager.RNCViewPagerPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.horcrux.svg.SvgPackage;
-import com.dylanvann.fastimage.FastImageViewPackage
+import com.dylanvann.fastimage.FastImageViewPackage;
 
 import java.util.ArrayList;
 import java.util.HashSet;
