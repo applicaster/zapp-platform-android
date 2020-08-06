@@ -15,6 +15,7 @@ import com.reactnativecommunity.netinfo.NetInfoPackage;
 import com.reactnativecommunity.viewpager.RNCViewPagerPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.horcrux.svg.SvgPackage;
+import com.dylanvann.fastimage.FastImageViewPackage
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -112,6 +113,7 @@ class ReactPackagesManager {
         defaultPackages.add(new NetInfoPackage());
         defaultPackages.add(new LinearGradientPackage());
         defaultPackages.add(new SvgPackage());
+        defaultPackages.add(new FastImageViewPackage());
     }
 
     /**
