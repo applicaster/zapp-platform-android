@@ -33,3 +33,7 @@
 ## react-native-linear-gradient
 
 -keep class com.BV.LinearGradient.** { *; }
+
+## react-native-svg
+
+-keep public class com.horcrux.svg.** {*;}
