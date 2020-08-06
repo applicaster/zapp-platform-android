@@ -106,6 +106,12 @@ dependencies {
     }
 
     implementation project(':react-native-community_viewpager')
+    
+    implementation project(':react-native-svg')
+
+    implementation project(':react-native-linear-gradient')
+    
+    implementation project(':react-native-fast-image')
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
