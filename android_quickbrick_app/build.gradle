@@ -72,10 +72,6 @@ def safeExtGet(prop, fallback) {
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
 
-project.ext {
-    excludeAppGlideModule = true
-}
-
 dependencies {
     // Check if an open SDK is defined - if not use the closed one.
     if (!findProject(':applicaster-android-sdk') || project.hasProperty('forceClosedDependencies')) {
