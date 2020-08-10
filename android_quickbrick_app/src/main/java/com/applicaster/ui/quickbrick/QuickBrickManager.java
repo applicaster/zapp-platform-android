@@ -18,6 +18,7 @@ import com.applicaster.ui.quickbrick.listeners.QuickBrickCommunicationListener;
 import com.applicaster.util.APDebugUtil;
 import com.applicaster.util.APLogger;
 import com.applicaster.util.OSUtil;
+import com.applicaster.util.server.SSLPinner;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.ReactRootView;
@@ -27,11 +28,14 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.network.OkHttpClientProvider;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+
+import okhttp3.OkHttpClient;
 
 public class QuickBrickManager implements
         IUILayerManager,
@@ -237,11 +241,18 @@ public class QuickBrickManager implements
         try {
             reactInstanceManager = getReactInstanceManager();
             reactInstanceManager.addReactInstanceEventListener(this);
+            initOkHttpClientProvider();
             initializeFlipper(application, reactInstanceManager);
             reactInstanceManager.createReactContextInBackground();
         } catch (Exception e) {
             if (listener != null) listener.onError(e);
         }
+    }
+
+    private void initOkHttpClientProvider() {
+        OkHttpClient.Builder builder = OkHttpClientProvider.createClientBuilder(application);
+        SSLPinner.apply(builder);
+        OkHttpClientProvider.setOkHttpClientFactory(builder::build);
     }
 
     private void initializeFlipper(Context context, ReactInstanceManager reactInstanceManager) {
