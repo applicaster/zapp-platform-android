@@ -63,14 +63,25 @@ class ReactPackagesManager {
         this.extraPackages = extraPackages;
     }
 
+    public Set<String> getCorePackages() {
+        return corePackages;
+    }
+
     private List<ReactPackage> defaultPackages;
     private List<ReactPackage> pluginPackages;
     private List<ReactPackage> extraPackages;
+    private Set<String> corePackages;
 
     public ReactPackagesManager() {
         defaultPackages = new ArrayList<>();
         pluginPackages = new ArrayList<>();
         extraPackages = new ArrayList<>();
+        corePackages = new HashSet<>();
+
+        corePackages.add("com.dylanvann.fastimage.FastImageViewPackage");
+        corePackages.add("com.horcrux.svg.SvgPackage");
+        corePackages.add("com.BV.LinearGradient.LinearGradientPackage");
+        corePackages.add("com.reactnativecommunity.webview.RNCWebViewPackage");
     }
 
     /**
@@ -111,9 +122,10 @@ class ReactPackagesManager {
         defaultPackages.add(new APReactNativeBridgePackage()); // Crucial for all interactions with native code at app level)
         defaultPackages.add(new AnalyticsBridgePackage());
         defaultPackages.add(new NetInfoPackage());
-        defaultPackages.add(new LinearGradientPackage());
-        defaultPackages.add(new SvgPackage());
-        defaultPackages.add(new FastImageViewPackage());
+        
+        // defaultPackages.add(new LinearGradientPackage());
+        // defaultPackages.add(new SvgPackage());
+        // defaultPackages.add(new FastImageViewPackage());
     }
 
     /**
@@ -126,6 +138,7 @@ class ReactPackagesManager {
      */
     public void initializePackagesFromPlugins() {
         Set<String> allPackageNames = new HashSet<>();
+        allPackageNames.addAll(corePackages);
 
         List<PluginManager.InitiatedPlugin> initiatedPlugins = PluginManager.getInstance().getAllInitiatedPlugins();
         if (initiatedPlugins == null) {
