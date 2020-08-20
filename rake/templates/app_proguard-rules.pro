@@ -19,6 +19,14 @@
 -keepclassmembers class *  { @com.facebook.react.uimanager.annotations.ReactProp <methods>; }
 -keepclassmembers class *  { @com.facebook.react.uimanager.annotations.ReactPropGroup <methods>; }
 
+# keep all the plugins
+
+-keep public class * implements com.applicaster.plugin_manager.PluginI
+-keep public class * implements com.applicaster.plugin_manager.GenericPluginI
+-keep public class * implements com.applicaster.plugin_manager.crashlog.CrashlogPlugin
+-keep public class * implements com.applicaster.plugin_manager.push_plugin.PushContract
+-keep public class * implements com.applicaster.plugin_manager.dependencyplugin.base.interfaces.**
+
 ## react-native-fast-image
 
 -keep public class com.dylanvann.fastimage.* {*;}
