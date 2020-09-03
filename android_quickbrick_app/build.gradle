@@ -113,6 +113,8 @@ dependencies {
     
     implementation project(':react-native-fast-image')
 
+    implementation project(':react-native-webview')
+
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
     }
