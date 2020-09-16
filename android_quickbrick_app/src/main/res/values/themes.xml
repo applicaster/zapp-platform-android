@@ -11,8 +11,6 @@
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
         -->
-<!--        <item name="android:windowAnimationStyle">@android:style/Animation.Activity</item>-->
-<!--        <item name="android:textCursorDrawable">@null</item>-->
     </style>
 
     <!-- Application theme. -->
@@ -36,7 +34,7 @@
     </style>
 
     <style name="GenericAppTheme.MainActivity" parent="GenericAppTheme">
-        <item name="android:colorBackground">@color/app_background</item>
+        <item name="android:colorBackground">@color/background_color</item>
     </style>
 
 </resources>
