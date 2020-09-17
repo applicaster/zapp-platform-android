@@ -76,7 +76,7 @@ dependencies {
     // Check if an open SDK is defined - if not use the closed one.
     if (!findProject(':applicaster-android-sdk') || project.hasProperty('forceClosedDependencies')) {
         // core is the same project as applicaster-android-sdk but uses a different flavor
-        def sdkVersion = safeExtGet('applicaster_android_sdk_core_version', '6.4.0')
+        def sdkVersion = safeExtGet('applicaster_android_sdk_core_version', '6.4.1')
         api ("com.applicaster:applicaster-android-sdk-core:${sdkVersion}") {
             exclude group: 'com.applicaster', module: 'react-native'
         }
