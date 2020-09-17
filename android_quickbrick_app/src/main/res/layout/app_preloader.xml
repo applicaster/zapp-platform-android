@@ -27,7 +27,7 @@
         android:layout_gravity="center"
         android:visibility="gone" />
 
-    <ProgressBar
+    <ImageView
         android:id="@+id/preloading_indicator"
         android:indeterminateDrawable="@drawable/image_loading"
         android:layout_width="wrap_content"
