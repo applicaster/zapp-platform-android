@@ -16,8 +16,8 @@
     <com.applicaster.ui.views.AnimatedImageView
         android:id="@+id/progress_bar"
         android:src="@drawable/image_loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="50dp" />
 
