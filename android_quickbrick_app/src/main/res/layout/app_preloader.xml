@@ -27,11 +27,11 @@
         android:layout_gravity="center"
         android:visibility="gone" />
 
-    <ProgressBar
+    <com.applicaster.ui.views.AnimatedImageView
         android:id="@+id/preloading_indicator"
-        android:indeterminateDrawable="@drawable/image_loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:src="@drawable/image_loading"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_centerInParent="true"
         android:visibility="gone" />
 

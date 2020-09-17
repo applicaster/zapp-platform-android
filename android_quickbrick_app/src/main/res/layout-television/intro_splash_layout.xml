@@ -13,9 +13,9 @@
         android:contentDescription="@string/app_name"
         android:src="@drawable/splash_logo" />
 
-    <ProgressBar
+    <com.applicaster.ui.views.AnimatedImageView
         android:id="@+id/progress_bar"
-        android:indeterminateDrawable="@drawable/image_loading"
+        android:src="@drawable/image_loading"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_gravity="bottom|center_horizontal"
