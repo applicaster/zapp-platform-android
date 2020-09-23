@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.ArraySet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -15,8 +16,10 @@ import com.applicaster.reactnative.utils.DataUtils;
 import com.applicaster.ui.interfaces.HostActivityBase;
 import com.applicaster.ui.interfaces.IUILayerManager;
 import com.applicaster.ui.quickbrick.listeners.QuickBrickCommunicationListener;
+import com.applicaster.ui.utils.RTL_LOCALES;
 import com.applicaster.util.APDebugUtil;
 import com.applicaster.util.APLogger;
+import com.applicaster.util.AppData;
 import com.applicaster.util.OSUtil;
 import com.applicaster.util.server.SSLPinner;
 import com.facebook.react.ReactInstanceManager;
@@ -29,11 +32,16 @@ import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.network.OkHttpClientProvider;
+import com.facebook.react.modules.i18nmanager.I18nUtil;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 
 import okhttp3.OkHttpClient;
 
@@ -435,6 +443,15 @@ public class QuickBrickManager implements
                 .getCurrentReactContext()
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(RN_EVENT_HANDLE_OPEN_URL, resultMap);
+    }
+
+    @Override
+    public void setRightToLeftFlag() {
+        String locale = AppData.getLocale().toString();
+        I18nUtil.getInstance().forceRTL(
+                this.rootActivity,
+                RTL_LOCALES.includes(locale)
+        );
     }
 
     @Override
