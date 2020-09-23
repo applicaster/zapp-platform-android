@@ -455,20 +455,14 @@ public class QuickBrickManager implements
     }
 
     public void setRightToLeftFlag() {
-
-            // logic to include instead of what's below
-//            List<String> languageList = WhateverWayToGetTheListOfLanguagesOfTheApp();
-//            String appLocale = AppData.getLocale().toString();
-//            String localeToUse = languageList.contains(appLocale) ? appLocale : languageList.get(0);
-
-
-            // should be commented out, as `localToUse` is defined in the logic above
-            String localeToUse = AppData.getLocale().toString();
-
-            I18nUtil.getInstance().forceRTL(
-                    this.rootActivity,
-                    RTL_LOCALES.includes(localeToUse)
-            );
+        List<String> languageList = AppData.getAvailableLocalizations();
+        String appLocale = AppData.getLocale().toString();
+        String localeToUse = languageList.isEmpty() || languageList.contains(appLocale)
+                ? appLocale : languageList.get(0);
+        I18nUtil.getInstance().forceRTL(
+                this.rootActivity,
+                RTL_LOCALES.includes(localeToUse)
+        );
     }
 
     @Override
