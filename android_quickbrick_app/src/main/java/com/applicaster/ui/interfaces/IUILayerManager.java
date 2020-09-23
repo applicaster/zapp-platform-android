@@ -30,8 +30,6 @@ public interface IUILayerManager {
 
     void handleURL(@NonNull String url);
 
-    void setRightToLeftFlag();
-
     @NonNull
     View getRootView();
 

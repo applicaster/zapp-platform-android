@@ -28,7 +28,7 @@ public enum RTL_LOCALES {
         HashSet<String> localesList = new HashSet<>();
 
         for (RTL_LOCALES rawLocale : locales) {
-            localesList.add(rawLocale.toString());
+            localesList.add(rawLocale.locale);
         }
 
         return localesList;

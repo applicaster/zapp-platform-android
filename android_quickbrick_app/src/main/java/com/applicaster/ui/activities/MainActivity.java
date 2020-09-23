@@ -303,7 +303,6 @@ public class MainActivity extends HostActivityBase {
                     return;
                 }
                 runOnUiThread(() -> {
-                    uiLayer.setRightToLeftFlag();
                     initOrientationListener();
                     setContentView(uiLayer.getRootView()); // simplistic approach, replace whole intro layout with RN layout
                     Uri uri = UrlSchemeUtil.getUrlSchemeData(getIntent());
