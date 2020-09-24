@@ -15,10 +15,13 @@ import com.applicaster.reactnative.utils.DataUtils;
 import com.applicaster.ui.interfaces.HostActivityBase;
 import com.applicaster.ui.interfaces.IUILayerManager;
 import com.applicaster.ui.quickbrick.listeners.QuickBrickCommunicationListener;
+import com.applicaster.ui.utils.RTL_LOCALES;
 import com.applicaster.util.APDebugUtil;
 import com.applicaster.util.APLogger;
+import com.applicaster.util.AppData;
 import com.applicaster.util.OSUtil;
 import com.applicaster.util.server.SSLPinner;
+import com.applicaster.zapp.quickbrick.loader.DataLoader;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.ReactRootView;
@@ -28,14 +31,27 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.modules.network.OkHttpClientProvider;
+import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class QuickBrickManager implements
         IUILayerManager,
@@ -80,6 +96,7 @@ public class QuickBrickManager implements
     public QuickBrickManager(HostActivityBase rootActivity) {
         this.rootActivity = rootActivity;
         this.application = rootActivity.getApplication();
+        setRightToLeftFlag();
         reactPackagesManager = new ReactPackagesManager();
         debugPackagerRoot = getDebugPackagerRoot();
         setIsBuildTypeDebug(APDebugUtil.getIsInDebugMode());
@@ -435,6 +452,17 @@ public class QuickBrickManager implements
                 .getCurrentReactContext()
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(RN_EVENT_HANDLE_OPEN_URL, resultMap);
+    }
+
+    public void setRightToLeftFlag() {
+        List<String> languageList = AppData.getAvailableLocalizations();
+        String appLocale = AppData.getLocale().toString();
+        String localeToUse = languageList.isEmpty() || languageList.contains(appLocale)
+                ? appLocale : languageList.get(0);
+        I18nUtil.getInstance().forceRTL(
+                this.rootActivity,
+                RTL_LOCALES.includes(localeToUse)
+        );
     }
 
     @Override
