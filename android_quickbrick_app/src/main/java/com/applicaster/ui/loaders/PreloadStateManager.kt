@@ -1,6 +1,6 @@
 package com.applicaster.ui.loaders
 
-import android.util.Log
+import com.applicaster.util.APLogger
 
 /**
  * Does nothing except holding multiple steps to complete.
@@ -21,7 +21,7 @@ class PreloadStateManager {
      */
     @Synchronized
     fun setStepComplete(step: PreloadStep) {
-        Log.d(TAG, "Preload step complete: $step")
+        APLogger.debug(TAG, "Preload step complete: $step")
         steps.remove(step)
     }
 
