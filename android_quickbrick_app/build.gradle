@@ -68,16 +68,11 @@ def getVersionName = { ->
     }
 }
 
-def safeExtGet(prop, fallback) {
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-}
-
 dependencies {
     // Check if an open SDK is defined - if not use the closed one.
     if (!findProject(':applicaster-android-sdk') || project.hasProperty('forceClosedDependencies')) {
         // core is the same project as applicaster-android-sdk but uses a different flavor
-        def sdkVersion = safeExtGet('applicaster_android_sdk_core_version', '6.5.0')
-        api ("com.applicaster:applicaster-android-sdk-core:${sdkVersion}") {
+        api ("com.applicaster:applicaster-android-sdk-core:${rootProject.ext.applicaster_android_sdk_core_version}") {
             exclude group: 'com.applicaster', module: 'react-native'
         }
         api "com.facebook.react:react-native:+"
