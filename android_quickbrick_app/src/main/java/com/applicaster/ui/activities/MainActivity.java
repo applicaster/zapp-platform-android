@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.OrientationEventListener;
@@ -44,6 +45,8 @@ public class MainActivity extends HostActivityBase {
     private static final String INTRO_VIDEO_RAW_RESOURCE_DEFAULT = "intro";
     private static final String INTRO_VIDEO_RAW_RESOURCE_TABLET = "intro_tablet";
     private static final String APPLICATION_PRELOADER_LAYOUT_ID = "preloader_view";
+    // intents from Firebase Push messages handled in the background will deliver url in the extras
+    private static final String INTENT_EXTRA_URL = "url";
 
     private final Stack<Integer> orientationStack = new Stack<>();
 
@@ -56,8 +59,26 @@ public class MainActivity extends HostActivityBase {
         preloadStateManager = new PreloadStateManager();
         setAppOrientation();
         setSplashAndApplicationPreloaderView();
+        updateIntent();
         // todo: show debug setup dialog here
         executeOnStartupHooks(this::startLoading);
+    }
+
+    private void updateIntent() {
+        Intent intent = getIntent();
+        Uri data = intent.getData();
+        String message = "Start Intent received with data: " + (null != data ? data.toString() : "null");
+        if(intent.hasExtra(INTENT_EXTRA_URL)) {
+            // most likely its url extra delivered from Firebase Console Firebase Push when app was not active
+            String url = intent.getStringExtra(INTENT_EXTRA_URL);
+            message += ", url extra: " + url;
+            if(!TextUtils.isEmpty(url)) {
+                intent.setData(Uri.parse(url));
+                setIntent(intent);
+                APLogger.info(TAG, "Intent data was replaced with url extra: " + url);
+            }
+        }
+        APLogger.info(TAG, message);
     }
 
     @Override
@@ -65,8 +86,8 @@ public class MainActivity extends HostActivityBase {
         super.onNewIntent(intent);
         Uri data = intent.getData();
         setIntent(intent);
-        APLogger.info(TAG, "New Intent received with data:" +
-                (null != data ? data.toString() : "null"));
+        String message = "New Intent received with data: " + (null != data ? data.toString() : "null");
+        APLogger.info(TAG, message);
         if(null != uiLayer && uiLayer.isReady()) {
             Uri uri = UrlSchemeUtil.getUrlSchemeData(intent);
             if (null != uri) {
