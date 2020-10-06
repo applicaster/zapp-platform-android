@@ -59,35 +59,59 @@ public class MainActivity extends HostActivityBase {
         preloadStateManager = new PreloadStateManager();
         setAppOrientation();
         setSplashAndApplicationPreloaderView();
-        updateIntent();
+        if(routeOrUpdateIntent(getIntent())) {
+            // Abort launch if the intent was supposed to be handled in external application.
+            // Can't use finishAndRemoveTask() since external app we launch is in the same stack, and will be terminated too
+            // So our app still will be visible in the recent apps history.
+            finish();
+            return;
+        }
         // todo: show debug setup dialog here
         executeOnStartupHooks(this::startLoading);
     }
 
-    private void updateIntent() {
-        Intent intent = getIntent();
+    private boolean routeOrUpdateIntent(Intent intent) {
+        // Take care of url extra delivered from Firebase Console Firebase Push when app was not active
+        // if url schema belongs to our app, we will update the intent,
+        // otherwise we will try to route it as it was supposed to be done.
         Uri data = intent.getData();
-        String message = "Start Intent received with data: " + (null != data ? data.toString() : "null");
-        if(intent.hasExtra(INTENT_EXTRA_URL)) {
-            // most likely its url extra delivered from Firebase Console Firebase Push when app was not active
-            String url = intent.getStringExtra(INTENT_EXTRA_URL);
-            message += ", url extra: " + url;
-            if(!TextUtils.isEmpty(url)) {
-                intent.setData(Uri.parse(url));
-                setIntent(intent);
-                APLogger.info(TAG, "Intent data was replaced with url extra: " + url);
-            }
+        APLogger.info(TAG, "Intent received with data: " + (null != data ? data.toString() : "null"));
+        if (!intent.hasExtra(INTENT_EXTRA_URL)) {
+            return false;
         }
-        APLogger.info(TAG, message);
+        String url = intent.getStringExtra(INTENT_EXTRA_URL);
+        APLogger.info(TAG, "Received Url extra: " + url);
+        if (TextUtils.isEmpty(url)) {
+            return false;
+        }
+        Uri uri = Uri.parse(url);
+        if(UrlSchemeUtil.isUrlScheme(url)) {
+            // update intent inplace, and let caller proceed
+            intent.setData(uri);
+            setIntent(intent);
+            APLogger.info(TAG, "Intent data was replaced with url extra: " + url);
+            return false;
+        }
+        else {
+            Intent externalIntent = new Intent(Intent.ACTION_VIEW, uri);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(externalIntent);
+            APLogger.info(TAG, "Intent was routed to an external application");
+            return true;
+        }
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Uri data = intent.getData();
+        if(routeOrUpdateIntent(intent)) {
+            // This was probably intent from Firebase Console Firebase Push when app was not active.
+            // User has first launched the app, and then clicked the notification
+            return;
+        }
+        // Update current intent in any case,
+        // since QB may still be launching, and will only check it later.
         setIntent(intent);
-        String message = "New Intent received with data: " + (null != data ? data.toString() : "null");
-        APLogger.info(TAG, message);
         if(null != uiLayer && uiLayer.isReady()) {
             Uri uri = UrlSchemeUtil.getUrlSchemeData(intent);
             if (null != uri) {
