@@ -43,7 +43,6 @@ public class MainActivity extends HostActivityBase {
 
     private static final String INTRO_LAYOUT = "intro";
     private static final String INTRO_VIDEO_RAW_RESOURCE_DEFAULT = "intro";
-    private static final String INTRO_VIDEO_RAW_RESOURCE_TABLET = "intro_tablet";
     private static final String APPLICATION_PRELOADER_LAYOUT_ID = "preloader_view";
     // intents from Firebase Push messages handled in the background will deliver url in the extras
     private static final String INTENT_EXTRA_URL = "url";
@@ -371,21 +370,14 @@ public class MainActivity extends HostActivityBase {
     }
 
     /**
-     * Check for device type, and return resource for tablet video, if available.
+     * Check return resource for video, if available.
      * Default: return default video resource (phone/portrait video)
      *
      * @return resource id of intro video
      */
     @RawRes
     private int getVideoIntroResource() {
-        int resourceId = OSUtil.getRawResourceIdentifier(INTRO_VIDEO_RAW_RESOURCE_DEFAULT);
-        if (OSUtil.isTablet()) {
-            int tabletResourceId = OSUtil.getRawResourceIdentifier(INTRO_VIDEO_RAW_RESOURCE_TABLET);
-            if (tabletResourceId > 0) {
-                resourceId = tabletResourceId;
-            }
-        }
-        return resourceId;
+        return OSUtil.getRawResourceIdentifier(INTRO_VIDEO_RAW_RESOURCE_DEFAULT);
     }
 
     static class PreloaderViewListener implements PreloaderListener {
