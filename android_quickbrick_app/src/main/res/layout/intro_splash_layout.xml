@@ -5,20 +5,29 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/splash_image"
+        android:id="@+id/splash_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:scaleType="centerCrop"
         android:contentDescription="@string/app_name"
+        android:scaleType="centerCrop"
+        android:src="@drawable/splash_background" />
+
+    <ImageView
+        android:id="@+id/splash_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:contentDescription="@string/app_name"
+        android:scaleType="center"
         android:src="@drawable/splash_logo" />
 
     <com.applicaster.ui.views.AnimatedImageView
         android:id="@+id/progress_bar"
-        android:src="@drawable/image_loading"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_gravity="bottom|center"
-        android:layout_marginBottom="50dp" />
+        android:layout_marginBottom="50dp"
+        android:src="@drawable/image_loading" />
 
 </FrameLayout>
