@@ -22,12 +22,12 @@ import com.applicaster.ui.loaders.PreloadStateManager.PreloadStep;
 import com.applicaster.ui.quickbrick.QuickBrickManager;
 import com.applicaster.ui.utils.HookExecutor;
 import com.applicaster.ui.utils.OrientationUtils;
+import com.applicaster.ui.views.ApplicationPreloaderView;
 import com.applicaster.util.APLogger;
 import com.applicaster.util.AppData;
 import com.applicaster.util.OSUtil;
 import com.applicaster.util.UrlSchemeUtil;
 import com.applicaster.util.ui.APUIUtils;
-import com.applicaster.util.ui.ApplicationPreloader;
 import com.applicaster.util.ui.PreloaderListener;
 import com.applicaster.zapp.quickbrick.loader.DataLoader;
 
@@ -43,7 +43,6 @@ public class MainActivity extends HostActivityBase {
 
     private static final String INTRO_LAYOUT = "intro";
     private static final String INTRO_VIDEO_RAW_RESOURCE_DEFAULT = "intro";
-    private static final String INTRO_VIDEO_RAW_RESOURCE_TABLET = "intro_tablet";
     private static final String APPLICATION_PRELOADER_LAYOUT_ID = "preloader_view";
     // intents from Firebase Push messages handled in the background will deliver url in the extras
     private static final String INTENT_EXTRA_URL = "url";
@@ -311,7 +310,7 @@ public class MainActivity extends HostActivityBase {
             return;
         }
 
-        ApplicationPreloader applicationPreloaderView = findViewById(OSUtil.getResourceId(APPLICATION_PRELOADER_LAYOUT_ID));
+        ApplicationPreloaderView applicationPreloaderView = findViewById(OSUtil.getResourceId(APPLICATION_PRELOADER_LAYOUT_ID));
         applicationPreloaderView.setListener(new PreloaderViewListener(
                 () -> preloadStepComplete(PreloadStep.VIDEO_INTRO))
         );
@@ -371,21 +370,14 @@ public class MainActivity extends HostActivityBase {
     }
 
     /**
-     * Check for device type, and return resource for tablet video, if available.
+     * Check return resource for video, if available.
      * Default: return default video resource (phone/portrait video)
      *
      * @return resource id of intro video
      */
     @RawRes
     private int getVideoIntroResource() {
-        int resourceId = OSUtil.getRawResourceIdentifier(INTRO_VIDEO_RAW_RESOURCE_DEFAULT);
-        if (OSUtil.isTablet()) {
-            int tabletResourceId = OSUtil.getRawResourceIdentifier(INTRO_VIDEO_RAW_RESOURCE_TABLET);
-            if (tabletResourceId > 0) {
-                resourceId = tabletResourceId;
-            }
-        }
-        return resourceId;
+        return OSUtil.getRawResourceIdentifier(INTRO_VIDEO_RAW_RESOURCE_DEFAULT);
     }
 
     static class PreloaderViewListener implements PreloaderListener {
@@ -405,7 +397,7 @@ public class MainActivity extends HostActivityBase {
         }
 
         /**
-         * Handles other "onComplete" events in the {@link ApplicationPreloader},
+         * Handles other "onComplete" events in the {@link ApplicationPreloaderView},
          * like dismissed interstitial / ad / webview
          */
         @Override
@@ -414,7 +406,7 @@ public class MainActivity extends HostActivityBase {
 
         /**
          * NEVER called
-         * @param e Exception from {@link ApplicationPreloader}
+         * @param e Exception from {@link ApplicationPreloaderView}
          */
         @Override
         public void handlePreloaderException(Exception e) {
