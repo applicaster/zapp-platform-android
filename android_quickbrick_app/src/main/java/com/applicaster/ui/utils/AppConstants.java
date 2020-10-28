@@ -30,6 +30,7 @@ public class AppConstants {
     private static final String DEVICE_ID = "deviceId";
     private static final String RIVERS_ID = "riversConfigurationId";
     private static final String BUILD_VERSION = "build_version";
+    private static final String IS_TABLET_PORTRAIT = "isTabletPortrait";
 
     public static Map<String, Object> generateMap(Context context) {
         Map<String, Object> constants = new HashMap<>();
@@ -43,6 +44,7 @@ public class AppConstants {
         constants.put(DEVICE_ID,            OSUtil.getDeviceIdentifier(context));
         constants.put(RIVERS_ID,            AppData.getProperty(RIVERS_ID));
         constants.put(BUILD_VERSION,        OSUtil.getAppVersionCode(context));
+        constants.put(IS_TABLET_PORTRAIT,   AppData.getProperty(APProperties.IS_TABLET_PORTRAIT) == "true");
         return constants;
     }
 }
