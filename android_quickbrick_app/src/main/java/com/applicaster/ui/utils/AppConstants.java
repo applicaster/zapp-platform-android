@@ -44,7 +44,7 @@ public class AppConstants {
         constants.put(DEVICE_ID,            OSUtil.getDeviceIdentifier(context));
         constants.put(RIVERS_ID,            AppData.getProperty(RIVERS_ID));
         constants.put(BUILD_VERSION,        OSUtil.getAppVersionCode(context));
-        constants.put(IS_TABLET_PORTRAIT,   AppData.getProperty(APProperties.IS_TABLET_PORTRAIT) == "true");
+        constants.put(IS_TABLET_PORTRAIT,   "true".equals(AppData.getProperty(APProperties.IS_TABLET_PORTRAIT)));
         return constants;
     }
 }
