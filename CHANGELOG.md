@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.1 (Nov 20, 2020)
+
+#### Minimum Android OS supported: 4.4.x
+#### React Native version: 0.62.2
+#### Gradle version: 5.6.4
+#### Android Studio Gradle Plugin version: 3.5.3
+#### QuickBrick version: v4.1.1
+#### Applicaster Android SDK Core version: 6.4.0
+#### Android target API: 29
+
+## Fixes:
+- Fastlane MS AppCenter publishing fixed [#78](https://github.com/applicaster/zapp-platform-android/pull/78)
+
+
 ## 1.0.0 (Sept 21, 2020)
 
 #### Minimum Android OS supported: 4.4.x
