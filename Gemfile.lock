@@ -103,7 +103,7 @@ GEM
       xcodeproj (>= 1.8.1, < 2.0.0)
       xcpretty (~> 0.3.0)
       xcpretty-travis-formatter (>= 0.0.3)
-    fastlane-plugin-appcenter (1.6.0)
+    fastlane-plugin-appcenter (1.11.0)
     fastlane-plugin-aws_s3 (1.8.0)
       apktools (~> 0.7)
       aws-sdk-s3 (~> 1)
