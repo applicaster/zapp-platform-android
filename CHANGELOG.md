@@ -1,5 +1,33 @@
 # Changelog
 
+## 1.0.0 (Sept 21, 2020)
+
+#### Minimum Android OS supported: 4.4.x
+#### React Native version: 0.62.2
+#### Gradle version: 5.6.4
+#### Android Studio Gradle Plugin version: 3.5.3
+#### QuickBrick version: v4.1.1
+#### Applicaster Android SDK Core version: 6.4.0
+#### Android target API: 29
+
+
+### Improvements:
+- SSL pinning support added [#45](https://github.com/applicaster/zapp-platform-android/pull/45)
+- Native startup plugin hooks re-introduced from legacy SDK [#47](https://github.com/applicaster/zapp-platform-android/pull/47)
+- All React Native classes and interfaces are preserved by proguard by default [#44](https://github.com/applicaster/zapp-platform-android/pull/44), [#60](https://github.com/applicaster/zapp-platform-android/pull/60)
+- Support for non-minified react-native bundles in Zapp added [#48](https://github.com/applicaster/zapp-platform-android/pull/48), [#49](https://github.com/applicaster/zapp-platform-android/pull/49), [#54](https://github.com/applicaster/zapp-platform-android/pull/54)
+- Analytics events now contain build version, rivers ID and device ID [#55](https://github.com/applicaster/zapp-platform-android/pull/55), [#53](https://github.com/applicaster/zapp-platform-android/pull/53)
+- Default QuickBrick react native packages added to the SDK: react-native-webview, react-native-fast-image, react-native-linear-gradient, react-native-svg, react-community-viewpager [#56](https://github.com/applicaster/zapp-platform-android/pull/56), [#59](https://github.com/applicaster/zapp-platform-android/pull/59), [#57](https://github.com/applicaster/zapp-platform-android/pull/57), [#46](https://github.com/applicaster/zapp-platform-android/pull/46), [#61](https://github.com/applicaster/zapp-platform-android/pull/61)
+- Applicaster SDK logger can now be routed to X-Ray [#1420](https://github.com/applicaster/applicaster-android-sdk/pull/1420)
+- Applicaster Core SDK plugin manager now handles pure React Native plugins gracefully [#1427](https://github.com/applicaster/applicaster-android-sdk/pull/1427)
+
+## Changes:
+- Updated to QuickBrick 4.1.1 [#63](https://github.com/applicaster/zapp-platform-android/pull/63)
+- New unified key background_color style key added instead of app_background [#65](https://github.com/applicaster/zapp-platform-android/pull/65)
+
+## Fixes:
+- Use custom animated drawable AnimatedImageView for loading spinner to fix visual glitches on FireTV [#65](https://github.com/applicaster/zapp-platform-android/pull/65)
+
 
 ## 21.0.0 (July 1, 2020)
 
