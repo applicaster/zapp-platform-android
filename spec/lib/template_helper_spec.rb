@@ -97,7 +97,7 @@ RSpec.describe TemplateHelper do
 
       it "return the env var value" do
         expect(subject.send(:quick_brick_version))
-          .to eq "4.1.3
+          .to eq "4.1.3"
       end
     end
 
