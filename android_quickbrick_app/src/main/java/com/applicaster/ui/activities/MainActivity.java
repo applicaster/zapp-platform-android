@@ -26,7 +26,6 @@ import com.applicaster.util.AppData;
 import com.applicaster.util.OSUtil;
 import com.applicaster.util.UrlSchemeUtil;
 import com.applicaster.util.ui.APUIUtils;
-import com.applicaster.util.ui.ApplicationPreloader;
 import com.applicaster.util.ui.PreloaderListener;
 import com.applicaster.zapp.quickbrick.loader.DataLoader;
 
@@ -71,7 +70,6 @@ public class MainActivity extends HostActivityBase {
         // todo: show debug setup dialog here
         executeOnStartupHooks();
     }
-
 
     private boolean routeOrUpdateIntent(Intent intent) {
         // Take care of url extra delivered from Firebase Console Firebase Push when app was not active
@@ -266,10 +264,9 @@ public class MainActivity extends HostActivityBase {
      * @param step Preload step like video play complete, RN initialize complete, etc.
      */
     private synchronized void preloadStepComplete(PreloadStep step) {
-        if(isFinishing())
-            return;
-        APLogger.debug(TAG, "Preload step complete: " + step.name());
-        preloadStateManager.setStepComplete(step);
+        if(!isFinishing()) {
+            preloadStateManager.setStepComplete(step);
+        }
     }
 
     private void executeOnStartupHooks() {
@@ -302,7 +299,8 @@ public class MainActivity extends HostActivityBase {
      * - Does not exist? Set PreloadStep.VIDEO_INTRO as complete
      */
     private void playVideoIntroIfPresent() {
-        if (getVideoIntroResource() == 0) {
+        int introResource = getVideoIntroResource();
+        if (introResource == 0) {
             preloadStepComplete(PreloadStep.VIDEO_INTRO);
             return;
         }
@@ -312,7 +310,7 @@ public class MainActivity extends HostActivityBase {
                 () -> preloadStepComplete(PreloadStep.VIDEO_INTRO))
         );
 
-        Uri videoIntroUri = buildVideoIntroUri(getVideoIntroResource());
+        Uri videoIntroUri = buildVideoIntroUri(introResource);
         applicationPreloaderView.showIntro(videoIntroUri, this);
     }
 

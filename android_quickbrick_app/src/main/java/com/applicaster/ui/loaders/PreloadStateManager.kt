@@ -2,10 +2,6 @@ package com.applicaster.ui.loaders
 
 import com.applicaster.util.APLogger
 
-/**
- * Does nothing except holding multiple steps to complete.
- * If no steps left, preload considered complete - [.isPreloadComplete]
- */
 class PreloadStateManager(private val onComplete: Runnable) {
 
     enum class PreloadStep {
@@ -39,7 +35,9 @@ class PreloadStateManager(private val onComplete: Runnable) {
     @Synchronized
     fun setStepComplete(step: PreloadStep) {
         APLogger.debug(TAG, "Preload step complete: $step")
-        steps.remove(step)
+        if(!steps.remove(step)) {
+            APLogger.error(TAG, "Preload step was marked complete more than once: $step")
+        }
         stepHandlers[step]?.forEach { it.handle(step) }
         if(steps.isEmpty()) {
             onComplete.run()
