@@ -20,6 +20,7 @@ import com.applicaster.ui.loaders.PreloadStateManager.PreloadStep;
 import com.applicaster.ui.quickbrick.QuickBrickManager;
 import com.applicaster.ui.utils.HookExecutor;
 import com.applicaster.ui.utils.OrientationUtils;
+import com.applicaster.ui.views.ApplicationPreloaderView;
 import com.applicaster.util.APLogger;
 import com.applicaster.util.AppData;
 import com.applicaster.util.OSUtil;
@@ -306,7 +307,7 @@ public class MainActivity extends HostActivityBase {
             return;
         }
 
-        ApplicationPreloader applicationPreloaderView = findViewById(OSUtil.getResourceId(APPLICATION_PRELOADER_LAYOUT_ID));
+        ApplicationPreloaderView applicationPreloaderView = findViewById(OSUtil.getResourceId(APPLICATION_PRELOADER_LAYOUT_ID));
         applicationPreloaderView.setListener(new PreloaderViewListener(
                 () -> preloadStepComplete(PreloadStep.VIDEO_INTRO))
         );
@@ -398,7 +399,7 @@ public class MainActivity extends HostActivityBase {
         }
 
         /**
-         * Handles other "onComplete" events in the {@link ApplicationPreloader},
+         * Handles other "onComplete" events in the {@link ApplicationPreloaderView},
          * like dismissed interstitial / ad / webview
          */
         @Override
@@ -407,7 +408,7 @@ public class MainActivity extends HostActivityBase {
 
         /**
          * NEVER called
-         * @param e Exception from {@link ApplicationPreloader}
+         * @param e Exception from {@link ApplicationPreloaderView}
          */
         @Override
         public void handlePreloaderException(Exception e) {
