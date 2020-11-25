@@ -5,11 +5,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.OrientationEventListener;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
 
@@ -22,12 +20,12 @@ import com.applicaster.ui.loaders.PreloadStateManager.PreloadStep;
 import com.applicaster.ui.quickbrick.QuickBrickManager;
 import com.applicaster.ui.utils.HookExecutor;
 import com.applicaster.ui.utils.OrientationUtils;
-import com.applicaster.ui.views.ApplicationPreloaderView;
 import com.applicaster.util.APLogger;
 import com.applicaster.util.AppData;
 import com.applicaster.util.OSUtil;
 import com.applicaster.util.UrlSchemeUtil;
 import com.applicaster.util.ui.APUIUtils;
+import com.applicaster.util.ui.ApplicationPreloader;
 import com.applicaster.util.ui.PreloaderListener;
 import com.applicaster.zapp.quickbrick.loader.DataLoader;
 
@@ -54,8 +52,12 @@ public class MainActivity extends HostActivityBase {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        APLogger.debug(TAG, "Activity onCreate called");
         super.onCreate(savedInstanceState);
-        preloadStateManager = new PreloadStateManager();
+        preloadStateManager = new PreloadStateManager(this::showUI)
+                .whenStepComplete(PreloadStep.STARTUP_HOOK, step -> startLoading())
+                .whenStepComplete(PreloadStep.LOAD_DATA, step -> runOnUiThread(this::executeOnApplicationReadyHooks))
+                .whenStepComplete(PreloadStep.APPLICATION_READY_HOOK, step -> runOnUiThread(this::initializeUILayer));
         setAppOrientation();
         setSplashAndApplicationPreloaderView();
         if(routeOrUpdateIntent(getIntent())) {
@@ -66,8 +68,9 @@ public class MainActivity extends HostActivityBase {
             return;
         }
         // todo: show debug setup dialog here
-        executeOnStartupHooks(this::startLoading);
+        executeOnStartupHooks();
     }
+
 
     private boolean routeOrUpdateIntent(Intent intent) {
         // Take care of url extra delivered from Firebase Console Firebase Push when app was not active
@@ -264,25 +267,18 @@ public class MainActivity extends HostActivityBase {
     private synchronized void preloadStepComplete(PreloadStep step) {
         if(isFinishing())
             return;
-
-        if (preloadStateManager.isPreloadComplete())
-            return; // preload was already complete, don't do anything
-
+        APLogger.debug(TAG, "Preload step complete: " + step.name());
         preloadStateManager.setStepComplete(step);
-
-        if (preloadStateManager.isPreloadComplete()) {
-            runOnUiThread(this::executeOnApplicationReadyHooks);
-        }
     }
 
-    private void executeOnStartupHooks(@NonNull Runnable continuation) {
+    private void executeOnStartupHooks() {
         List<ApplicationLoaderHookUpI> hookPluginList = PluginManager.getInstance().getHookPluginList();
         if (hookPluginList == null || hookPluginList.isEmpty()) {
-            continuation.run();
+            preloadStepComplete(PreloadStep.STARTUP_HOOK);
         } else {
             new HookExecutor(this,
                     hookPluginList,
-                    () -> runOnUiThread(continuation),
+                    () -> runOnUiThread(() -> preloadStepComplete(PreloadStep.STARTUP_HOOK)),
                     false);
         }
     }
@@ -290,11 +286,11 @@ public class MainActivity extends HostActivityBase {
     private void executeOnApplicationReadyHooks() {
         List<ApplicationLoaderHookUpI> hookPluginList = PluginManager.getInstance().getHookPluginList();
         if (hookPluginList == null || hookPluginList.isEmpty()) {
-            initializeUILayer();
+            preloadStepComplete(PreloadStep.APPLICATION_READY_HOOK);
         } else {
             new HookExecutor(this,
                     hookPluginList,
-                    () -> runOnUiThread(this::initializeUILayer),
+                    () -> preloadStepComplete(PreloadStep.APPLICATION_READY_HOOK),
                     true);
         }
     }
@@ -310,7 +306,7 @@ public class MainActivity extends HostActivityBase {
             return;
         }
 
-        ApplicationPreloaderView applicationPreloaderView = findViewById(OSUtil.getResourceId(APPLICATION_PRELOADER_LAYOUT_ID));
+        ApplicationPreloader applicationPreloaderView = findViewById(OSUtil.getResourceId(APPLICATION_PRELOADER_LAYOUT_ID));
         applicationPreloaderView.setListener(new PreloaderViewListener(
                 () -> preloadStepComplete(PreloadStep.VIDEO_INTRO))
         );
@@ -339,27 +335,17 @@ public class MainActivity extends HostActivityBase {
         if(isFinishing()) {
             return;
         }
+        APLogger.debug(TAG, "Initializing UI layer...");
         uiLayer = new QuickBrickManager(this);
         uiLayer.setEventsListener(new IUILayerManager.StatusListener() {
             @Override
             public void onReady() {
-                if(isFinishing()) {
-                    return;
-                }
-                runOnUiThread(() -> {
-                    initOrientationListener();
-                    setContentView(uiLayer.getRootView()); // simplistic approach, replace whole intro layout with RN layout
-                    Uri uri = UrlSchemeUtil.getUrlSchemeData(getIntent());
-                    if(null != uri) {
-                        APLogger.info(TAG, "Passing URI to UI Layer:" + uri.toString());
-                        uiLayer.handleURL(uri.toString());
-                    }});
+                preloadStepComplete(PreloadStep.UI_READY);
             }
 
             @Override
             public void onError(@Nullable Exception e) {
-                Log.e(TAG, "QuickBrickManager error", e);
-
+                APLogger.error(TAG, "QuickBrickManager error", e);
                 Handler handler = new Handler();
                 handler.postDelayed(() -> {
                     finish(); // Not very nice but we prefer failing hard and fast in this case
@@ -367,6 +353,21 @@ public class MainActivity extends HostActivityBase {
             }
         });
         uiLayer.start();
+    }
+
+    private void showUI() {
+        if(isFinishing()) {
+            return;
+        }
+        runOnUiThread(() -> {
+            APLogger.debug(TAG, "UI ready...");
+            initOrientationListener();
+            setContentView(uiLayer.getRootView()); // simplistic approach, replace whole intro layout with RN layout
+            Uri uri = UrlSchemeUtil.getUrlSchemeData(getIntent());
+            if(null != uri) {
+                APLogger.info(TAG, "Passing URI to UI Layer:" + uri.toString());
+                uiLayer.handleURL(uri.toString());
+            }});
     }
 
     /**
@@ -397,7 +398,7 @@ public class MainActivity extends HostActivityBase {
         }
 
         /**
-         * Handles other "onComplete" events in the {@link ApplicationPreloaderView},
+         * Handles other "onComplete" events in the {@link ApplicationPreloader},
          * like dismissed interstitial / ad / webview
          */
         @Override
@@ -406,7 +407,7 @@ public class MainActivity extends HostActivityBase {
 
         /**
          * NEVER called
-         * @param e Exception from {@link ApplicationPreloaderView}
+         * @param e Exception from {@link ApplicationPreloader}
          */
         @Override
         public void handlePreloaderException(Exception e) {
