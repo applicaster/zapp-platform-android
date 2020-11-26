@@ -1,46 +1,63 @@
 package com.applicaster.ui.loaders
 
 import com.applicaster.util.APLogger
+import io.reactivex.Completable
 
-class PreloadStateManager(private val onComplete: Runnable) {
+class PreloadStateManager {
 
     enum class PreloadStep {
         STARTUP_HOOK,
         LOAD_DATA,
         VIDEO_INTRO,
         APPLICATION_READY_HOOK,
-        UI_READY
+        UI_READY,
+        RUNNING
     }
 
-    interface IStepHandler {
-        fun handle(step: PreloadStep)
+    private data class Step(val step: PreloadStep,
+                            val executor: Completable,
+                            val depends: Set<PreloadStep> = setOf())
+
+    private val actions = mutableSetOf<Step>()
+    private val complete = mutableSetOf<PreloadStep>()
+    private val running = mutableSetOf<PreloadStep>()
+
+    fun addStep(step: PreloadStep,
+                executor: Completable,
+                vararg depends: PreloadStep) {
+        actions.add(Step(step, executor, setOf(*depends)))
     }
 
-    private val steps = hashSetOf(*PreloadStep.values())
-    private val stepHandlers = mutableMapOf<PreloadStep, MutableList<IStepHandler>>()
+    fun run() = tryNext()
 
-    /**
-     * Register step complete handler (no multiple dependencies for now)
-     */
-    fun whenStepComplete(step: PreloadStep, handler: IStepHandler): PreloadStateManager {
-        val lst = stepHandlers.getOrPut(step) { mutableListOf() }
-        lst.add(handler)
-        return this
-    }
-
-    /**
-     * Complete [PreloadStep].
-     * @param step  Preload step to marked as complete
-     */
     @Synchronized
-    fun setStepComplete(step: PreloadStep) {
-        APLogger.debug(TAG, "Preload step complete: $step")
-        if(!steps.remove(step)) {
-            APLogger.error(TAG, "Preload step was marked complete more than once: $step")
+    private fun tryNext() {
+        if (actions.isEmpty()) {
+            if(running.isEmpty()) {
+                APLogger.info(TAG, "Initialization complete")
+            }
+            return
         }
-        stepHandlers[step]?.forEach { it.handle(step) }
-        if(steps.isEmpty()) {
-            onComplete.run()
+
+        val actionable = actions.filter { complete.containsAll(it.depends) }.toList()
+
+        if (actionable.isEmpty()) {
+            if(running.isEmpty()) {
+                val stepsLeft = actions.joinToString { it.step.name }
+                APLogger.error(TAG, "Initialization deadlock, some steps has failed to meet conditions: $stepsLeft")
+            }
+        } else {
+            actions.removeAll(actionable)
+            running.addAll(actionable.map { it.step })
+            actionable.forEach { action: Step ->
+                APLogger.info(TAG, "Executing initialization step: ${action.step}")
+                action.executor.subscribe {
+                    complete.add(action.step)
+                    APLogger.info(TAG, "Initialization step complete: ${action.step}")
+                    tryNext()
+                }
+                // todo: handle errors
+            }
         }
     }
 
