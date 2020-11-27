@@ -49,6 +49,23 @@ references:
 
 version: 2
 jobs:
+  test:
+    <<: *container_config
+
+    steps:
+      - checkout
+      - *restore_gems
+      - *install_gems
+      - *save_gems
+
+      - run:
+          name: Lint check
+          command: ./gradlew lint
+
+      - run:
+          name: Run Tests
+          command: ./gradlew test
+
   build:
     <<: *container_config
 
@@ -368,10 +385,15 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - test:
+          filters:
+            tags:
+              only: /.*/
       - hold_create_android_mobile_sdk:
           type: approval
           requires:
             - build
+            - test
           filters:
             tags:
               only: /.*/
@@ -389,6 +411,7 @@ workflows:
           type: approval
           requires:
             - build
+            - test
           filters:
             tags:
               only: /.*/
@@ -406,6 +429,7 @@ workflows:
           type: approval
           requires:
             - build
+            - test
           filters:
             tags:
               only: /.*/
@@ -423,6 +447,7 @@ workflows:
           type: approval
           requires:
             - build
+            - test
           filters:
             tags:
               only: /.*/
