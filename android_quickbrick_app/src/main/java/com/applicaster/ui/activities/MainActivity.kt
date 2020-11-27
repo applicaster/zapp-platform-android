@@ -309,6 +309,7 @@ class MainActivity : HostActivityBase() {
         }
     }
 
+    // Not really needed right now, since we run callbacks on UI thread in PreloadStateManager.
     private fun createUIThreadCompletable(action: (CompletableEmitter) -> Unit): Completable {
         return Completable.create {
             runOnUiThread { action(it) }

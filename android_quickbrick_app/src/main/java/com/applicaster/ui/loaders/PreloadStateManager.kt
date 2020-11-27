@@ -2,6 +2,7 @@ package com.applicaster.ui.loaders
 
 import com.applicaster.util.APLogger
 import io.reactivex.Completable
+import io.reactivex.android.schedulers.AndroidSchedulers
 
 class PreloadStateManager {
 
@@ -51,11 +52,16 @@ class PreloadStateManager {
             running.addAll(actionable.map { it.step })
             actionable.forEach { action: Step ->
                 APLogger.info(TAG, "Executing initialization step: ${action.step}")
-                action.executor.subscribe {
-                    complete.add(action.step)
-                    APLogger.info(TAG, "Initialization step complete: ${action.step}")
-                    tryNext()
-                }
+                // For now we run and observe on UI thread.
+                // Tasks can wrap it internally, or we will add an option to the step in the future.
+                action.executor
+                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe {
+                            complete.add(action.step)
+                            APLogger.info(TAG, "Initialization step complete: ${action.step}")
+                            tryNext()
+                        }
                 // todo: handle errors
             }
         }
