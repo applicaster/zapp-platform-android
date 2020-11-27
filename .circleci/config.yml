@@ -80,10 +80,6 @@ jobs:
           command: bundle exec rake build_app
 
       - run:
-          name: Lint check
-          command: ./gradlew lint
-
-      - run:
           name: Run Tests
           command: ./gradlew test
 
