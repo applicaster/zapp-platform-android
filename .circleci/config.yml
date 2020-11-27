@@ -59,6 +59,27 @@ jobs:
       - *save_gems
 
       - run:
+          name: Build App Specs
+          command: |
+            if [ "$CIRCLE_BRANCH" = "release" ] || [ "$triggered_by" = "zapp" ];
+            then
+              echo "skipping default rake task"
+            else
+              set -eo
+              bundle exec rake
+              git checkout .
+              git clean -f -d
+            fi
+
+      - run:
+          name: NPM Login
+          command: npx npm-shell-login
+
+      - run:
+          name: Build App
+          command: bundle exec rake build_app
+
+      - run:
           name: Lint check
           command: ./gradlew lint
 
