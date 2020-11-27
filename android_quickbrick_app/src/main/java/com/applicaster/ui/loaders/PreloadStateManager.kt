@@ -3,6 +3,7 @@ package com.applicaster.ui.loaders
 import com.applicaster.util.APLogger
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import java.lang.IllegalStateException
 
 class PreloadStateManager {
 
@@ -29,7 +30,10 @@ class PreloadStateManager {
         actions.add(Step(step, executor, setOf(*depends)))
     }
 
-    fun run() = tryNext()
+    fun run() {
+        verify()
+        tryNext()
+    }
 
     @Synchronized
     private fun tryNext() {
@@ -64,6 +68,24 @@ class PreloadStateManager {
                         }
                 // todo: handle errors
             }
+        }
+    }
+
+    /**
+     * Verify that current steps graph is correct.
+     * Will throw an IllegalStateException if there are unreachable steps.
+     */
+    fun verify() {
+        val left = LinkedHashSet<Step>(actions)
+        val performed = mutableSetOf<PreloadStep>()
+        while (left.isNotEmpty()) {
+            val actionable = left.filter { performed.containsAll(it.depends) }.toList()
+            if (actionable.isEmpty()) {
+                val unreachable = left.joinToString { it.step.name }
+                throw IllegalStateException("Some steps are unreachable: $unreachable")
+            }
+            left.removeAll(actionable)
+            performed.addAll(actionable.map { it.step })
         }
     }
 
