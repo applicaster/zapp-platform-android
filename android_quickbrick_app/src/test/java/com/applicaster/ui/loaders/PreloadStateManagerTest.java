@@ -58,4 +58,25 @@ public class PreloadStateManagerTest {
         throw new Exception("Failed to detect unreachable steps");
     }
 
+    @Test
+    public void cycleDependencyTest() throws Exception {
+        try {
+            new PreloadStateManager(Schedulers.trampoline())
+                    .addStep(PreloadStateManager.PreloadStep.VIDEO_INTRO,
+                            Completable.complete(),
+                            PreloadStateManager.PreloadStep.APPLICATION_READY_HOOK)
+                    .addStep(PreloadStateManager.PreloadStep.STARTUP_HOOK,
+                            Completable.complete())
+                    .addStep(PreloadStateManager.PreloadStep.APPLICATION_READY_HOOK,
+                            Completable.complete(),
+                            PreloadStateManager.PreloadStep.VIDEO_INTRO)
+                    .verify();
+        } catch (IllegalStateException e) {
+            // all is fine, we were waiting for that exception
+            String message = e.getMessage();
+            Assert.assertEquals("Some steps are unreachable: VIDEO_INTRO, APPLICATION_READY_HOOK", message);
+            return;
+        }
+        throw new Exception("Failed to detect unreachable steps");
+    }
 }
