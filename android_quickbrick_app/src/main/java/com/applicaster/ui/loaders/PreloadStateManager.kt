@@ -2,10 +2,9 @@ package com.applicaster.ui.loaders
 
 import com.applicaster.util.APLogger
 import io.reactivex.Completable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import java.lang.IllegalStateException
+import io.reactivex.Scheduler
 
-class PreloadStateManager {
+class PreloadStateManager(private val defaultScheduler: Scheduler) {
 
     enum class PreloadStep {
         STARTUP_HOOK,
@@ -26,8 +25,9 @@ class PreloadStateManager {
 
     fun addStep(step: PreloadStep,
                 executor: Completable,
-                vararg depends: PreloadStep) {
+                vararg depends: PreloadStep): PreloadStateManager {
         actions.add(Step(step, executor, setOf(*depends)))
+        return this
     }
 
     fun run() {
@@ -59,9 +59,10 @@ class PreloadStateManager {
                 // For now we run and observe on UI thread.
                 // Tasks can wrap it internally, or we will add an option to the step in the future.
                 action.executor
-                        .subscribeOn(AndroidSchedulers.mainThread())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(defaultScheduler)
+                        .observeOn(defaultScheduler)
                         .subscribe {
+                            running.remove(action.step)
                             complete.add(action.step)
                             APLogger.info(TAG, "Initialization step complete: ${action.step}")
                             tryNext()
@@ -88,6 +89,9 @@ class PreloadStateManager {
             performed.addAll(actionable.map { it.step })
         }
     }
+
+    @Synchronized
+    fun complete() = actions.isEmpty() && running.isEmpty()
 
     companion object {
         private const val TAG = "PreloadStateManager"

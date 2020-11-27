@@ -12,8 +12,7 @@ import com.applicaster.plugin_manager.PluginManager
 import com.applicaster.ui.R
 import com.applicaster.ui.interfaces.HostActivityBase
 import com.applicaster.ui.interfaces.IUILayerManager
-import com.applicaster.ui.loaders.PreloadStateManager
-import com.applicaster.ui.loaders.PreloadStateManager.PreloadStep
+import com.applicaster.ui.loaders.MainActivityPreloadSequence
 import com.applicaster.ui.quickbrick.QuickBrickManager
 import com.applicaster.ui.utils.HookExecutor
 import com.applicaster.ui.utils.OrientationUtils.jsOrientationMapper
@@ -27,7 +26,6 @@ import com.applicaster.util.OSUtil
 import com.applicaster.util.UrlSchemeUtil
 import com.applicaster.util.ui.APUIUtils
 import com.applicaster.util.ui.PreloaderListener
-import com.applicaster.zapp.quickbrick.loader.DataLoader
 import io.reactivex.Completable
 import io.reactivex.CompletableEmitter
 import java.util.*
@@ -50,30 +48,7 @@ class MainActivity : HostActivityBase() {
         setAppOrientation()
         setContentView(R.layout.intro)
         // todo: show debug setup dialog here
-        with(PreloadStateManager()) {
-            addStep(PreloadStep.VIDEO_INTRO,
-                    playVideoIntroIfPresent())
-
-            addStep(PreloadStep.STARTUP_HOOK,
-                    executeHooks(false))
-
-            addStep(PreloadStep.LOAD_DATA,
-                    DataLoader.initialize(applicationContext),
-                    PreloadStep.STARTUP_HOOK)
-
-            addStep(PreloadStep.APPLICATION_READY_HOOK,
-                    executeHooks(true),
-                    PreloadStep.LOAD_DATA)
-
-            addStep(PreloadStep.UI_READY,
-                    initializeUILayer(),
-                    PreloadStep.APPLICATION_READY_HOOK)
-
-            addStep(PreloadStep.RUNNING,
-                    showUI(),
-                    PreloadStep.VIDEO_INTRO, PreloadStep.UI_READY)
-            run()
-        }
+        MainActivityPreloadSequence.configure(this).run()
     }
 
     private fun routeOrUpdateIntent(intent: Intent): Boolean {
@@ -222,7 +197,7 @@ class MainActivity : HostActivityBase() {
         }
     }
 
-    private fun executeHooks(isAppReady: Boolean) : Completable {
+    internal fun executeHooks(isAppReady: Boolean) : Completable {
         val hookPluginList = PluginManager.getInstance().hookPluginList
         return when {
             hookPluginList == null || hookPluginList.isEmpty() -> Completable.complete()
@@ -240,7 +215,7 @@ class MainActivity : HostActivityBase() {
      * - Exists? Play video and connect onIntroVideoFinished to PreloadStep.VIDEO_INTRO
      * - Does not exist? Set PreloadStep.VIDEO_INTRO as complete
      */
-    private fun playVideoIntroIfPresent(): Completable {
+    internal fun playVideoIntroIfPresent(): Completable {
         val introResource = videoIntroResource
         if (introResource == 0) {
             return Completable.complete()
@@ -270,7 +245,7 @@ class MainActivity : HostActivityBase() {
      * The Manager interacts with this activity using this interface:
      * [IUILayerManager.StatusListener]
      */
-    private fun initializeUILayer(): Completable {
+    internal fun initializeUILayer(): Completable {
         if (isFinishing) {
             return Completable.complete()
         }
@@ -292,7 +267,7 @@ class MainActivity : HostActivityBase() {
         }
     }
 
-    private fun showUI(): Completable {
+    internal fun showUI(): Completable {
         if (isFinishing) {
             return Completable.complete()
         }
