@@ -34,7 +34,7 @@ class TemplateHelper
 
   def app_name_xml
     # xml-escaped app-name
-    ENV["app_name"].encode(:xml => :attr)
+    ENV["app_name"].encode(xml: :attr)
   end
 
   def bundle_identifier
