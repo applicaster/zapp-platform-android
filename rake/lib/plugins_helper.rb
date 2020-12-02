@@ -115,7 +115,7 @@ module PluginsHelper
 
     if configurations
       additional_resources = configurations.map do |key, value|
-        "<string name=\"#{key}\">#{value.encode(xml: :attr)}</string>"
+        "<string name=\"#{key}\">#{value}</string>"
       end
 
       additional_resources.join("\n")
