@@ -11,8 +11,10 @@
 #### Applicaster Android SDK Core version: 8.0.1
 #### Android target API: 29
 
-### Improvements:
+### Breaking changes:
 - QuickBrick updated to 4.1.4 [#81](https://github.com/applicaster/zapp-platform-android/pull/81)
+
+### Improvements:
 - CI application updated [#74](https://github.com/applicaster/zapp-platform-android/pull/74)
 - Tablet orientation setting added [71](https://github.com/applicaster/zapp-platform-android/pull/71),[72](https://github.com/applicaster/zapp-platform-android/pull/72), [71](https://github.com/applicaster/zapp-platform-android/pull/71),[73](https://github.com/applicaster/zapp-platform-android/pull/73)
 - Firebase push notification DeepLink support added [#69](https://github.com/applicaster/zapp-platform-android/pull/69), [#70](https://github.com/applicaster/zapp-platform-android/pull/70)
