@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.applicaster.app.APProperties;
 import com.applicaster.reactnative.utils.InitialProperties;
+import com.applicaster.session.SessionStorage;
 import com.applicaster.util.AppData;
 import com.applicaster.util.OSUtil;
 
@@ -32,6 +33,10 @@ public class AppConstants {
     private static final String BUILD_VERSION = "build_version";
     private static final String IS_TABLET_PORTRAIT = "isTabletPortrait";
 
+    private static final String LANGUAGE_CODE = "languageCode";
+    private static final String LANGUAGE_LOCALE = "languageLocale";
+    private static final String COUNTRY_LOCALE = "countryLocale";
+
     public static Map<String, Object> generateMap(Context context) {
         Map<String, Object> constants = new HashMap<>();
         constants.put(ACCOUNT_ID,           AppData.getProperty(APProperties.ACCOUNT_ID_KEY));
@@ -45,6 +50,11 @@ public class AppConstants {
         constants.put(RIVERS_ID,            AppData.getProperty(RIVERS_ID));
         constants.put(BUILD_VERSION,        OSUtil.getAppVersionCode(context));
         constants.put(IS_TABLET_PORTRAIT,   "true".equals(AppData.getProperty(APProperties.IS_TABLET_PORTRAIT)));
+
+        constants.put(LANGUAGE_LOCALE, SessionStorage.INSTANCE.get(SessionStorage.LANGUAGE_LOCALE));
+        constants.put(LANGUAGE_CODE, SessionStorage.INSTANCE.get(SessionStorage.LANGUAGE_CODE));
+        constants.put(COUNTRY_LOCALE, SessionStorage.INSTANCE.get(SessionStorage.COUNTRY_LOCALE));
+
         return constants;
     }
 }
