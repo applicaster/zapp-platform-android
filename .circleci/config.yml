@@ -186,23 +186,6 @@ jobs:
             else
               bundle exec rake ui_tests:publish_build_status[true,app/build/outputs/apk/mobileGoogle/debug/app-mobile-google-debug.apk,false]
             fi
-      - run:
-          name: App Center Upload Unsigned .apk
-          command: |
-            if [ -z "$flavor" ];
-            then
-              export flavor=mobile
-            fi
-            app_name_no_whitespaces=${bundle_identifier//[^a-zA-Z0-9]/_};
-            apk_path=app/build/outputs/apk/${flavor}/debug/app-${flavor}-debug.apk
-            cp ${apk_path} ${HOME}/${app_name_no_whitespaces}-debug.apk;
-            bundle exec fastlane app_center_debug_upload
-            echo "Debug distribution environment variables"
-            cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_app_center.env
-            cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_app_center.env >> $BASH_ENV
-            source $BASH_ENV
-          environment:
-            TERM: dumb
 
       - run:
           name: Build and upload Signed .apk
@@ -226,6 +209,24 @@ jobs:
                 echo "Skip upload to s3"
               fi
             fi
+          environment:
+            TERM: dumb
+
+      - run:
+          name: App Center Upload Unsigned .apk
+          command: |
+            if [ -z "$flavor" ];
+            then
+              export flavor=mobile
+            fi
+            app_name_no_whitespaces=${bundle_identifier//[^a-zA-Z0-9]/_};
+            apk_path=app/build/outputs/apk/${flavor}/debug/app-${flavor}-debug.apk
+            cp ${apk_path} ${HOME}/${app_name_no_whitespaces}-debug.apk;
+            bundle exec fastlane app_center_debug_upload
+            echo "Debug distribution environment variables"
+            cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_app_center.env
+            cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_app_center.env >> $BASH_ENV
+            source $BASH_ENV
           environment:
             TERM: dumb
 
