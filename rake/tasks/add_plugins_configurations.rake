@@ -66,8 +66,6 @@ task generate_plugins: :dotenv do
     PluginsHelper.add_plugin_class_name(plugin)
     PluginsHelper.add_proguard_rules(plugin)
 
-    next unless plugin["react_native"]
-
     # React Native dependencies
     puts "Adding React Native #{plugin['name']} plugin...".yellow
 
