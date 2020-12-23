@@ -12,6 +12,7 @@ class TemplateHelper
   include AndroidManifestHelper
 
   SDK_DEFAULT_QB_VERSION = "4.1.4"
+  SDK_DEFAULT_MIN_SDK_VERSION = 19
 
   def render_template(template_path, dst_path)
     helper_binding = binding
@@ -25,7 +26,7 @@ class TemplateHelper
   private
 
   def min_sdk_version
-    [19, ENV["min_sdk_version"].to_i].max
+    [SDK_DEFAULT_MIN_SDK_VERSION, ENV["min_sdk_version"].to_i].max
   end
 
   def app_name
