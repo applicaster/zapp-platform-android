@@ -1,90 +1,163 @@
-<html>
-  <head>
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Install <%= title %></title>
-  </head>
-  <body>
-    <style type="text/css">
-      * {
-        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-        text-align: center;
-        background-color: #f5f5f5;
-      }
-      h1 {
-        margin-bottom: 0px;
-      }
-      h2 {
-        margin-top: 5px;
-      }
-      .oneRow {
-        width: 100%;
-        overflow: auto;
-        overflow-y: hidden;
-        white-space: nowrap;
-        text-align: center;
-      }
-      .download {
-        margin: 30px;
-        font-size: 130%;
-      }
-      #appIcon {
-        -webkit-border-radius: 22.544%;
-        -moz-border-radius: 22.544%;
-        -ms-border-radius: 22.544%;
-          border-radius: 22.544%;
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <title><%= title %> | Version <%= version_name %> | Build <%= version_code %></title>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+        body {
+            display: flex;
+            align-items: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #f5f5f5;
+        }
+        .form-download {
+            width: 100%;
+            max-width: 330px;
+            padding: 10px;
+            margin: auto;
+        }
+        .form-download .checkbox {
+            font-weight: 400;
+        }
+        .form-download .form-control {
+            position: relative;
+            box-sizing: border-box;
+            height: auto;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .form-download .form-control:focus {
+            z-index: 2;
+        }
+        .form-download input[type="email"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+        .form-download input[type="password"] {
+            margin-bottom: 10px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+        .platform-icon {
+            height: 50px;
+        }
+        .version-text-container {
+            flex: 1;
+            text-align: left;
+            padding-left: 15px;
+            padding-right: 5px;
+        }
+        .version-text {
+            word-break: break-word;
+        }
+        .capitalize {
+            text-transform: capitalize;
+        }
+        .download-button {
+            display: flex;
+            align-items: center;
+        }
 
-        margin-bottom: 30px;
-      }
-      a {
-        text-decoration: none;
-        color: blue;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
-      #os-message {
-        text-align: center;
-        color: #737373;
-        font-size: 14px;
-      }
-      #footnote {
-        color: #737373;
-        font-size: 14px;
-      }
-      #finished { display: none; }
-      #fastlaneLogo {
-        text-align: center;
-        max-width: 150px;
-        margin-top: 10px;
-      }
     </style>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.0/dist/alpine.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/gh/englishextra/qrjs2@0.1.7/js/qrjs2.min.js" defer></script>
+</head>
+<body class="text-center" :class="{'modal-open': open}" x-data="{ open: false, downloaded: false }">
+    <main class="form-download">
+        <form>
+            <img class="mb-4 rounded-3"
+                onerror="this.src='https://assets-production.applicaster.com/zapp/assets/cms_assets/zapp-launcher.png'"
+                src="https://assets-production.applicaster.com/zapp/assets/app_versions/<%= ENV['version_id'] %>/xxxhdpi/ic_launcher.png"
+                alt="" width="100" height="100">
+            <h2>
+                <%= title %>
+            </h2>
+            <p class="">
+                Built on <%= Time.now.strftime('%a, %e %b %Y %H:%M %p') %>
+            </p>
+            <a href=<%= apk_url %> x-bind:disabled="downloaded" class="w-100 btn btn-lg btn-dark" @click="downloaded = true" x-on:click>
+                <div class="download-button">
+                    <svg class="platform-icon" fill="currentColor" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>Android icon</title><path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4483-.9993.9993-.9993c.5511 0 .9993.4483.9993.9993.0001.5511-.4482.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4483.9993.9993 0 .5511-.4483.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.2439 13.8533 7.8508 12 7.8508s-3.5902.3931-5.1367 1.0989L4.841 5.4467a.4161.4161 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3435-4.1021-2.6892-7.5743-6.1185-9.4396"/></svg>
 
-    <h1 style="text-align: center;"><%= title %></h1>
-    <h2><%= version_name %> (<%= version_code %>)</h2>
-    <p><em>Built on <%= Time.now.strftime('%a, %e %b %Y %H:%M %p') %></em></p>
-
-    <div class="oneRow">
-      <span class="download" id="android">
-        <a href="<%= apk_url %>" id="text" class="btn btn-lg btn-default" onclick="document.getElementById('finished').id = '';">
-          Install <%= title %> <%= version_name %> (<%= version_code %>)
-        </a>
-      </span>
-
-      <span class="info">
-        <p><%= release_notes %></p>
-      </span>
+                    <div class="version-text-container">
+                        <template x-if="!downloaded"><small class="capitalize">Download <%= ENV['build_type'] %></small></template>
+                        <template x-if="downloaded"><small>App is being installed</small></template>
+                        <div class="version-text"> V<%= version_name %> (<%= version_code %>)</div>
+                    </div>
+                </div>
+            </a>
+            <p class="mt-5 mb-3 text-muted">This is a private version and is not intended for public sharing.</p>
+            <a href="https://applicaster.com">
+                <img class="mx-auto h-6 w-auto mt-16"
+                    src="https://assets-production.applicaster.com/zapp/assets/cms_assets/applicaster_logo.svg"
+                    height="25">
+            </a>
+        <h4 class="mt-4" :style="`opacity: ${downloaded ? 1 : 0};`" >App is being installed. You might have to close the browser.</h4>
+        </form>
+        </div>
+    </main>
+    <!-- Modal -->
+    <div class="modal fade show" tabindex="-1" :style="`display: ${open && 'block'};`  "
+        x-on:toggle.window="open = !open">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <div class="d-flex">
+                        <img class="me-2 rounded-3"
+                            onerror="this.src='https://assets-production.applicaster.com/zapp/assets/cms_assets/zapp-launcher.png'"
+                            src="https://assets-production.applicaster.com/zapp/assets/app_versions/<%= ENV['version_id'] %>/xxxhdpi/ic_launcher.png"
+                            alt="" width="40" height="40">
+                        <h5 class="modal-title"><%= title %></h5>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <h5 class="modal-title">Please open this page on your Android device!</h5>
+                    <p>OR Scan this QR code using your Android device</p>
+                    <div id="qr"></div>
+                    <p class="">
+                        V<%= version_name %> (<%= version_code %>)
+                    </p>
+                    <p class="text-center">
+                        Built on <%= Time.now.strftime('%a, %e %b %Y %H:%M %p') %>
+                    </p>
+                    <p><a href="<%= apk_url %>">Download apk</a></p>
+                </div>
+            </div>
+        </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            //the event occurred
+            var userAgent = window.navigator.userAgent;
 
-    <h3 id="os-message">Please open this page on your Android device!</h3>
-
-    <p id="finished">
-      App is being installed. You might have to close the browser.
-    </p>
-
-    <p id="footnote">
-      This is a beta version and is not intended for public sharing.
-    </p>
-    <img src="https://assets-production.applicaster.com/zapp/assets/cms_assets/applicaster_logo.svg" id="app-logo" />
-  </body>
+            if (!/Android/.test(userAgent)) {
+                window.dispatchEvent(new CustomEvent('toggle'));
+            }
+            var element = document.getElementById('qr');
+            var svgElement = document.createElement("div"),
+                u = window.location.href,
+                s = window.QRCode.generateSVG(u, {
+                    ecclevel: "M",
+                    fillcolor: "#FFFFFF",
+                    textcolor: "#373737",
+                    margin: 4,
+                    modulesize: 8
+                });
+            svgElement.appendChild(s);
+            element.appendChild(svgElement);
+        })
+    </script>
+    <div x-show="open" class="modal-backdrop fade show"></div>
+</body>
 </html>

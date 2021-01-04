@@ -134,6 +134,8 @@ jobs:
           command: |
             if [ "$with_release" = "true" ];
             then
+              export build_type=release
+
               bundle exec fastlane app_center_build_bundle
               if [ -z "$service_account_key_url"];
               then
@@ -150,6 +152,7 @@ jobs:
       - run:
           name: Build and upload Unsigned .apk
           command: |
+            export build_type=debug
 
             if [ -z "$react_native_packager_root" ];
             then
@@ -169,7 +172,7 @@ jobs:
 
             if [ "$triggered_by" = "zapp" ];
             then
-              bundle exec fastlane s3_debug_upload
+              bundle exec fastlane s3_upload
             else
               echo "Skip upload to s3"
             fi
@@ -194,6 +197,8 @@ jobs:
             then
               echo "debug only, skipping release version"
             else
+              export build_type=release
+
               if [ "$flavor" = "tv" ];
               then
                 ./gradlew assembleTvRelease
@@ -204,7 +209,7 @@ jobs:
 
               if [ "$triggered_by" = "zapp" ];
               then
-                bundle exec fastlane s3_release_upload
+                bundle exec fastlane s3_upload
               else
                 echo "Skip upload to s3"
               fi
@@ -215,6 +220,8 @@ jobs:
       - run:
           name: App Center Upload Unsigned .apk
           command: |
+            export build_type=debug
+
             if [ -z "$flavor" ];
             then
               export flavor=mobile
@@ -222,7 +229,7 @@ jobs:
             app_name_no_whitespaces=${bundle_identifier//[^a-zA-Z0-9]/_};
             apk_path=app/build/outputs/apk/${flavor}/debug/app-${flavor}-debug.apk
             cp ${apk_path} ${HOME}/${app_name_no_whitespaces}-debug.apk;
-            bundle exec fastlane app_center_debug_upload
+            bundle exec fastlane app_center_apk_upload
             echo "Debug distribution environment variables"
             cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_app_center.env
             cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_app_center.env >> $BASH_ENV
@@ -237,6 +244,8 @@ jobs:
             then
               echo "no release apk"
             else
+              export build_type=release
+
               if [ -z "$flavor" ];
               then
                 flavor=mobile
@@ -245,7 +254,7 @@ jobs:
               app_name_no_whitespaces=${bundle_identifier//[^a-zA-Z0-9]/_};
               apk_path=app/build/outputs/apk/${flavor}/release/app-${flavor}-release.apk
               cp ${apk_path} ${HOME}/${app_name_no_whitespaces}.apk;
-              bundle exec fastlane app_center_release_upload
+              bundle exec fastlane app_center_apk_upload
               echo "Release distribution environment variables"
               cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/release_app_center.env
               cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/release_app_center.env >> $BASH_ENV
