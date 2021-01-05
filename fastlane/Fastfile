@@ -23,9 +23,11 @@ platform :android do
       version_file_name: "#{zapp_build_path}version_distribution.json",
     )
 
-    store_results(build_type,
+    store_results(
+      build_type,
       lane_context["S3_HTML_OUTPUT_PATH"],
-      lane_context["S3_APK_OUTPUT_PATH"])
+      lane_context["S3_APK_OUTPUT_PATH"],
+    )
   end
 
   desc "Upload apk to the App Center"
@@ -55,7 +57,7 @@ platform :android do
     build_type = "release"
     bundle_build(build_type)
     if store_exists?
-      app_center_prepare_bundle(build_type)
+      app_center_prepare_bundle
     else
       puts "Play Store is not connected, skipping store upload. "\
       "Please follow the instructions if you want releases to be uploaded to the Play Store: "\
@@ -89,7 +91,7 @@ platform :android do
       "#{ENV['build_version']}/"
   end
 
-  def app_center_prepare_bundle(build_type)
+  def app_center_prepare_bundle
     puts "Uploading bundle..."
     aab_file = lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
 
@@ -130,11 +132,11 @@ platform :android do
   def store_results(build_type, installation_link, download_link)
     File.open("../#{build_type}_artifacts.env", "ab") do |file|
       file.puts(
-        "export #{build_type}_install_url=\"#{installation_link.gsub("s3.amazonaws.com/", "")}\""
+        "export #{build_type}_install_url=\"#{installation_link.gsub('s3.amazonaws.com/', '')}\"",
       )
 
       file.puts(
-        "export #{build_type}_download_url=\"#{download_link.gsub("s3.amazonaws.com/", "")}\""
+        "export #{build_type}_download_url=\"#{download_link.gsub('s3.amazonaws.com/', '')}\"",
       )
     end
   end
