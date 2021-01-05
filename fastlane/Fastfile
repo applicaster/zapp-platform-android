@@ -22,6 +22,10 @@ platform :android do
       html_template_path: "rake/templates/s3_apk.html.erb",
       version_file_name: "#{zapp_build_path}version_distribution.json",
     )
+
+    store_results(build_type,
+      lane_context["S3_HTML_OUTPUT_PATH"],
+      lane_context["S3_APK_OUTPUT_PATH"])
   end
 
   desc "Upload apk to the App Center"
@@ -38,8 +42,6 @@ platform :android do
       app_os: "Android",
       app_platform: "Java",
     )
-
-    store_results(build_type, lane_context[SharedValues::APPCENTER_BUILD_INFORMATION])
   end
 
   desc "Build aab file"
@@ -92,7 +94,6 @@ platform :android do
     aab_file = lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
 
     app_center_bundle_upload(appcenter_app_name, aab_file)
-    store_results(build_type, lane_context[SharedValues::APPCENTER_BUILD_INFORMATION])
   end
 
   def app_center_bundle_upload(appcenter_app_name, aab_dir)
@@ -126,12 +127,15 @@ platform :android do
     new_file
   end
 
-  def store_results(build_type, response)
-    File.open("../#{build_type}_app_center.env", "ab") do |file|
-      file.puts("export #{build_type}_appcenter_install_url=\"#{response['install_url']}\"")
-      file.puts("export #{build_type}_appcenter_download_url=\"#{response['download_url']}\"")
-      file.puts("export #{build_type}_appcenter_release_id=\"#{response['id']}\"")
-      file.puts("export #{build_type}_appcenter_app_name=\"#{response['app_name']}\"")
+  def store_results(build_type, installation_link, download_link)
+    File.open("../#{build_type}_artifacts.env", "ab") do |file|
+      file.puts(
+        "export #{build_type}_install_url=\"#{installation_link.gsub("s3.amazonaws.com/", "")}\""
+      )
+
+      file.puts(
+        "export #{build_type}_download_url=\"#{download_link.gsub("s3.amazonaws.com/", "")}\""
+      )
     end
   end
 

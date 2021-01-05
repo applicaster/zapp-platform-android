@@ -173,6 +173,10 @@ jobs:
             if [ "$triggered_by" = "zapp" ];
             then
               bundle exec fastlane s3_upload
+              echo "Debug distribution environment variables"
+              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_artifacts.env
+              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_artifacts.env >> $BASH_ENV
+              source $BASH_ENV
             else
               echo "Skip upload to s3"
             fi
@@ -210,6 +214,9 @@ jobs:
               if [ "$triggered_by" = "zapp" ];
               then
                 bundle exec fastlane s3_upload
+                echo "Release distribution environment variables"
+                cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/release_artifacts.env
+                cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/release_artifacts.env >> $BASH_ENV
               else
                 echo "Skip upload to s3"
               fi
@@ -230,10 +237,6 @@ jobs:
             apk_path=app/build/outputs/apk/${flavor}/debug/app-${flavor}-debug.apk
             cp ${apk_path} ${HOME}/${app_name_no_whitespaces}-debug.apk;
             bundle exec fastlane app_center_apk_upload
-            echo "Debug distribution environment variables"
-            cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_app_center.env
-            cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_app_center.env >> $BASH_ENV
-            source $BASH_ENV
           environment:
             TERM: dumb
 
@@ -255,9 +258,6 @@ jobs:
               apk_path=app/build/outputs/apk/${flavor}/release/app-${flavor}-release.apk
               cp ${apk_path} ${HOME}/${app_name_no_whitespaces}.apk;
               bundle exec fastlane app_center_apk_upload
-              echo "Release distribution environment variables"
-              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/release_app_center.env
-              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/release_app_center.env >> $BASH_ENV
             fi
           environment:
             TERM: dumb
@@ -343,13 +343,13 @@ jobs:
             then
               bundle exec rake "zapp:notify_zapp_build[$version_id,\
                 success,\
-                $debug_appcenter_install_url,\
-                $debug_appcenter_download_url,\
+                $debug_install_url,\
+                $debug_download_url,\
                 $debug_appcenter_release_id,\
                 $debug_appcenter_app_name,\
                 $debug_artifact_publish_time,\
-                $release_appcenter_install_url,\
-                $release_appcenter_download_url,\
+                $release_install_url,\
+                $release_download_url,\
                 $release_appcenter_release_id,\
                 $release_appcenter_app_name,\
                 $release_artifact_publish_time,\
