@@ -25,8 +25,8 @@ platform :android do
 
     store_results(
       build_type,
-      lane_context["S3_HTML_OUTPUT_PATH"],
-      lane_context["S3_APK_OUTPUT_PATH"],
+      lane_context[SharedValues::S3_HTML_OUTPUT_PATH],
+      lane_context[SharedValues::S3_APK_OUTPUT_PATH],
     )
   end
 
