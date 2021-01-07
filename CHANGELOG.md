@@ -1,5 +1,34 @@
 # Changelog
 
+
+## 2.0.0 (Dec 3, 2020)
+
+#### Minimum Android OS supported: 4.4.x
+#### React Native version: 0.62.2
+#### Gradle version: 5.6.4
+#### Android Studio Gradle Plugin version: 3.5.3
+#### QuickBrick version: v4.1.4
+#### Applicaster Android SDK Core version: 8.0.1
+#### Android target API: 29
+
+### Breaking changes:
+- QuickBrick updated to 4.1.4 [#81](https://github.com/applicaster/zapp-platform-android/pull/81)
+
+### Improvements:
+- CI application updated [#74](https://github.com/applicaster/zapp-platform-android/pull/74)
+- Tablet orientation setting added [71](https://github.com/applicaster/zapp-platform-android/pull/71),[72](https://github.com/applicaster/zapp-platform-android/pull/72), [71](https://github.com/applicaster/zapp-platform-android/pull/71),[73](https://github.com/applicaster/zapp-platform-android/pull/73)
+- Firebase push notification DeepLink support added [#69](https://github.com/applicaster/zapp-platform-android/pull/69), [#70](https://github.com/applicaster/zapp-platform-android/pull/70)
+- Pre-load sequence improved [#67](https://github.com/applicaster/zapp-platform-android/pull/67)
+- RtL support improved [#66](https://github.com/applicaster/zapp-platform-android/pull/66)
+
+### Core SDK improvements:
+- Localization support fixes [#1455](https://github.com/applicaster/applicaster-android-sdk/pull/1455)
+- Firebase BoM upgraded to 26.0.0 [#1446](https://github.com/applicaster/applicaster-android-sdk/pull/1446)
+- Glide upgraded to 4.11.0 [#1439](https://github.com/applicaster/applicaster-android-sdk/pull/1439)
+- Dynamically toggled plugins introduced [#1386](https://github.com/applicaster/applicaster-android-sdk/pull/1386)
+- Warning added if more that one push provider is found [#1437](https://github.com/applicaster/applicaster-android-sdk/pull/1437)
+
+
 ## 1.0.1 (Nov 20, 2020)
 
 #### Minimum Android OS supported: 4.4.x

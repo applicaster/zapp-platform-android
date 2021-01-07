@@ -118,6 +118,7 @@ class MainActivity : HostActivityBase() {
                 lastKnownRotation = normalisedOrientation
                 val to = jsOrientationMapper(normalisedOrientation)
                 if (uiLayer != null && uiLayer!!.isReady) {
+                    APLogger.info(TAG, "Reporting onOrientationChanged event to UI: $orientation")
                     uiLayer!!.orientationChange(from, to)
                 }
             }
@@ -182,18 +183,24 @@ class MainActivity : HostActivityBase() {
     private fun setAppOrientation() {
         APUIUtils.setOrientation(this)
         orientationStack.add(this.requestedOrientation)
+        APLogger.info(TAG, "Setting requested orientation: $requestedOrientation, stack depth ${orientationStack.size}")
     }
 
     override fun setAppOrientation(orientation: Int) {
         val nativeOrientation = nativeOrientationMapper(orientation)
         this.requestedOrientation = nativeOrientation
         orientationStack.add(this.requestedOrientation)
+        APLogger.info(TAG, "Orientation change requested: $nativeOrientation, stack depth ${orientationStack.size}")
     }
 
     override fun releaseOrientation() {
         if (orientationStack.size > 1) {
             orientationStack.pop()
             this.requestedOrientation = orientationStack.peek()
+            APLogger.info(TAG, "Orientation change released, stack depth ${orientationStack.size}")
+        } else {
+            // first one is startup one, should not be popped
+            APLogger.warn(TAG, "Orientation change released, but stack is empty")
         }
     }
 

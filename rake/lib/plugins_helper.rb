@@ -167,6 +167,7 @@ module PluginsHelper
                   # do not change indentation
                   %(maven {
                     url "#{repo_data['url']}"
+                    #{header(repo_data['header_credentials'])}
                     #{credentials(repo_data['credentials'])}
                   }\n\t\t)
                 end
@@ -180,7 +181,7 @@ module PluginsHelper
   end
 
   def credentials(credentials)
-    return "" unless credentails?(credentials)
+    return "" unless credentials_data_exists?(credentials, "username", "password")
 
     # do not change indentation
     %(credentials {
@@ -189,9 +190,22 @@ module PluginsHelper
             })
   end
 
-  def credentails?(credentials)
-    return false unless credentials.present?
-    return false unless credentials["username"].present? && credentials["password"].present?
+  def header(header_credentials_data)
+    return "" unless credentials_data_exists?(header_credentials_data, "name", "value")
+
+    # do not change indentation
+    %(credentials(HttpHeaderCredentials) {
+      name = '#{header_credentials_data['name']}'
+      value = '#{header_credentials_data['value']}'
+    }
+    authentication {
+      header(HttpHeaderAuthentication)
+    })
+  end
+
+  def credentials_data_exists?(credentials_data, key_user, key_pwd)
+    return unless credentials_data.present?
+    return unless credentials_data[key_user].present? && credentials_data[key_pwd].present?
 
     true
   end
