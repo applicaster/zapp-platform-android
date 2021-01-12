@@ -8,6 +8,9 @@ import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.OrientationEventListener
 import androidx.annotation.RawRes
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import com.applicaster.plugin_manager.PluginManager
 import com.applicaster.ui.R
 import com.applicaster.ui.interfaces.HostActivityBase
@@ -100,7 +103,7 @@ class MainActivity : HostActivityBase() {
     }
 
     private fun initOrientationListener() {
-        object : OrientationEventListener(this) {
+        object : OrientationEventListener(this), LifecycleObserver {
             private var lastKnownRotation = 0
 
             /**
@@ -123,10 +126,16 @@ class MainActivity : HostActivityBase() {
                 }
             }
 
+            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+            fun onActivityDestroy() {
+                disable()
+            }
+
             init {
                 if (canDetectOrientation()) {
                     enable()
                 }
+                lifecycle.addObserver(this)
             }
         }
     }
