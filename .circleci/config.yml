@@ -134,6 +134,8 @@ jobs:
           command: |
             if [ "$with_release" = "true" ];
             then
+              export build_type=release
+
               bundle exec fastlane app_center_build_bundle
               if [ -z "$service_account_key_url"];
               then
@@ -150,6 +152,7 @@ jobs:
       - run:
           name: Build and upload Unsigned .apk
           command: |
+            export build_type=debug
 
             if [ -z "$react_native_packager_root" ];
             then
@@ -169,7 +172,11 @@ jobs:
 
             if [ "$triggered_by" = "zapp" ];
             then
-              bundle exec fastlane s3_debug_upload
+              bundle exec fastlane s3_upload
+              echo "Debug distribution environment variables"
+              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_artifacts.env
+              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_artifacts.env >> $BASH_ENV
+              source $BASH_ENV
             else
               echo "Skip upload to s3"
             fi
@@ -194,6 +201,8 @@ jobs:
             then
               echo "debug only, skipping release version"
             else
+              export build_type=release
+
               if [ "$flavor" = "tv" ];
               then
                 ./gradlew assembleTvRelease
@@ -204,7 +213,10 @@ jobs:
 
               if [ "$triggered_by" = "zapp" ];
               then
-                bundle exec fastlane s3_release_upload
+                bundle exec fastlane s3_upload
+                echo "Release distribution environment variables"
+                cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/release_artifacts.env
+                cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/release_artifacts.env >> $BASH_ENV
               else
                 echo "Skip upload to s3"
               fi
@@ -215,6 +227,8 @@ jobs:
       - run:
           name: App Center Upload Unsigned .apk
           command: |
+            export build_type=debug
+
             if [ -z "$flavor" ];
             then
               export flavor=mobile
@@ -222,11 +236,7 @@ jobs:
             app_name_no_whitespaces=${bundle_identifier//[^a-zA-Z0-9]/_};
             apk_path=app/build/outputs/apk/${flavor}/debug/app-${flavor}-debug.apk
             cp ${apk_path} ${HOME}/${app_name_no_whitespaces}-debug.apk;
-            bundle exec fastlane app_center_debug_upload
-            echo "Debug distribution environment variables"
-            cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_app_center.env
-            cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_app_center.env >> $BASH_ENV
-            source $BASH_ENV
+            bundle exec fastlane app_center_apk_upload
           environment:
             TERM: dumb
 
@@ -237,6 +247,8 @@ jobs:
             then
               echo "no release apk"
             else
+              export build_type=release
+
               if [ -z "$flavor" ];
               then
                 flavor=mobile
@@ -245,10 +257,7 @@ jobs:
               app_name_no_whitespaces=${bundle_identifier//[^a-zA-Z0-9]/_};
               apk_path=app/build/outputs/apk/${flavor}/release/app-${flavor}-release.apk
               cp ${apk_path} ${HOME}/${app_name_no_whitespaces}.apk;
-              bundle exec fastlane app_center_release_upload
-              echo "Release distribution environment variables"
-              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/release_app_center.env
-              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/release_app_center.env >> $BASH_ENV
+              bundle exec fastlane app_center_apk_upload
             fi
           environment:
             TERM: dumb
@@ -334,13 +343,13 @@ jobs:
             then
               bundle exec rake "zapp:notify_zapp_build[$version_id,\
                 success,\
-                $debug_appcenter_install_url,\
-                $debug_appcenter_download_url,\
+                $debug_install_url,\
+                $debug_download_url,\
                 $debug_appcenter_release_id,\
                 $debug_appcenter_app_name,\
                 $debug_artifact_publish_time,\
-                $release_appcenter_install_url,\
-                $release_appcenter_download_url,\
+                $release_install_url,\
+                $release_download_url,\
                 $release_appcenter_release_id,\
                 $release_appcenter_app_name,\
                 $release_artifact_publish_time,\
