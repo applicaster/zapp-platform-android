@@ -7,42 +7,43 @@ fastlane_require "active_support/core_ext/string"
 default_platform(:android)
 
 platform :android do
-  desc "Upload debug version to the S3"
-  lane :s3_debug_upload do
-    build_type = "debug"
-    s3_upload_apk(build_type)
-  end
-
-  desc "Upload release version to the S3"
-  lane :s3_release_upload do
-    build_type = "release"
-    s3_upload_apk(build_type)
-  end
-
-  desc "Upload a debug version to the App Center"
-  lane :app_center_debug_upload do
-    build_type = "debug"
-
-    app_center_apk_upload(
-      appcenter_app_name,
-      apk_hash(build_type)[:mapping_dir],
-      apk_hash(build_type)[:apk_dir],
+  desc "Upload apk to the S3"
+  lane :s3_upload do
+    aws_s3(
+      access_key: ENV["AWS_ACCESS_KEY"],
+      secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"],
+      bucket: ENV["S3_BUCKET_NAME"],
+      region: ENV["AWS_REGION"],
+      apk: apk_hash(build_type)[:apk_dir],
+      path: zapp_build_path,
+      upload_metadata: true,
+      html_in_folder: true,
+      html_file_name: "#{build_type}.html",
+      html_template_path: "rake/templates/s3_apk.html.erb",
+      version_file_name: "#{zapp_build_path}version_distribution.json",
     )
 
-    store_results(build_type, lane_context[SharedValues::APPCENTER_BUILD_INFORMATION])
+    store_results(
+      build_type,
+      lane_context[SharedValues::S3_HTML_OUTPUT_PATH],
+      lane_context[SharedValues::S3_APK_OUTPUT_PATH],
+    )
   end
 
-  desc "Upload a release version to the App Center"
-  lane :app_center_release_upload do
-    build_type = "release"
-
-    app_center_apk_upload(
-      appcenter_app_name,
-      apk_hash(build_type)[:mapping_dir],
-      apk_hash(build_type)[:apk_dir],
+  desc "Upload apk to the App Center"
+  lane :app_center_apk_upload do
+    appcenter_upload(
+      api_token: ENV["APPCENTER_API_TOKEN"],
+      owner_name: ENV["APPCENTER_OWNER_NAME"],
+      app_name: appcenter_app_name,
+      app_display_name: ENV["app_name"],
+      upload_mapping_only: false,
+      mapping: apk_hash(build_type)[:mapping_dir],
+      file: apk_hash(build_type)[:apk_dir],
+      owner_type: "organization",
+      app_os: "Android",
+      app_platform: "Java",
     )
-
-    store_results(build_type, lane_context[SharedValues::APPCENTER_BUILD_INFORMATION])
   end
 
   desc "Build aab file"
@@ -56,12 +57,16 @@ platform :android do
     build_type = "release"
     bundle_build(build_type)
     if store_exists?
-      app_center_prepare_bundle(build_type)
+      app_center_prepare_bundle
     else
       puts "Play Store is not connected, skipping store upload. "\
       "Please follow the instructions if you want releases to be uploaded to the Play Store: "\
       "https://docs.microsoft.com/en-us/appcenter/distribution/stores/googleplay"
     end
+  end
+
+  def build_type
+    ENV["build_type"]
   end
 
   def bundle_build(build_type)
@@ -80,49 +85,17 @@ platform :android do
     }
   end
 
-  def s3_upload_apk(build_type)
-    aws_s3(
-      access_key: ENV["AWS_ACCESS_KEY"],
-      secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"],
-      bucket: ENV["S3_BUCKET_NAME"],
-      region: ENV["AWS_REGION"],
-      apk: apk_hash(build_type)[:apk_dir],
-      path: zapp_build_path,
-      upload_metadata: true,
-      html_in_folder: true,
-      html_file_name: "#{build_type}.html",
-      html_template_path: "rake/templates/s3_apk.html.erb",
-      version_file_name: "#{zapp_build_path}version_distribution.json",
-    )
-  end
-
   def zapp_build_path
     "zapp/accounts/#{ENV['accounts_account_id']}/apps/"\
       "#{ENV['bundle_identifier']}/#{ENV['store']}/#{ENV['version_name']}/builds/"\
       "#{ENV['build_version']}/"
   end
 
-  def app_center_prepare_bundle(build_type)
+  def app_center_prepare_bundle
     puts "Uploading bundle..."
     aab_file = lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
 
     app_center_bundle_upload(appcenter_app_name, aab_file)
-    store_results(build_type, lane_context[SharedValues::APPCENTER_BUILD_INFORMATION])
-  end
-
-  def app_center_apk_upload(appcenter_app_name, mapping_dir, apk_dir)
-    appcenter_upload(
-      api_token: ENV["APPCENTER_API_TOKEN"],
-      owner_name: ENV["APPCENTER_OWNER_NAME"],
-      app_name: appcenter_app_name,
-      app_display_name: ENV["app_name"],
-      upload_mapping_only: false,
-      mapping: mapping_dir,
-      file: apk_dir,
-      owner_type: "organization",
-      app_os: "Android",
-      app_platform: "Java",
-    )
   end
 
   def app_center_bundle_upload(appcenter_app_name, aab_dir)
@@ -156,12 +129,15 @@ platform :android do
     new_file
   end
 
-  def store_results(build_type, response)
-    File.open("../#{build_type}_app_center.env", "ab") do |file|
-      file.puts("export #{build_type}_appcenter_install_url=\"#{response['install_url']}\"")
-      file.puts("export #{build_type}_appcenter_download_url=\"#{response['download_url']}\"")
-      file.puts("export #{build_type}_appcenter_release_id=\"#{response['id']}\"")
-      file.puts("export #{build_type}_appcenter_app_name=\"#{response['app_name']}\"")
+  def store_results(build_type, installation_link, download_link)
+    File.open("../#{build_type}_artifacts.env", "ab") do |file|
+      file.puts(
+        "export #{build_type}_install_url=\"#{installation_link.gsub('s3.amazonaws.com/', '')}\"",
+      )
+
+      file.puts(
+        "export #{build_type}_download_url=\"#{download_link.gsub('s3.amazonaws.com/', '')}\"",
+      )
     end
   end
 
