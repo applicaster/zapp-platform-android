@@ -47,6 +47,22 @@ references:
         bundle exec rake zapp_sdks:create[$ZAPP_SDK_PLATFORM,$version,$CIRCLE_PROJECT_REPONAME]
         bundle exec rake zapp_sdks:publish_changelog[$ZAPP_SDK_PLATFORM,$version]
 
+  prepare_build_parameters: &prepare_build_parameters
+    run:
+      name: Prepare build parameters
+      command: |
+        echo "Build params url: $build_params_url"
+        values=`curl -s -X GET $build_params_url`
+        echo $values | jq -r ".[\"build_params\"]|to_entries|map(\"export \(.key)='\(.value|tostring)'\")|.[]" | while read i; do echo $i >> $BASH_ENV; done
+        source $BASH_ENV
+
+  print_build_parameters: &print_build_parameters
+    run:
+      name: Print build parameters
+      command: |
+        echo $app_name
+        echo $bundle_identifier
+
 version: 2
 jobs:
   test:
@@ -57,6 +73,8 @@ jobs:
       - *restore_gems
       - *install_gems
       - *save_gems
+      - *prepare_build_parameters
+      - *print_build_parameters
 
       - run:
           name: Build App Specs
@@ -95,6 +113,8 @@ jobs:
       - *restore_gems
       - *install_gems
       - *save_gems
+      - *prepare_build_parameters
+      - *print_build_parameters
 
       - run:
           name: Build App Specs
