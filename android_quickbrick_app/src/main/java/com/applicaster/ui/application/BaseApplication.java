@@ -1,6 +1,7 @@
 package com.applicaster.ui.application;
 
 import android.app.Application;
+import android.os.Build;
 import android.util.Log;
 
 import com.applicaster.app.APProperties;
@@ -8,6 +9,7 @@ import com.applicaster.audience.AudienceHelper;
 import com.applicaster.plugin_manager.push_plugin.PushManager;
 import com.applicaster.session.SessionStorage;
 import com.applicaster.storage.LocalStorage;
+import com.applicaster.storage.SecureSharedPreferencesRepository;
 import com.applicaster.storage.SharedPreferencesRepository;
 import com.applicaster.ui.BuildConfig;
 import com.applicaster.util.APDebugUtil;
@@ -34,7 +36,12 @@ public class BaseApplication
         initAppData();
         ErrorMonitoringUtil.initPlugins(this);
         initLocale();
-        LocalStorage.INSTANCE.init(new SharedPreferencesRepository(this));
+        LocalStorage.INSTANCE.init(
+                new SharedPreferencesRepository(this),
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                        ? new SecureSharedPreferencesRepository(this)
+                        : new SharedPreferencesRepository(this));
+
         SessionStorage.INSTANCE.init(this);
 
         APDebugUtil.OnApplicationLoaded(this);
