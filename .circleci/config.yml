@@ -59,13 +59,6 @@ references:
         echo $values | jq -r ".[\"build_params\"]|to_entries|map(\"export \(.key)='\(.value|tostring)'\")|.[]" | while read i; do echo $i; done
         source $BASH_ENV
 
-  print_build_parameters: &print_build_parameters
-    run:
-      name: Print build parameters
-      command: |
-        echo $app_name
-        echo $bundle_identifier
-
 version: 2
 jobs:
   test:
@@ -76,8 +69,6 @@ jobs:
       - *restore_gems
       - *install_gems
       - *save_gems
-      - *prepare_build_parameters
-      - *print_build_parameters
 
       - run:
           name: Build App Specs
@@ -91,6 +82,8 @@ jobs:
               git checkout .
               git clean -f -d
             fi
+
+      - *prepare_build_parameters
 
       - run:
           name: NPM Login
@@ -116,8 +109,6 @@ jobs:
       - *restore_gems
       - *install_gems
       - *save_gems
-      - *prepare_build_parameters
-      - *print_build_parameters
 
       - run:
           name: Build App Specs
@@ -131,6 +122,8 @@ jobs:
               git checkout .
               git clean -f -d
             fi
+
+      - *prepare_build_parameters
 
       - run:
           name: NPM Login
