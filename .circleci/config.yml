@@ -51,9 +51,12 @@ references:
     run:
       name: Prepare build parameters
       command: |
+        echo "export $(grep -v '^#' .env | xargs)" >> $BASH_ENV
+        . .env
         echo "Build params url: $build_params_url"
         values=`curl -s -X GET $build_params_url`
         echo $values | jq -r ".[\"build_params\"]|to_entries|map(\"export \(.key)='\(.value|tostring)'\")|.[]" | while read i; do echo $i >> $BASH_ENV; done
+        echo $values | jq -r ".[\"build_params\"]|to_entries|map(\"export \(.key)='\(.value|tostring)'\")|.[]" | while read i; do echo $i; done
         source $BASH_ENV
 
   print_build_parameters: &print_build_parameters
