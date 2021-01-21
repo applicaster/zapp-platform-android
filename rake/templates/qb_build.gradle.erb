@@ -13,6 +13,7 @@ android {
         manifestPlaceholders = [
           app_name: "<%= app_name %>",
           fb_app_id: "<%= fb_app_id %>",
+          appAuthRedirectScheme: "<%= url_scheme_prefix %>",
         ]
         multiDexEnabled true
         renderscriptSupportModeEnabled true
