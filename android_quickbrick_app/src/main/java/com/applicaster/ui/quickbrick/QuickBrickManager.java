@@ -2,6 +2,7 @@ package com.applicaster.ui.quickbrick;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -21,7 +22,6 @@ import com.applicaster.util.APLogger;
 import com.applicaster.util.AppData;
 import com.applicaster.util.OSUtil;
 import com.applicaster.util.server.SSLPinner;
-import com.applicaster.zapp.quickbrick.loader.DataLoader;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.ReactRootView;
@@ -33,25 +33,14 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.modules.network.OkHttpClientProvider;
-import com.google.gson.Gson;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class QuickBrickManager implements
         IUILayerManager,
@@ -127,6 +116,13 @@ public class QuickBrickManager implements
     public void onDestroy() {
         if (reactInstanceManager != null) reactInstanceManager.onHostDestroy(rootActivity);
         if (reactRootView != null) reactRootView.unmountReactApplication();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (reactInstanceManager != null) {
+            reactInstanceManager.onActivityResult(this.rootActivity, requestCode, resultCode, data);
+        }
     }
 
     // endregion

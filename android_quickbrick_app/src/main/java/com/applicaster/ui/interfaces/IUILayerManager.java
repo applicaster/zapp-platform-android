@@ -1,5 +1,6 @@
 package com.applicaster.ui.interfaces;
 
+import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -29,6 +30,8 @@ public interface IUILayerManager {
     boolean onKeyDownDebug(int keyCode);
 
     void handleURL(@NonNull String url);
+
+    void onActivityResult(int requestCode, int resultCode, Intent data);
 
     @NonNull
     View getRootView();
