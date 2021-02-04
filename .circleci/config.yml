@@ -47,6 +47,20 @@ references:
         bundle exec rake zapp_sdks:create[$ZAPP_SDK_PLATFORM,$version,$CIRCLE_PROJECT_REPONAME]
         bundle exec rake zapp_sdks:publish_changelog[$ZAPP_SDK_PLATFORM,$version]
 
+  prepare_build_parameters: &prepare_build_parameters
+    run:
+      name: Prepare build parameters
+      command: |
+        if [ -z "$build_params_url" ];
+        then
+          . .env
+          echo "Imported SDK CI defaults"
+        fi
+        echo "build_params_url is $build_params_url"
+        values=`curl -s -X GET $build_params_url`
+        echo $values | jq -r "to_entries|map(\"export \(.key)='\(.value|tostring)'\")|.[]" | while read i; do echo $i >> $BASH_ENV; done
+        source $BASH_ENV
+
 version: 2
 jobs:
   test:
@@ -70,6 +84,8 @@ jobs:
               git checkout .
               git clean -f -d
             fi
+
+      - *prepare_build_parameters
 
       - run:
           name: NPM Login
@@ -108,6 +124,8 @@ jobs:
               git checkout .
               git clean -f -d
             fi
+
+      - *prepare_build_parameters
 
       - run:
           name: NPM Login

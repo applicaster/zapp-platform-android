@@ -188,6 +188,11 @@ class MainActivity : HostActivityBase() {
         uiLayer?.onDestroy()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        uiLayer?.onActivityResult(requestCode, resultCode, data)
+    }
+
     //endregion
     private fun setAppOrientation() {
         APUIUtils.setOrientation(this)
