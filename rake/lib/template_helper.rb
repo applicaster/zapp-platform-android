@@ -33,6 +33,11 @@ class TemplateHelper
     ENV["app_name"]
   end
 
+  def app_name_xml
+    # xml-escaped app-name
+    ENV["app_name"].encode(xml: :text).gsub("'") { "\\'" }
+  end
+
   def bundle_identifier
     ENV["bundle_identifier"]
   end
