@@ -11,7 +11,7 @@ class TemplateHelper
   include DependencyHelper
   include AndroidManifestHelper
 
-  SDK_DEFAULT_QB_VERSION = "4.1.4"
+  SDK_DEFAULT_QB_VERSION = "4.1.6"
   SDK_DEFAULT_MIN_SDK_VERSION = 19
 
   def render_template(template_path, dst_path)

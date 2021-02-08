@@ -92,12 +92,12 @@ RSpec.describe TemplateHelper do
   describe "quick_brick_version" do
     context "quick_brick_version env var exists" do
       before do
-        ENV["quick_brick_version"] = "4.1.4"
+        ENV["quick_brick_version"] = "4.1.6"
       end
 
       it "return the env var value" do
         expect(subject.send(:quick_brick_version))
-          .to eq "4.1.4"
+          .to eq "4.1.6"
       end
     end
 
