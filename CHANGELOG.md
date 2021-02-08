@@ -1,5 +1,34 @@
 # Changelog
 
+## 3.0.0 (Feb 8, 2021)
+
+#### Minimum Android OS supported: 4.4.x
+#### React Native version: 0.62.2
+#### Gradle version: 5.6.4
+#### Android Studio Gradle Plugin version: 3.5.3
+#### QuickBrick version: v4.1.6
+#### Applicaster Android SDK Core version: 8.3.1
+#### Android target API: 29
+
+
+### Breaking changes:
+- QuickBrick updated to 4.1.6 [#103](https://github.com/applicaster/zapp-platform-android/pull/103)
+
+### Improvements:
+- App build parameters are now fetched by url [#100](https://github.com/applicaster/zapp-platform-android/pull/100)
+- Escaping added special symbols in application name [#83](https://github.com/applicaster/zapp-platform-android/pull/83)
+- Support for OAuth2 schemes added [#101](https://github.com/applicaster/zapp-platform-android/pull/101)
+
+### Changes
+- Microsoft AppCenter removed [#102](https://github.com/applicaster/zapp-platform-android/pull/102)
+
+### Core SDK improvements:
+- Secure preferences storage added [#1461](https://github.com/applicaster/applicaster-android-sdk/pull/1461)
+- Handling of malformed malformed SSL pins input improved [#1460](https://github.com/applicaster/applicaster-android-sdk/pull/1460)
+- Push notification react-native bridge exported to QuickBrick SDK [#1459](https://github.com/applicaster/applicaster-android-sdk/pull/1459)
+- remove, getNamespace and removeNamespace methods added to the local storage [#1456](https://github.com/applicaster/applicaster-android-sdk/pull/1456)
+- LocalizationHelper class added to extract localizations from plugins [#1457](https://github.com/applicaster/applicaster-android-sdk/pull/1457)
+
 
 ## 2.0.0 (Dec 3, 2020)
 
