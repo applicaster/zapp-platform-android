@@ -1,5 +1,22 @@
 # Changelog
 
+## 4.0.0 (Feb 22, 2021)
+
+#### Minimum Android OS supported: 4.4.x
+#### React Native version: 0.62.2
+#### Gradle version: 5.6.4
+#### Android Studio Gradle Plugin version: 3.5.3
+#### QuickBrick version: v5.0.0
+#### Applicaster Android SDK Core version: 8.3.1
+#### Android target API: 29
+
+
+### Breaking changes:
+- QuickBrick updated to 5.0.0 [#105](https://github.com/applicaster/zapp-platform-android/pull/105)
+
+## QuickBrick SDK changes:
+
+
 ## 3.0.0 (Feb 8, 2021)
 
 #### Minimum Android OS supported: 4.4.x
