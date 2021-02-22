@@ -17,15 +17,15 @@
 ## QuickBrick SDK changes:
 
 - New TV components:
-    - support for Theme plugin with specific properties for TV platforms, including screen & component margins, and content anchoring (determines how many pixels from the top of the screen content is anchored when focus moves)
-    - support on TV for Horizontal List (QB) and Grid (QB) plugin. These plugins should be used instead of the legacy horizontal list & grid component. These plugins support full customization of styling & spacing
-    - support for Group, Group Info & Group info cell plugins on TV platforms, which allow to create Groups on TV layouts, and support full customization of TV components headers
+    - Support for Theme plugin with specific properties for TV platforms, including screen & component margins, and content anchoring (determines how many pixels from the top of the screen content is anchored when focus moves)
+    - Support on TV for Horizontal List (QB) and Grid (QB) plugin. These plugins should be used instead of the legacy horizontal list & grid component. These plugins support full customization of styling & spacing
+    - Support for Group, Group Info & Group info cell plugins on TV platforms, which allow to create Groups on TV layouts, and support full customization of TV components headers
     - Advanced customization capabilities on component cells with the use of the TV Cell 1 power cell plugin
     - Brand new Screen Picker TV (QB) plugin, with advanced configuration for styling of the screen selector part of the component
 - pipes v2:
-    - improved compatibility of pipes v2 layout, on mobile & TV platforms
-    - separate entry / screen & search context to inject data in feeds
-    - support for v2 feeds from plugins, available on continue watching & local favourites plugins
+    - Improved compatibility of pipes v2 layout, on mobile & TV platforms
+    - Separate entry / screen & search context to inject data in feeds
+    - Support for v2 feeds from plugins, available on continue watching & local favourites plugins
 
 
 ## 3.0.0 (Feb 8, 2021)
