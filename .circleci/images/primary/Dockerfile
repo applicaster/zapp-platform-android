@@ -63,6 +63,8 @@ RUN sdkmanager \
     "extras;google;m2repository" \
     "extras;google;google_play_services"
 
+RUN sdkmanager --install "ndk;20.0.5594570"
+
 RUN rm -rf /usr/local/bin/node
 
 RUN mkdir -p /usr/local/nvm
