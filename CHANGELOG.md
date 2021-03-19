@@ -1,5 +1,23 @@
 # Changelog
 
+## 5.0.0 (March 22, 2021)
+
+#### Minimum Android OS supported: 4.4.x
+#### React Native version: 0.62.2
+#### Gradle version: 5.6.4
+#### Android Studio Gradle Plugin version: 3.6.4
+#### QuickBrick version: v5.0.0
+#### Applicaster Android SDK Core version: 8.3.2
+#### Android target API: 29
+
+
+### Breaking changes:
+- Android gradle plugin upgrade to 3.6.4 [#107](https://github.com/applicaster/zapp-platform-android/pull/107)
+
+### Improvements:
+- New react native plugin type `player_overlay` added. [#1464](https://github.com/applicaster/applicaster-android-sdk/pull/1464)
+
+
 ## 4.0.0 (Feb 22, 2021)
 
 #### Minimum Android OS supported: 4.4.x
