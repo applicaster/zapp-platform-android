@@ -3,6 +3,7 @@ package com.applicaster.ui.quickbrick.profiling;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -46,7 +47,9 @@ public class PerformanceOverlay extends FpsView implements NotThreadSafeBridgeId
             return; // first call, ignore
         long work = System.nanoTime() - enterTime;
         if(work > 1_000_000_000 / 4) { // 1/4 second warn threshold
-            Log.w("TransitionTimer", "Bridge was busy for " + work / 1_000_000 + " ms");
+            String msg = "Bridge was busy for " + work / 1_000_000 + " ms";
+            Log.w("TransitionTimer", msg);
+            Toast.makeText(reactContext, msg, Toast.LENGTH_SHORT).show();
         }
     }
 
