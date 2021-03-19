@@ -10,12 +10,14 @@ import android.view.KeyEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 
 import com.applicaster.reactnative.utils.DataUtils;
 import com.applicaster.ui.interfaces.HostActivityBase;
 import com.applicaster.ui.interfaces.IUILayerManager;
 import com.applicaster.ui.quickbrick.listeners.QuickBrickCommunicationListener;
+import com.applicaster.ui.quickbrick.profiling.PerformanceOverlay;
 import com.applicaster.ui.utils.RTL_LOCALES;
 import com.applicaster.util.APDebugUtil;
 import com.applicaster.util.APLogger;
@@ -66,6 +68,8 @@ public class QuickBrickManager implements
     private ReactRootView reactRootView;
 
     private boolean initialized;
+    @Nullable
+    private PerformanceOverlay performanceOverlay;
 
     @Override
     public boolean isReady() {
@@ -206,8 +210,15 @@ public class QuickBrickManager implements
      */
     @Override
     public boolean onKeyDownDebug(int keyCode) {
-        if (debugPackagerRoot.isEmpty() || (reactInstanceManager == null))
+        if (reactInstanceManager == null)
             return false;
+
+        if (debugPackagerRoot.isEmpty()) {
+            if(APDebugUtil.getIsInDebugMode() && KeyEvent.KEYCODE_FOCUS == keyCode) {
+                toggleProfiler();
+            }
+            return false;
+        }
 
         switch (keyCode) {
             case KeyEvent.KEYCODE_MENU: {
@@ -223,6 +234,17 @@ public class QuickBrickManager implements
             default: {
                 return false;
             }
+        }
+    }
+
+    private void toggleProfiler() {
+        if(null == performanceOverlay)
+            performanceOverlay = PerformanceOverlay.create(
+                    reactInstanceManager.getCurrentReactContext(),
+                    reactRootView);
+        else {
+            performanceOverlay.release();
+            performanceOverlay = null;
         }
     }
 
