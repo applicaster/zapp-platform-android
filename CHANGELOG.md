@@ -16,6 +16,7 @@
 
 ### Improvements:
 - New react native plugin type `player_overlay` added. [#1464](https://github.com/applicaster/applicaster-android-sdk/pull/1464)
+- Default SDK assets updated
 
 
 ## 4.0.0 (Feb 22, 2021)
