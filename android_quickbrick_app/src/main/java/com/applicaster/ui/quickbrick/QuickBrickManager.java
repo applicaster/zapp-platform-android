@@ -42,6 +42,9 @@ import java.util.List;
 
 import okhttp3.OkHttpClient;
 
+import android.app.UiModeManager;
+import android.content.res.Configuration;
+
 public class QuickBrickManager implements
         IUILayerManager,
         DefaultHardwareBackBtnHandler,
@@ -450,13 +453,23 @@ public class QuickBrickManager implements
                 .emit(RN_EVENT_HANDLE_OPEN_URL, resultMap);
     }
 
+    /**
+     * Check if app runs on TV platform.
+     **/
+    private boolean isTVPlatform() {
+        UiModeManager uiModeManager = (UiModeManager) this.rootActivity.getSystemService(Context.UI_MODE_SERVICE);
+        return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
+    }
+
     public void setRightToLeftFlag() {
         List<String> languageList = AppData.getAvailableLocalizations();
         String appLocale = AppData.getLocale().toString();
         String localeToUse = languageList.isEmpty() || languageList.contains(appLocale)
                 ? appLocale : languageList.get(0);
 
-        I18nUtil.getInstance().allowRTL(this.rootActivity, false);
+        if(isTVPlatform()) {
+            I18nUtil.getInstance().allowRTL(this.rootActivity, false);
+        }
 
         I18nUtil.getInstance().forceRTL(
                 this.rootActivity,
