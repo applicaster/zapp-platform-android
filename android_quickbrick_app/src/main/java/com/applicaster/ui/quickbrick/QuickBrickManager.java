@@ -455,6 +455,9 @@ public class QuickBrickManager implements
         String appLocale = AppData.getLocale().toString();
         String localeToUse = languageList.isEmpty() || languageList.contains(appLocale)
                 ? appLocale : languageList.get(0);
+
+        I18nUtil.getInstance().allowRTL(this.rootActivity, false);
+
         I18nUtil.getInstance().forceRTL(
                 this.rootActivity,
                 RTL_LOCALES.includes(localeToUse)
