@@ -134,13 +134,18 @@ jobs:
       - run:
           name: Check app name with App Center
           command: |
-            if [ "$bundle_identifier" ]
+            if [ "$with_release" = "true" ];
             then
-              bundle exec rake app_center:prepare_app_data[${bundle_identifier}]
-              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/app_data.env
-              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/app_data.env >> $BASH_ENV
+              if [ "$bundle_identifier" ]
+              then
+                bundle exec rake app_center:prepare_app_data[${bundle_identifier}]
+                cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/app_data.env
+                cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/app_data.env >> $BASH_ENV
+              else
+                echo "Skipping the step, no bundle_identifier available."
+              fi
             else
-              echo "Skipping the step, no bundle_identifier available."
+              echo "debug only, skipping app name check with App Center"
             fi
 
       - run:
