@@ -12,7 +12,7 @@ references:
           GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx6144M -XX:MaxPermSize=1024m -Xms512m -XX:+HeapDumpOnOutOfMemoryError"'
           RAILS_ENV: test
           RACK_ENV: test
-          NODE_OPTIONS: --max_old_space_size=8192
+          NODE_OPTIONS: --max_old_space_size=6144
 
   gems_cache_key: &gems_cache_key Zapp-Platform-Android-v1-{{ checksum "Gemfile.lock" }}
 
