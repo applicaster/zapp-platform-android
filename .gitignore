@@ -96,3 +96,6 @@ quick_brick/
 
 # scan temporary files
 **/fastlane/test_output
+
+# VS Code files
+.vscode
