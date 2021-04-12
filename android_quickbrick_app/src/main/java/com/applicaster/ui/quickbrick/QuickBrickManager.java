@@ -20,6 +20,7 @@ import com.applicaster.ui.utils.RTL_LOCALES;
 import com.applicaster.util.APDebugUtil;
 import com.applicaster.util.APLogger;
 import com.applicaster.util.AppData;
+import com.applicaster.util.NetworkRequestListener;
 import com.applicaster.util.OSUtil;
 import com.applicaster.util.server.SSLPinner;
 import com.facebook.react.ReactInstanceManager;
@@ -265,6 +266,7 @@ public class QuickBrickManager implements
     private void initOkHttpClientProvider() {
         OkHttpClient.Builder builder = OkHttpClientProvider.createClientBuilder(application);
         SSLPinner.apply(builder);
+        builder.addInterceptor(new NetworkRequestListener("QBNetworkRequestLogger"));
         OkHttpClientProvider.setOkHttpClientFactory(builder::build);
     }
 
