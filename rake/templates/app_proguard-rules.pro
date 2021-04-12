@@ -9,6 +9,10 @@
 # Without it the debug dialog will not work for example, because the .BuildConfig file will be minified. So NO DELETE.
 -keep class **.BuildConfig { *; }
 
+# Hermes
+-keep class com.facebook.hermes.unicode.** { *; }
+-keep class com.facebook.jni.** { *; }
+
 # keep all RN packages
 -keep public class * extends com.facebook.react.ReactPackage
 
