@@ -453,14 +453,20 @@ public class QuickBrickManager implements
     }
 
     public void setRightToLeftFlag() {
-        List<String> languageList = AppData.getAvailableLocalizations();
-        String appLocale = AppData.getLocale().toString();
-        String localeToUse = languageList.isEmpty() || languageList.contains(appLocale)
-                ? appLocale : languageList.get(0);
-        I18nUtil.getInstance().forceRTL(
-                this.rootActivity,
-                RTL_LOCALES.includes(localeToUse)
-        );
+        if (OSUtil.isTv()) {
+            I18nUtil.getInstance().allowRTL(this.rootActivity, false);
+            I18nUtil.getInstance().forceRTL(this.rootActivity, false);
+        } else {
+            List<String> languageList = AppData.getAvailableLocalizations();
+            String appLocale = AppData.getLocale().toString();
+            String localeToUse = languageList.isEmpty() || languageList.contains(appLocale)
+                    ? appLocale : languageList.get(0);
+
+            I18nUtil.getInstance().forceRTL(
+                    this.rootActivity,
+                    RTL_LOCALES.includes(localeToUse)
+            );
+        }
     }
 
     @Override
