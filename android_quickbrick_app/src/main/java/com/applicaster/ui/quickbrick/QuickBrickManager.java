@@ -34,6 +34,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.modules.network.OkHttpClientProvider;
+import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -369,7 +370,7 @@ public class QuickBrickManager implements
     @Override
     public void onReactContextInitialized(ReactContext context) {
         reactInstanceManager.removeReactInstanceEventListener(this);
-        reactRootView = new ReactRootView(context);
+        reactRootView = new RNGestureHandlerEnabledRootView(rootActivity); //new ReactRootView(context);
         initialized = true;
         reactRootView.startReactApplication(reactInstanceManager, REACT_NATIVE_MODULE_NAME, null);
     }
