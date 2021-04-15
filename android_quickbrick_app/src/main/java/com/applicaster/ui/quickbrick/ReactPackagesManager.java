@@ -79,6 +79,7 @@ class ReactPackagesManager {
         corePackages.add("com.horcrux.svg.SvgPackage");
         corePackages.add("com.BV.LinearGradient.LinearGradientPackage");
         corePackages.add("com.reactnativecommunity.webview.RNCWebViewPackage");
+        corePackages.add("com.swmansion.gesturehandler.react.RNGestureHandlerPackage");
     }
 
     /**
