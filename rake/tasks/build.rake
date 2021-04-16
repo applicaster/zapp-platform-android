@@ -15,6 +15,8 @@ require "curb"
 require "zip"
 require "pry"
 
+WEBVIEW_RESOLUTIONS_MIN_VERSION = "5.0.1-rc.22"
+
 desc "submodule update"
 task submodule_update: :dotenv do
   system("git submodule update --init --recursive")
@@ -56,7 +58,9 @@ task render_templates: :dotenv do
   )
 
   puts "Generating package.json file...".green
-  template_helper.render_template("package.json.erb", "package.json")
+  options = {}
+  options["should_set_resolutions"] = template_helper.should_set_resolutions
+  template_helper.render_template("package.json.erb", "package.json", options)
 
   puts "Generating applicaster.properties file...".green
   template_helper.render_template(

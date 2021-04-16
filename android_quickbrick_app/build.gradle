@@ -109,6 +109,9 @@ dependencies {
 
     implementation project(':react-native-webview')
 
+    implementation project(':react-native-gesture-handler')
+
+
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
     }
