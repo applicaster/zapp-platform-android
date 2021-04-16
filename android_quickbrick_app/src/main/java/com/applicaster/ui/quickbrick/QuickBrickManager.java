@@ -25,7 +25,6 @@ import com.applicaster.util.OSUtil;
 import com.applicaster.util.server.SSLPinner;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
-import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -34,6 +33,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.modules.network.OkHttpClientProvider;
+import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -64,7 +64,7 @@ public class QuickBrickManager implements
 
     private boolean blockTVKeyEmit = true;
 
-    private ReactRootView reactRootView;
+    private RNGestureHandlerEnabledRootView reactRootView;
 
     private boolean initialized;
 
@@ -369,7 +369,7 @@ public class QuickBrickManager implements
     @Override
     public void onReactContextInitialized(ReactContext context) {
         reactInstanceManager.removeReactInstanceEventListener(this);
-        reactRootView = new ReactRootView(context);
+        reactRootView = new RNGestureHandlerEnabledRootView(rootActivity); // Extends ReactRootView
         initialized = true;
         reactRootView.startReactApplication(reactInstanceManager, REACT_NATIVE_MODULE_NAME, null);
     }
