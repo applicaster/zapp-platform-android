@@ -111,6 +111,10 @@ dependencies {
 
     implementation project(':react-native-gesture-handler')
 
+    implementation (project(':react-native-safe-area-context')) {
+        exclude group: 'com.facebook.react', module: 'react-native'
+    }
+
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'

@@ -80,6 +80,7 @@ class ReactPackagesManager {
         corePackages.add("com.BV.LinearGradient.LinearGradientPackage");
         corePackages.add("com.reactnativecommunity.webview.RNCWebViewPackage");
         corePackages.add("com.swmansion.gesturehandler.react.RNGestureHandlerPackage");
+        corePackages.add("com.th3rdwave.safeareacontext.SafeAreaContextPackage");
     }
 
     /**
