@@ -46,3 +46,7 @@
 ## react-native-svg
 
 -keep public class com.horcrux.svg.** {*;}
+
+## react-native-safe-area-context
+
+-keep public class com.th3rdwave.safeareacontext.** {*;}
