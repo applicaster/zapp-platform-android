@@ -34,6 +34,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
+import com.facebook.react.ReactRootView;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -64,7 +65,7 @@ public class QuickBrickManager implements
 
     private boolean blockTVKeyEmit = true;
 
-    private RNGestureHandlerEnabledRootView reactRootView;
+    private ReactRootView reactRootView;
 
     private boolean initialized;
 
@@ -369,7 +370,12 @@ public class QuickBrickManager implements
     @Override
     public void onReactContextInitialized(ReactContext context) {
         reactInstanceManager.removeReactInstanceEventListener(this);
-        reactRootView = new RNGestureHandlerEnabledRootView(rootActivity); // Extends ReactRootView
+        if (OSUtil.isTv()) {
+            reactRootView = new ReactRootView(context); // Extends ReactRootView
+        } else {
+            reactRootView = new RNGestureHandlerEnabledRootView(rootActivity);
+        }
+
         initialized = true;
         reactRootView.startReactApplication(reactInstanceManager, REACT_NATIVE_MODULE_NAME, null);
     }
