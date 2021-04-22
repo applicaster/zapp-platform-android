@@ -1,9 +1,11 @@
-include ':app', ':android_quickbrick_app', ':react-native-netinfo', ':react-native-community_viewpager', ':react-native-linear-gradient', 'react-native-svg', ':react-native-fast-image', ':react-native-webview' ,':project-name',':project-for-@applicaster-name'
+include ':app', ':android_quickbrick_app', ':react-native-netinfo', ':react-native-community_viewpager', ':react-native-linear-gradient', 'react-native-svg', ':react-native-fast-image', ':react-native-webview', ':react-native-gesture-handler', ':react-native-safe-area-context' ,':project-name',':project-for-@applicaster-name'
 project(':react-native-netinfo').projectDir = new File('node_modules/@react-native-community/netinfo/android')
 project(':react-native-community_viewpager').projectDir = new File('node_modules/@react-native-community/viewpager/android')
 project(':react-native-linear-gradient').projectDir = new File('node_modules/react-native-linear-gradient/android')
 project(':react-native-svg').projectDir = new File('node_modules/react-native-svg/android')
 project(':react-native-fast-image').projectDir = new File('node_modules/@applicaster/react-native-fast-image/android')
 project(':react-native-webview').projectDir = new File('node_modules/react-native-webview/android')
+project(':react-native-gesture-handler').projectDir = new File('node_modules/react-native-gesture-handler/android')
+project(':react-native-safe-area-context').projectDir = new File('node_modules/react-native-safe-area-context/android')
 project(':project-name').projectDir = new File('project-path')
 project(':project-for-@applicaster-name').projectDir = new File('project-path')

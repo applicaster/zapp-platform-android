@@ -20,11 +20,11 @@ import com.applicaster.ui.utils.RTL_LOCALES;
 import com.applicaster.util.APDebugUtil;
 import com.applicaster.util.APLogger;
 import com.applicaster.util.AppData;
+import com.applicaster.util.NetworkRequestListener;
 import com.applicaster.util.OSUtil;
 import com.applicaster.util.server.SSLPinner;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
-import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -33,6 +33,8 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.modules.network.OkHttpClientProvider;
+import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
+import com.facebook.react.ReactRootView;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -265,6 +267,7 @@ public class QuickBrickManager implements
     private void initOkHttpClientProvider() {
         OkHttpClient.Builder builder = OkHttpClientProvider.createClientBuilder(application);
         SSLPinner.apply(builder);
+        builder.addInterceptor(new NetworkRequestListener("QBNetworkRequestLogger"));
         OkHttpClientProvider.setOkHttpClientFactory(builder::build);
     }
 
@@ -367,7 +370,12 @@ public class QuickBrickManager implements
     @Override
     public void onReactContextInitialized(ReactContext context) {
         reactInstanceManager.removeReactInstanceEventListener(this);
-        reactRootView = new ReactRootView(context);
+        if (OSUtil.isTv()) {
+            reactRootView = new ReactRootView(context); // Extends ReactRootView
+        } else {
+            reactRootView = new RNGestureHandlerEnabledRootView(rootActivity);
+        }
+
         initialized = true;
         reactRootView.startReactApplication(reactInstanceManager, REACT_NATIVE_MODULE_NAME, null);
     }
