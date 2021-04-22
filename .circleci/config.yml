@@ -2,7 +2,7 @@ references:
   workspace_root: &workspace_root ~/zapp-platform-android
   container_config: &container_config
     working_directory: *workspace_root
-    resource_class: large
+    resource_class: xlarge
     docker:
       - image: applicaster/zapp-platform-android-circleci-primary:1.1.0
         environment:
@@ -12,7 +12,7 @@ references:
           GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx6144M -XX:MaxPermSize=1024m -Xms512m -XX:+HeapDumpOnOutOfMemoryError"'
           RAILS_ENV: test
           RACK_ENV: test
-          NODE_OPTIONS: --max_old_space_size=6144
+          NODE_OPTIONS: --max_old_space_size=16536
 
   gems_cache_key: &gems_cache_key Zapp-Platform-Android-v1-{{ checksum "Gemfile.lock" }}
 
