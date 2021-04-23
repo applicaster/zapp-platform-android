@@ -1,5 +1,81 @@
 # Changelog
 
+## 5.0.0 (March 22, 2021)
+
+#### Minimum Android OS supported: 4.4.x
+#### React Native version: 0.62.2
+#### Gradle version: 5.6.4
+#### Android Studio Gradle Plugin version: 3.6.4
+#### QuickBrick version: v5.0.0
+#### Applicaster Android SDK Core version: 8.3.2
+#### Android target API: 29
+
+
+### Breaking changes:
+- Android gradle plugin upgrade to 3.6.4 [#107](https://github.com/applicaster/zapp-platform-android/pull/107)
+
+### Improvements:
+- New react native plugin type `player_overlay` added. [#1464](https://github.com/applicaster/applicaster-android-sdk/pull/1464)
+- Default SDK assets updated
+
+
+## 4.0.0 (Feb 22, 2021)
+
+#### Minimum Android OS supported: 4.4.x
+#### React Native version: 0.62.2
+#### Gradle version: 5.6.4
+#### Android Studio Gradle Plugin version: 3.5.3
+#### QuickBrick version: v5.0.0
+#### Applicaster Android SDK Core version: 8.3.1
+#### Android target API: 29
+
+
+### Breaking changes:
+- QuickBrick updated to 5.0.0 [#105](https://github.com/applicaster/zapp-platform-android/pull/105)
+
+## QuickBrick SDK changes:
+
+- New TV components:
+    - Support for Theme plugin with specific properties for TV platforms, including screen & component margins, and content anchoring (determines how many pixels from the top of the screen content is anchored when focus moves)
+    - Support on TV for Horizontal List (QB) and Grid (QB) plugin. These plugins should be used instead of the legacy horizontal list & grid component. These plugins support full customization of styling & spacing
+    - Support for Group, Group Info & Group info cell plugins on TV platforms, which allow to create Groups on TV layouts, and support full customization of TV components headers
+    - Advanced customization capabilities on component cells with the use of the TV Cell 1 power cell plugin
+    - Brand new Screen Picker TV (QB) plugin, with advanced configuration for styling of the screen selector part of the component
+- pipes v2:
+    - Improved compatibility of pipes v2 layout, on mobile & TV platforms
+    - Separate entry / screen & search context to inject data in feeds
+    - Support for v2 feeds from plugins, available on continue watching & local favourites plugins
+
+
+## 3.0.0 (Feb 8, 2021)
+
+#### Minimum Android OS supported: 4.4.x
+#### React Native version: 0.62.2
+#### Gradle version: 5.6.4
+#### Android Studio Gradle Plugin version: 3.5.3
+#### QuickBrick version: v4.1.6
+#### Applicaster Android SDK Core version: 8.3.1
+#### Android target API: 29
+
+
+### Breaking changes:
+- QuickBrick updated to 4.1.6 [#103](https://github.com/applicaster/zapp-platform-android/pull/103)
+
+### Improvements:
+- App build parameters are now fetched by url [#100](https://github.com/applicaster/zapp-platform-android/pull/100)
+- Special symbols in application name are now escaped in generated Android xml localization files [#83](https://github.com/applicaster/zapp-platform-android/pull/83)
+- Support for OAuth2 schemes added [#101](https://github.com/applicaster/zapp-platform-android/pull/101)
+
+### Changes
+- Microsoft AppCenter Distribution SDK removed [#102](https://github.com/applicaster/zapp-platform-android/pull/102)
+
+### Core SDK improvements:
+- Secure Shared Preferences storage added [#1461](https://github.com/applicaster/applicaster-android-sdk/pull/1461)
+- Handling of malformed malformed SSL pins input improved [#1460](https://github.com/applicaster/applicaster-android-sdk/pull/1460)
+- Push notification react-native bridge exported to QuickBrick SDK [#1459](https://github.com/applicaster/applicaster-android-sdk/pull/1459)
+- `remove`, `getNamespace` and `removeNamespace` methods added to the local storage [#1456](https://github.com/applicaster/applicaster-android-sdk/pull/1456)
+- `LocalizationHelper` class added to extract localizations from plugins [#1457](https://github.com/applicaster/applicaster-android-sdk/pull/1457)
+
 
 ## 2.0.0 (Dec 3, 2020)
 
