@@ -26,11 +26,13 @@ allprojects {
         maven { url 'https://jitpack.io' }
         jcenter()
         maven {
-            credentials{
-                username System.getenv("MAVEN_USERNAME")
-                password System.getenv("MAVEN_PASSWORD")
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/applicaster/"
+            credentials {
+                username = "inckie"
+                // read only token with access to packages only
+                password = System.getenv("GITHUB_TOKEN")
             }
-            url 'https://dl.bintray.com/applicaster-ltd/maven'
         }
         maven {
             url "$rootDir/node_modules/react-native/android"
