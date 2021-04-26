@@ -27,11 +27,14 @@ allprojects {
         jcenter()
         maven {
             name = "GitHubPackages"
-            url = "https://maven.pkg.github.com/applicaster/"
+            url = "https://maven.pkg.github.com/applicaster/applicaster-android-sdk-core"
             credentials {
                 username = "inckie"
                 // read only token with access to packages only
                 password = System.getenv("GITHUB_TOKEN")
+            }
+            content {
+                includeGroup("com.applicaster")
             }
         }
         maven {
