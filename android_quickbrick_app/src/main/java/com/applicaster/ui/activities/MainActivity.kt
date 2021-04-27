@@ -8,6 +8,9 @@ import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.OrientationEventListener
 import androidx.annotation.RawRes
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import com.applicaster.plugin_manager.PluginManager
 import com.applicaster.ui.R
 import com.applicaster.ui.interfaces.HostActivityBase
@@ -100,7 +103,7 @@ class MainActivity : HostActivityBase() {
     }
 
     private fun initOrientationListener() {
-        object : OrientationEventListener(this) {
+        object : OrientationEventListener(this), LifecycleObserver {
             private var lastKnownRotation = 0
 
             /**
@@ -118,14 +121,21 @@ class MainActivity : HostActivityBase() {
                 lastKnownRotation = normalisedOrientation
                 val to = jsOrientationMapper(normalisedOrientation)
                 if (uiLayer != null && uiLayer!!.isReady) {
+                    APLogger.info(TAG, "Reporting onOrientationChanged event to UI: $orientation")
                     uiLayer!!.orientationChange(from, to)
                 }
+            }
+
+            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+            fun onActivityDestroy() {
+                disable()
             }
 
             init {
                 if (canDetectOrientation()) {
                     enable()
                 }
+                lifecycle.addObserver(this)
             }
         }
     }
@@ -178,22 +188,33 @@ class MainActivity : HostActivityBase() {
         uiLayer?.onDestroy()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        uiLayer?.onActivityResult(requestCode, resultCode, data)
+    }
+
     //endregion
     private fun setAppOrientation() {
         APUIUtils.setOrientation(this)
         orientationStack.add(this.requestedOrientation)
+        APLogger.info(TAG, "Setting requested orientation: $requestedOrientation, stack depth ${orientationStack.size}")
     }
 
     override fun setAppOrientation(orientation: Int) {
         val nativeOrientation = nativeOrientationMapper(orientation)
         this.requestedOrientation = nativeOrientation
         orientationStack.add(this.requestedOrientation)
+        APLogger.info(TAG, "Orientation change requested: $nativeOrientation, stack depth ${orientationStack.size}")
     }
 
     override fun releaseOrientation() {
         if (orientationStack.size > 1) {
             orientationStack.pop()
             this.requestedOrientation = orientationStack.peek()
+            APLogger.info(TAG, "Orientation change released, stack depth ${orientationStack.size}")
+        } else {
+            // first one is startup one, should not be popped
+            APLogger.warn(TAG, "Orientation change released, but stack is empty")
         }
     }
 

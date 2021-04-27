@@ -3,8 +3,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion '29.0.3'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     compileOptions.encoding = 'ISO-8859-1'
 
@@ -15,8 +15,8 @@ android {
 
 
     defaultConfig {
-        minSdkVersion MIN_SDK_VERSION
-        targetSdkVersion TARGET_SDK_VERSION
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         consumerProguardFiles 'proguard-project.txt'
@@ -93,7 +93,6 @@ dependencies {
     // used in RN
     api "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
-    api "com.microsoft.appcenter:appcenter-distribute:2.3.0"
     compileOnly 'javax.annotation:jsr250-api:1.0'
 
     implementation(project(':react-native-netinfo')) {
@@ -109,6 +108,13 @@ dependencies {
     implementation project(':react-native-fast-image')
 
     implementation project(':react-native-webview')
+
+    implementation project(':react-native-gesture-handler')
+
+    implementation (project(':react-native-safe-area-context')) {
+        exclude group: 'com.facebook.react', module: 'react-native'
+    }
+
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'

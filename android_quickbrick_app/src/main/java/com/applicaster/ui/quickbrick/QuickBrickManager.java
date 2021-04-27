@@ -2,6 +2,7 @@ package com.applicaster.ui.quickbrick;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -19,12 +20,11 @@ import com.applicaster.ui.utils.RTL_LOCALES;
 import com.applicaster.util.APDebugUtil;
 import com.applicaster.util.APLogger;
 import com.applicaster.util.AppData;
+import com.applicaster.util.NetworkRequestListener;
 import com.applicaster.util.OSUtil;
 import com.applicaster.util.server.SSLPinner;
-import com.applicaster.zapp.quickbrick.loader.DataLoader;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
-import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -33,25 +33,16 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.modules.network.OkHttpClientProvider;
-import com.google.gson.Gson;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
+import com.facebook.react.ReactRootView;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class QuickBrickManager implements
         IUILayerManager,
@@ -127,6 +118,13 @@ public class QuickBrickManager implements
     public void onDestroy() {
         if (reactInstanceManager != null) reactInstanceManager.onHostDestroy(rootActivity);
         if (reactRootView != null) reactRootView.unmountReactApplication();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (reactInstanceManager != null) {
+            reactInstanceManager.onActivityResult(this.rootActivity, requestCode, resultCode, data);
+        }
     }
 
     // endregion
@@ -269,6 +267,7 @@ public class QuickBrickManager implements
     private void initOkHttpClientProvider() {
         OkHttpClient.Builder builder = OkHttpClientProvider.createClientBuilder(application);
         SSLPinner.apply(builder);
+        builder.addInterceptor(new NetworkRequestListener("QBNetworkRequestLogger"));
         OkHttpClientProvider.setOkHttpClientFactory(builder::build);
     }
 
@@ -371,7 +370,12 @@ public class QuickBrickManager implements
     @Override
     public void onReactContextInitialized(ReactContext context) {
         reactInstanceManager.removeReactInstanceEventListener(this);
-        reactRootView = new ReactRootView(context);
+        if (OSUtil.isTv()) {
+            reactRootView = new ReactRootView(context); // Extends ReactRootView
+        } else {
+            reactRootView = new RNGestureHandlerEnabledRootView(rootActivity);
+        }
+
         initialized = true;
         reactRootView.startReactApplication(reactInstanceManager, REACT_NATIVE_MODULE_NAME, null);
     }
@@ -455,14 +459,20 @@ public class QuickBrickManager implements
     }
 
     public void setRightToLeftFlag() {
-        List<String> languageList = AppData.getAvailableLocalizations();
-        String appLocale = AppData.getLocale().toString();
-        String localeToUse = languageList.isEmpty() || languageList.contains(appLocale)
-                ? appLocale : languageList.get(0);
-        I18nUtil.getInstance().forceRTL(
-                this.rootActivity,
-                RTL_LOCALES.includes(localeToUse)
-        );
+        if (OSUtil.isTv()) {
+            I18nUtil.getInstance().allowRTL(this.rootActivity, false);
+            I18nUtil.getInstance().forceRTL(this.rootActivity, false);
+        } else {
+            List<String> languageList = AppData.getAvailableLocalizations();
+            String appLocale = AppData.getLocale().toString();
+            String localeToUse = languageList.isEmpty() || languageList.contains(appLocale)
+                    ? appLocale : languageList.get(0);
+
+            I18nUtil.getInstance().forceRTL(
+                    this.rootActivity,
+                    RTL_LOCALES.includes(localeToUse)
+            );
+        }
     }
 
     @Override

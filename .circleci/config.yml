@@ -2,9 +2,9 @@ references:
   workspace_root: &workspace_root ~/zapp-platform-android
   container_config: &container_config
     working_directory: *workspace_root
-    resource_class: large
+    resource_class: xlarge
     docker:
-      - image: applicaster/zapp-platform-android-circleci-primary:1.0.0
+      - image: applicaster/zapp-platform-android-circleci-primary:1.1.0
         environment:
           ANDROID_HOME: /home/circleci/android-sdk
           JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
@@ -12,6 +12,7 @@ references:
           GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx6144M -XX:MaxPermSize=1024m -Xms512m -XX:+HeapDumpOnOutOfMemoryError"'
           RAILS_ENV: test
           RACK_ENV: test
+          NODE_OPTIONS: --max_old_space_size=12288
 
   gems_cache_key: &gems_cache_key Zapp-Platform-Android-v1-{{ checksum "Gemfile.lock" }}
 
@@ -47,6 +48,20 @@ references:
         bundle exec rake zapp_sdks:create[$ZAPP_SDK_PLATFORM,$version,$CIRCLE_PROJECT_REPONAME]
         bundle exec rake zapp_sdks:publish_changelog[$ZAPP_SDK_PLATFORM,$version]
 
+  prepare_build_parameters: &prepare_build_parameters
+    run:
+      name: Prepare build parameters
+      command: |
+        if [ -z "$build_params_url" ];
+        then
+          . .env
+          echo "Imported SDK CI defaults"
+        fi
+        echo "build_params_url is $build_params_url"
+        values=`curl -s -X GET $build_params_url`
+        echo $values | jq -r "to_entries|map(\"export \(.key)='\(.value|tostring)'\")|.[]" | while read i; do echo $i >> $BASH_ENV; done
+        source $BASH_ENV
+
 version: 2
 jobs:
   test:
@@ -70,6 +85,8 @@ jobs:
               git checkout .
               git clean -f -d
             fi
+
+      - *prepare_build_parameters
 
       - run:
           name: NPM Login
@@ -109,6 +126,8 @@ jobs:
               git clean -f -d
             fi
 
+      - *prepare_build_parameters
+
       - run:
           name: NPM Login
           command: npx npm-shell-login
@@ -116,13 +135,18 @@ jobs:
       - run:
           name: Check app name with App Center
           command: |
-            if [ "$bundle_identifier" ]
+            if [ "$with_release" = "true" ];
             then
-              bundle exec rake app_center:prepare_app_data[${bundle_identifier}]
-              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/app_data.env
-              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/app_data.env >> $BASH_ENV
+              if [ "$bundle_identifier" ]
+              then
+                bundle exec rake app_center:prepare_app_data[${bundle_identifier}]
+                cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/app_data.env
+                cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/app_data.env >> $BASH_ENV
+              else
+                echo "Skipping the step, no bundle_identifier available."
+              fi
             else
-              echo "Skipping the step, no bundle_identifier available."
+              echo "debug only, skipping app name check with App Center"
             fi
 
       - run:
@@ -134,6 +158,8 @@ jobs:
           command: |
             if [ "$with_release" = "true" ];
             then
+              export build_type=release
+
               bundle exec fastlane app_center_build_bundle
               if [ -z "$service_account_key_url"];
               then
@@ -150,6 +176,7 @@ jobs:
       - run:
           name: Build and upload Unsigned .apk
           command: |
+            export build_type=debug
 
             if [ -z "$react_native_packager_root" ];
             then
@@ -169,7 +196,11 @@ jobs:
 
             if [ "$triggered_by" = "zapp" ];
             then
-              bundle exec fastlane s3_debug_upload
+              bundle exec fastlane s3_upload
+              echo "Debug distribution environment variables"
+              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_artifacts.env
+              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_artifacts.env >> $BASH_ENV
+              source $BASH_ENV
             else
               echo "Skip upload to s3"
             fi
@@ -186,23 +217,6 @@ jobs:
             else
               bundle exec rake ui_tests:publish_build_status[true,app/build/outputs/apk/mobileGoogle/debug/app-mobile-google-debug.apk,false]
             fi
-      - run:
-          name: App Center Upload Unsigned .apk
-          command: |
-            if [ -z "$flavor" ];
-            then
-              export flavor=mobile
-            fi
-            app_name_no_whitespaces=${bundle_identifier//[^a-zA-Z0-9]/_};
-            apk_path=app/build/outputs/apk/${flavor}/debug/app-${flavor}-debug.apk
-            cp ${apk_path} ${HOME}/${app_name_no_whitespaces}-debug.apk;
-            bundle exec fastlane app_center_debug_upload
-            echo "Debug distribution environment variables"
-            cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_app_center.env
-            cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/debug_app_center.env >> $BASH_ENV
-            source $BASH_ENV
-          environment:
-            TERM: dumb
 
       - run:
           name: Build and upload Signed .apk
@@ -211,6 +225,8 @@ jobs:
             then
               echo "debug only, skipping release version"
             else
+              export build_type=release
+
               if [ "$flavor" = "tv" ];
               then
                 ./gradlew assembleTvRelease
@@ -221,7 +237,10 @@ jobs:
 
               if [ "$triggered_by" = "zapp" ];
               then
-                bundle exec fastlane s3_release_upload
+                bundle exec fastlane s3_upload
+                echo "Release distribution environment variables"
+                cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/release_artifacts.env
+                cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/release_artifacts.env >> $BASH_ENV
               else
                 echo "Skip upload to s3"
               fi
@@ -236,6 +255,8 @@ jobs:
             then
               echo "no release apk"
             else
+              export build_type=release
+
               if [ -z "$flavor" ];
               then
                 flavor=mobile
@@ -244,10 +265,7 @@ jobs:
               app_name_no_whitespaces=${bundle_identifier//[^a-zA-Z0-9]/_};
               apk_path=app/build/outputs/apk/${flavor}/release/app-${flavor}-release.apk
               cp ${apk_path} ${HOME}/${app_name_no_whitespaces}.apk;
-              bundle exec fastlane app_center_release_upload
-              echo "Release distribution environment variables"
-              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/release_app_center.env
-              cat ${HOME}/${CIRCLE_PROJECT_REPONAME}/release_app_center.env >> $BASH_ENV
+              bundle exec fastlane app_center_apk_upload
             fi
           environment:
             TERM: dumb
@@ -333,13 +351,13 @@ jobs:
             then
               bundle exec rake "zapp:notify_zapp_build[$version_id,\
                 success,\
-                $debug_appcenter_install_url,\
-                $debug_appcenter_download_url,\
+                $debug_install_url,\
+                $debug_download_url,\
                 $debug_appcenter_release_id,\
                 $debug_appcenter_app_name,\
                 $debug_artifact_publish_time,\
-                $release_appcenter_install_url,\
-                $release_appcenter_download_url,\
+                $release_install_url,\
+                $release_download_url,\
                 $release_appcenter_release_id,\
                 $release_appcenter_app_name,\
                 $release_artifact_publish_time,\

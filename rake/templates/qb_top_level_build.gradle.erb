@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'com.android.tools.build:gradle:3.6.4'
         <%= gms_google_services_classpath %>
         <%= strict_version_matcher_plugin_classpath %>
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -94,3 +94,7 @@ subprojects {
         }
     }
 }
+
+ext.minSdkVersion=<%= min_sdk_version %>
+// this one can not be defined in the gradle properties due to typing issues
+ext.compileSdkVersion=29

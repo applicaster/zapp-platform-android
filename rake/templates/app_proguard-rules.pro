@@ -26,6 +26,7 @@
 -keep public class * implements com.applicaster.plugin_manager.crashlog.CrashlogPlugin
 -keep public class * implements com.applicaster.plugin_manager.push_plugin.PushContract
 -keep public class * implements com.applicaster.plugin_manager.dependencyplugin.base.interfaces.**
+-keep public class * implements com.applicaster.analytics.BaseAnalyticsAgent
 
 ## react-native-fast-image
 
@@ -45,3 +46,7 @@
 ## react-native-svg
 
 -keep public class com.horcrux.svg.** {*;}
+
+## react-native-safe-area-context
+
+-keep public class com.th3rdwave.safeareacontext.** {*;}

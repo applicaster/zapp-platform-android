@@ -6,15 +6,24 @@ require "dependency_helper"
 require "android_manifest_helper"
 require "yaml"
 require "workspace_helper"
+require "versionomy"
 
 class TemplateHelper
   include DependencyHelper
   include AndroidManifestHelper
 
-  SDK_DEFAULT_QB_VERSION = "4.1.4"
+  SDK_DEFAULT_QB_VERSION = "5.0.0"
+  SDK_DEFAULT_MIN_SDK_VERSION = 19
 
-  def render_template(template_path, dst_path)
+  def render_template(template_path, dst_path, obj = {})
     helper_binding = binding
+
+    unless obj.empty?
+      obj.each do |key, value|
+        helper_binding.local_variable_set(key, value)
+      end
+    end
+
     File.open(File.join("rake", "templates", template_path), "r") do |template|
       File.open(dst_path, "w+") do |dst|
         dst.write(ERB.new(template.read, nil, "-").result(helper_binding))
@@ -22,14 +31,43 @@ class TemplateHelper
     end
   end
 
+  def quick_brick_enabled
+    ENV["quick_brick_enabled"].to_s == "true"
+  end
+
+  # Use either provided quick_brick_version from configuration,
+  # or the default version set for the current android sdk.
+  def quick_brick_version
+    return SDK_DEFAULT_QB_VERSION if ENV["quick_brick_version"] == "sdk_default"
+
+    ENV["quick_brick_version"].presence || SDK_DEFAULT_QB_VERSION
+  end
+
+  # Tells wether or not the package.json should have the resolutions property
+  # This is required to properly support JS2Native from QB 5.0.1-rc.22 onwards
+  def should_set_resolutions
+    return true if quick_brick_version == "next"
+
+    Versionomy.parse(quick_brick_version) > WEBVIEW_RESOLUTIONS_MIN_VERSION
+  rescue Versionomy::Errors::ParseError
+    # when building on a canary, Versionomy will fail to parse the version
+    # number. In this case, instead of failing, we apply the resolution
+    true
+  end
+
   private
 
   def min_sdk_version
-    [19, ENV["min_sdk_version"].to_i].max
+    [SDK_DEFAULT_MIN_SDK_VERSION, ENV["min_sdk_version"].to_i].max
   end
 
   def app_name
     ENV["app_name"]
+  end
+
+  def app_name_xml
+    # xml-escaped app-name
+    ENV["app_name"].encode(xml: :text).gsub("'") { "\\'" }
   end
 
   def bundle_identifier
@@ -261,18 +299,6 @@ class TemplateHelper
 
   def environment_device_target
     ENV["device_target"]
-  end
-
-  def quick_brick_enabled
-    ENV["quick_brick_enabled"].to_s == "true"
-  end
-
-  # Use either provided quick_brick_version from configuration,
-  # or the default version set for the current android sdk.
-  def quick_brick_version
-    return SDK_DEFAULT_QB_VERSION if ENV["quick_brick_version"] == "sdk_default"
-
-    ENV["quick_brick_version"].presence || SDK_DEFAULT_QB_VERSION
   end
 
   def app_center_secret
