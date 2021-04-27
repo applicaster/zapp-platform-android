@@ -3,6 +3,7 @@ package com.applicaster.ui.views;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.View;
@@ -20,6 +21,7 @@ import com.applicaster.util.OSUtil;
 import com.applicaster.util.ui.PreloaderListener;
 
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 public class ApplicationPreloaderView extends FrameLayout implements LifecycleObserver {
 
@@ -30,6 +32,8 @@ public class ApplicationPreloaderView extends FrameLayout implements LifecycleOb
     private MediaPlayer player;
 
     private WeakReference<LifecycleOwner> lifecycleOwnerWeakReference;
+
+    private static final String TAG = "ApplicationPreloaderView";
 
     public ApplicationPreloaderView(Context activity, AttributeSet attrs) {
         super(activity, attrs);
@@ -73,20 +77,13 @@ public class ApplicationPreloaderView extends FrameLayout implements LifecycleOb
                 } else {
                     player.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
                     player.setDisplay(holder);
-                    player.setOnPreparedListener(mp -> {
-                        // VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING does not actually works,
-                        // fix it manually by scaling the view
-                        int videoHeight = player.getVideoHeight();
-                        int videoWidth = player.getVideoWidth();
-                        int width = videoView.getWidth();
-                        int height = videoView.getHeight();
-                        float ratioCorrection = (videoWidth / (float) videoHeight) / (width / (float) height);
-                        if (ratioCorrection > 1) {
-                            videoView.setScaleX(ratioCorrection);
-                        } else if (ratioCorrection < 1) {
-                            videoView.setScaleY(1 / ratioCorrection);
-                        }
-                    });
+                    if(hasAspectBug()) {
+                        player.setOnPreparedListener(mp -> {
+                            int viewWidth = videoView.getWidth();
+                            int viewHeight = videoView.getHeight();
+                            correctAspect(viewWidth, viewHeight, true);
+                        });
+                    }
                     player.setOnCompletionListener(mp -> {
                         videoView.getHolder().removeCallback(this);
                         ApplicationPreloaderView.this.setVisibility(View.GONE);
@@ -100,6 +97,33 @@ public class ApplicationPreloaderView extends FrameLayout implements LifecycleOb
 
                     player.start();
                 }
+            }
+
+            private void correctAspect(int viewWidth, int viewHeight, boolean warnUser) {
+                if(0 == viewWidth || 0 == viewHeight) {
+                    return; // view is not yet ready
+                }
+                int videoHeight = player.getVideoHeight();
+                int videoWidth = player.getVideoWidth();
+                // VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING does not actually works on most devices,
+                // fix it manually by scaling the view
+                if(0 == videoWidth || 0 == videoHeight) {
+                    // the video is broken
+                    if(warnUser) {
+                        APLogger.warn(TAG, "Failed to determine intro video dimensions. Probably its too large for this device");
+                    }
+                    return;
+                }
+                float ratioCorrection = (videoWidth / (float) videoHeight) / (viewWidth / (float) viewHeight);
+                if (ratioCorrection > 1) {
+                    videoView.setScaleX(ratioCorrection);
+                } else if (ratioCorrection < 1) {
+                    videoView.setScaleY(1 / ratioCorrection);
+                }
+            }
+
+            private boolean hasAspectBug() {
+                return !Build.BRAND.toLowerCase(Locale.ENGLISH).contains("samsung");
             }
 
             /**
@@ -122,7 +146,13 @@ public class ApplicationPreloaderView extends FrameLayout implements LifecycleOb
 
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-                // no op
+                if(!hasAspectBug()) {
+                    return;
+                }
+                if(null == player) {
+                    return;
+                }
+                correctAspect(width, height, false);
             }
 
             @Override
