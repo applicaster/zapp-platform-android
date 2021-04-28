@@ -331,13 +331,13 @@ public class QuickBrickManager implements
         }
 
         return getQuickBrickReactManagerBuilder()
-            .setJSBundleFile("assets://" + JS_BUNDLE_PATH)
-            .setNativeModuleCallExceptionHandler(e -> {
-                APLogger.error(TAG, "Exception in ReactInstanceManager", e);
-                if (listener != null) listener.onError(e);
-                throw new RuntimeException(e);
-            })
-            .build();
+                .setJSBundleFile("assets://" + JS_BUNDLE_PATH)
+                .setNativeModuleCallExceptionHandler(e -> {
+                    APLogger.error(TAG, "Exception in ReactInstanceManager: " + e.getMessage(), e);
+                    if (listener != null) listener.onError(e);
+                    throw new RuntimeException(e);
+                })
+                .build();
     }
 
     /**
@@ -376,7 +376,7 @@ public class QuickBrickManager implements
     public void onReactContextInitialized(ReactContext context) {
         reactInstanceManager.removeReactInstanceEventListener(this);
         context.setNativeModuleCallExceptionHandler(e -> {
-            APLogger.error(TAG, "Exception in react native", e);
+            APLogger.error(TAG, "Exception in ReactContext" + e.getMessage(), e);
             if (listener != null) listener.onError(e);
             throw new RuntimeException(e); // this is what RN seems to do by default
         });

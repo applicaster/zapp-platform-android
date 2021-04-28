@@ -276,9 +276,10 @@ class MainActivity : HostActivityBase() {
                 override fun onReady() = completableEmitter.onComplete()
 
                 override fun onError(e: Exception?) {
-                    APLogger.error(TAG, "QuickBrickManager error", e)
+                    APLogger.error(TAG, "QuickBrickManager error: ${e ?: " (no exception)"}", e)
                     val handler = Handler(Looper.getMainLooper())
-                    handler.post { // post on UI thread, some devices has issues with toasts on worker ones
+                    handler.post {
+                        // post on UI thread, some devices has issues with toasts on worker ones
                         Toast.makeText(
                                 AppContext.get(), // use app context so toast will survive past activity finish
                                 "QuickBrickManager critical error: $e. The Application will now close.",
