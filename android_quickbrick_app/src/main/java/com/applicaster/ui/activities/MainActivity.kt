@@ -4,9 +4,11 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.OrientationEventListener
+import android.widget.Toast
 import androidx.annotation.RawRes
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -23,10 +25,7 @@ import com.applicaster.ui.utils.OrientationUtils.nativeOrientationMapper
 import com.applicaster.ui.utils.OrientationUtils.normaliseOrientation
 import com.applicaster.ui.utils.OrientationUtils.supportOrientation
 import com.applicaster.ui.views.ApplicationPreloaderView
-import com.applicaster.util.APLogger
-import com.applicaster.util.AppData
-import com.applicaster.util.OSUtil
-import com.applicaster.util.UrlSchemeUtil
+import com.applicaster.util.*
 import com.applicaster.util.ui.APUIUtils
 import com.applicaster.util.ui.PreloaderListener
 import io.reactivex.Completable
@@ -277,8 +276,15 @@ class MainActivity : HostActivityBase() {
                 override fun onReady() = completableEmitter.onComplete()
 
                 override fun onError(e: Exception?) {
-                    APLogger.error(TAG, "QuickBrickManager error", e)
-                    val handler = Handler()
+                    APLogger.error(TAG, "QuickBrickManager error: ${e ?: " (no exception)"}", e)
+                    val handler = Handler(Looper.getMainLooper())
+                    handler.post {
+                        // post on UI thread, some devices has issues with toasts on worker ones
+                        Toast.makeText(
+                                AppContext.get(), // use app context so toast will survive past activity finish
+                                "QuickBrickManager critical error: $e. The Application will now close.",
+                                Toast.LENGTH_LONG).show()
+                    }
                     handler.postDelayed({
                         finish() // Not very nice but we prefer failing hard and fast in this case
                     }, 1000)
