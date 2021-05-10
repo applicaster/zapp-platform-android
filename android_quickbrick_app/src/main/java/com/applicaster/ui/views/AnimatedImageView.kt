@@ -7,17 +7,17 @@ import androidx.appcompat.widget.AppCompatImageView
 
 class AnimatedImageView : AppCompatImageView {
 
-    constructor(context: Context?)
+    constructor(context: Context)
             : super(context) {
         startDrawableAnimation()
     }
 
-    constructor(context: Context?, attrs: AttributeSet?)
+    constructor(context: Context, attrs: AttributeSet)
             : super(context, attrs) {
         startDrawableAnimation()
     }
 
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int)
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
             : super(context, attrs, defStyleAttr) {
         startDrawableAnimation()
     }
