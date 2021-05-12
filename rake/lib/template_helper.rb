@@ -7,6 +7,7 @@ require "android_manifest_helper"
 require "yaml"
 require "workspace_helper"
 require "versionomy"
+require "json"
 
 class TemplateHelper
   include DependencyHelper
@@ -132,6 +133,10 @@ class TemplateHelper
 
   def locale
     ENV["locale"]
+  end
+
+  def languages
+    JSON.parse(ENV["languages"]).join(",")
   end
 
   def twitter_key
