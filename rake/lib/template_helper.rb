@@ -148,7 +148,9 @@ class TemplateHelper
   end
 
   def store_password
-    ENV["store_password"].gsub('\\', '\\\\\\') if  ENV["store_password"].present? else ""
+    return "" unless ENV["store_password"].present?
+
+    ENV["store_password"].gsub('\\', '\\\\\\')
   end
 
   def key_alias
@@ -156,7 +158,9 @@ class TemplateHelper
   end
 
   def key_password
-    ENV["key_password"].gsub('\\', '\\\\\\') if  ENV["key_password"].present? else ""
+    return "" unless ENV["key_password"].present?
+
+    ENV["key_password"].gsub('\\', '\\\\\\')
   end
 
   def key_store_file
