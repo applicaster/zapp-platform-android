@@ -302,11 +302,6 @@ class MainActivity : HostActivityBase() {
             APLogger.debug(TAG, "UI ready...")
             initOrientationListener()
             setContentView(uiLayer!!.rootView) // simplistic approach, replace whole intro layout with RN layout
-            val uri = UrlSchemeUtil.getUrlSchemeData(intent)
-            if (null != uri) {
-                APLogger.info(TAG, "Passing URI to UI Layer:$uri")
-                uiLayer!!.handleURL(uri.toString())
-            }
             completableEmitter.onComplete()
         }
     }
