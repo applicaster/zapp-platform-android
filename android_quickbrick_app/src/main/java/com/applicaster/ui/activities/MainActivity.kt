@@ -71,7 +71,7 @@ class MainActivity : HostActivityBase() {
         return if (UrlSchemeUtil.isUrlScheme(url)) {
             // update intent in-place, and let caller proceed
             intent.data = uri
-            setIntent(intent)
+            setIntent(Intent(Intent.ACTION_VIEW, uri))
             APLogger.info(TAG, "Intent data was replaced with url extra: $url")
             false
         } else {
@@ -85,6 +85,7 @@ class MainActivity : HostActivityBase() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        setIntent(intent) // save new intent in any case
         if (routeOrUpdateIntent(intent)) {
             // This was probably intent from Firebase Console Firebase Push when app was not active.
             // User has first launched the app, and then clicked the notification
@@ -92,9 +93,9 @@ class MainActivity : HostActivityBase() {
         }
         // Update current intent in any case,
         // since QB may still be launching, and will only check it later.
-        setIntent(intent)
         if (true == uiLayer?.isReady) {
-            val uri = UrlSchemeUtil.getUrlSchemeData(intent)
+            // get intent back since routeOrUpdateIntent can update it
+            val uri = UrlSchemeUtil.getUrlSchemeData(getIntent())
             if (null != uri) {
                 uiLayer!!.handleURL(uri.toString())
             }
