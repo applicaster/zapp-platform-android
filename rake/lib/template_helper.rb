@@ -13,7 +13,7 @@ class TemplateHelper
   include DependencyHelper
   include AndroidManifestHelper
 
-  SDK_DEFAULT_QB_VERSION = "5.0.0"
+  SDK_DEFAULT_QB_VERSION = "5.1.0"
   SDK_DEFAULT_MIN_SDK_VERSION = 19
 
   def render_template(template_path, dst_path, obj = {})
