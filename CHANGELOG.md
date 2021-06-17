@@ -29,6 +29,7 @@
  - Microsoft AppCenter crash reporting is now disabled when application secret is not present (usully debug builds) [#112](https://github.com/applicaster/zapp-platform-android/pull/112)
 
 ## Fixes:
+ - annotation-experimental_release.kotlin_module build merge conflict resolved [#136](https://github.com/applicaster/zapp-platform-android/pull/136)
  - New universal fix applied for splash screen aspect ratio distortion [#133](https://github.com/applicaster/zapp-platform-android/pull/133)
  - Fixed handling of Firebase Push notification urls when app is running in the background [#132](https://github.com/applicaster/zapp-platform-android/pull/132)
  - Nullable kotlin signatures for AnimatedImageView updated [#125](https://github.com/applicaster/zapp-platform-android/pull/125)
