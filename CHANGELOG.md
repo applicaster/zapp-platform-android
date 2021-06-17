@@ -94,7 +94,7 @@
  - Fixed default focus on Android TV top menu bar
  - Fixed an issue with feed ids mutation on Android TV
 ### Chore:
- - Removed moment dependency to reduce bundle size
+ - Removed `moment.js` dependency to reduce bundle size
  - Refactored offline handler to typescript
 
 
