@@ -1,5 +1,104 @@
 # Changelog
 
+## 6.0.0 (June 17, 2021)
+
+#### Minimum Android OS supported: 4.4.x
+#### React Native version: 0.62.2
+#### Gradle version: 5.6.4
+#### Android Studio Gradle Plugin version: 3.6.4
+#### QuickBrick version: v5.1.0
+#### Applicaster Android SDK Core version: 8.3.7
+#### Android target API: 29
+
+
+### Breaking changes:
+- QuickBrick updated to 5.1.0 [#135](https://github.com/applicaster/zapp-platform-android/pull/135)
+
+
+## Improvements:
+ - Applicaster Android SDK Core updated to version 8.3.7 [#130](https://github.com/applicaster/zapp-platform-android/pull/130)
+ - Localization support improved, native app language is now changed to one of the supported on startup [#126](https://github.com/applicaster/zapp-platform-android/pull/126)
+ - React Native exceptions are now presented and logged in native before terminating the app [#123](https://github.com/applicaster/zapp-platform-android/pull/123)
+ - CI builder configuration is upgraded to mitigate node.js Out of memory build errors [#115](https://github.com/applicaster/zapp-platform-android/pull/115)
+ - Safe area React-Native library integrated [#120](https://github.com/applicaster/zapp-platform-android/pull/120)
+ - Gestures React-Native library integrated [#119](https://github.com/applicaster/zapp-platform-android/pull/119)
+ - React Native Network calls are now logged [#118](https://github.com/applicaster/zapp-platform-android/pull/118)
+ - Support of RtL languages on TV improved [#114](https://github.com/applicaster/zapp-platform-android/pull/114)
+
+## Changes:
+ - Microsoft AppCenter crash reporting is now disabled when application secret is not present (usully debug builds) [#112](https://github.com/applicaster/zapp-platform-android/pull/112)
+
+## Fixes:
+ - annotation-experimental_release.kotlin_module build merge conflict resolved [#136](https://github.com/applicaster/zapp-platform-android/pull/136)
+ - New universal fix applied for splash screen aspect ratio distortion [#133](https://github.com/applicaster/zapp-platform-android/pull/133)
+ - Fixed handling of Firebase Push notification urls when app is running in the background [#132](https://github.com/applicaster/zapp-platform-android/pull/132)
+ - Nullable kotlin signatures for AnimatedImageView updated [#125](https://github.com/applicaster/zapp-platform-android/pull/125)
+
+
+## Applicaster Android SDK Core changes:
+
+### Improvements:
+ - Crash reporting improved [#1474](https://github.com/applicaster/applicaster-android-sdk/pull/1474)
+ - Available localizations are now always present and remotely updated, native app language is now changed to one of the supported on startup [#1473](https://github.com/applicaster/applicaster-android-sdk/pull/1473)
+ - `removeItem` react native export added to Session Storage [#1472](https://github.com/applicaster/applicaster-android-sdk/pull/1472)
+ - Analytics debug logging improved [#1469](https://github.com/applicaster/applicaster-android-sdk/pull/1469)
+ - Network requests are now logged [#1466](https://github.com/applicaster/applicaster-android-sdk/pull/1466)
+ - New plugin type `payments` added [#1465](https://github.com/applicaster/applicaster-android-sdk/pull/1465)
+
+### Fixes:
+ - Crash on remote configuration loading from broken URLs fixed [#1476](https://github.com/applicaster/applicaster-android-sdk/pull/1476)
+ - Malformed manifest parsing improved [#1471](https://github.com/applicaster/applicaster-android-sdk/pull/1471)
+ - Push bridge name unified with iOS and topic unregistering fixed  [#1470](https://github.com/applicaster/applicaster-android-sdk/pull/1470)
+
+
+## QuickBrick SDK changes:
+
+### New features:
+ - Favourite screen can now be styles and localized
+ - URL schemes now support `content_type` options for link URL schemes
+ - Now using React Native Safe Area Context library for screen sizing
+ - Added React Native Gesture Handler and infrastructure for modal bottom sheet
+ - Pipes URL can now be created in any component with useBuildPipesUrl hook
+ - Webview screen can now leverage pipes endpoints to add headers & query parameters to webview urls
+ - Plugins providing a datasource can now register listeners to notify components that the datasource has changed
+ - Plugins can now register hooks to run when connectivity status changes
+ - Plugins can now register their own url scheme handlers
+ - Zapp Pipes reducer now has a `clear` action to remove a datasource from the store
+ - New options for context keys in pipes endpoint: can now define values for headers, Bearer token, query parameter or base64 ctx
+ - Samsung, LG, and tvOS horizontal list now supports feed pagination
+ - tvOS Top menu bar now allows font family to be customised
+### Bug fixes:
+ - Side menu now scrolls properly
+ - Player controller properly dispatches `onEnd` event through the player manager
+ - When signed device token is set up on the native side, it is no longer overwritten on the react native side
+ - Restored link handler functionality in the webview screen plugin to open external url schemes from link entries as expected
+ - Nested screen in routes are now properly mapped in pipes v2 entry context
+ - Webview screen plugin now properly shows the background color from the configuration during page load
+ - Fixed an issue which could cause some cells to scale incorrectly after exiting the player
+ - Webview screen now shows proper back button on android
+ - ViewportAware component now keeps state properly, even on long lists
+ - Url schemes with `link_url` parameter now properly open the webview screen plugin on pipes v2 apps
+ - Player screens are now properly resolved on pipes v2
+ - Fix to webpack file loader configuration & font file sanitising
+ - Fixed an issue when using connected screens on pipes v2
+ - Fix an issue which caused navigator.screenData to be stale
+ - Fix sizing of Group info cell on TV
+ - Properly hide app navbar in webview screen plugin when the option is selected
+ - Fixed an issue with type mapping for link type of entries
+ - Fixed an issue with rendering of empty group component on TV
+ - Fixed analytic events on Tabs screen plugin
+ - Fixed an issue with app launch analytic event
+ - Fixed a bug with Android TV menu item selection
+ - Fixed a bug which prevented localized strings to update properly when changed on Zapp
+ - Fixed an issue with scrolling and anchoring on Android TV Grid component
+ - Fixed analytic events properties on web based platforms
+ - Fixed default focus on Android TV top menu bar
+ - Fixed an issue with feed ids mutation on Android TV
+### Chore:
+ - Removed `moment.js` dependency to reduce bundle size
+ - Refactored offline handler to typescript
+
+
 ## 5.0.0 (March 22, 2021)
 
 #### Minimum Android OS supported: 4.4.x
