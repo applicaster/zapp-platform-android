@@ -14,11 +14,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.applicaster.plugin_manager.PluginManager
+import com.applicaster.plugin_manager.cmp.ConsentManager
 import com.applicaster.ui.R
 import com.applicaster.ui.interfaces.HostActivityBase
 import com.applicaster.ui.interfaces.IUILayerManager
 import com.applicaster.ui.loaders.MainActivityPreloadSequence
 import com.applicaster.ui.quickbrick.QuickBrickManager
+import com.applicaster.ui.utils.CmpHookExecutor
 import com.applicaster.ui.utils.HookExecutor
 import com.applicaster.ui.utils.OrientationUtils.jsOrientationMapper
 import com.applicaster.ui.utils.OrientationUtils.nativeOrientationMapper
@@ -311,6 +313,18 @@ class MainActivity : HostActivityBase() {
     private fun createUIThreadCompletable(action: (CompletableEmitter) -> Unit): Completable {
         return Completable.create {
             runOnUiThread { action(it) }
+        }
+    }
+
+    fun executeComplianceHooks(): Completable {
+        val consentPlugins = ConsentManager.getConsentPlugins()
+        return when {
+            consentPlugins.isEmpty() -> Completable.complete()
+            else -> Completable.create {
+                CmpHookExecutor(this,
+                        consentPlugins,
+                        it)
+            }
         }
     }
 
