@@ -316,7 +316,7 @@ class MainActivity : HostActivityBase() {
         }
     }
 
-    fun executeComplianceHooks(): Completable {
+    fun executeConsentHooks(): Completable {
         val consentPlugins = ConsentManager.getConsentPlugins()
         return when {
             consentPlugins.isEmpty() -> Completable.complete()

@@ -34,7 +34,7 @@ object MainActivityPreloadSequence {
                     PreloadStateManager.PreloadStep.LOAD_DATA)
 
             addStep(PreloadStateManager.PreloadStep.CMP_HOOK,
-                    activity.executeComplianceHooks(),
+                    activity.executeConsentHooks(),
                     PreloadStateManager.PreloadStep.VIDEO_INTRO,
                     PreloadStateManager.PreloadStep.APPLICATION_READY_HOOK)
 
