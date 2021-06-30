@@ -33,13 +33,19 @@ object MainActivityPreloadSequence {
                     activity.executeHooks(true),
                     PreloadStateManager.PreloadStep.LOAD_DATA)
 
+            addStep(PreloadStateManager.PreloadStep.CONSENT_HOOK,
+                    activity.executeConsentHooks(),
+                    PreloadStateManager.PreloadStep.VIDEO_INTRO,
+                    PreloadStateManager.PreloadStep.APPLICATION_READY_HOOK)
+
             addStep(PreloadStateManager.PreloadStep.UI_READY,
                     activity.initializeUILayer(),
                     PreloadStateManager.PreloadStep.APPLICATION_READY_HOOK)
 
             addStep(PreloadStateManager.PreloadStep.RUNNING,
                     activity.showUI(),
-                    PreloadStateManager.PreloadStep.VIDEO_INTRO, PreloadStateManager.PreloadStep.UI_READY)
+                    PreloadStateManager.PreloadStep.CONSENT_HOOK,
+                    PreloadStateManager.PreloadStep.UI_READY)
             return this
         }
     }

@@ -13,13 +13,16 @@ import androidx.annotation.RawRes
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import com.applicaster.analytics.AnalyticsAgentUtil
 import com.applicaster.plugin_manager.PluginManager
+import com.applicaster.plugin_manager.cmp.ConsentManager
 import com.applicaster.ui.R
 import com.applicaster.ui.interfaces.HostActivityBase
 import com.applicaster.ui.interfaces.IUILayerManager
 import com.applicaster.ui.loaders.MainActivityPreloadSequence
 import com.applicaster.ui.quickbrick.QuickBrickManager
-import com.applicaster.ui.utils.HookExecutor
+import com.applicaster.ui.utils.AppHookExecutor
+import com.applicaster.ui.utils.ConsentHookExecutor
 import com.applicaster.ui.utils.OrientationUtils.jsOrientationMapper
 import com.applicaster.ui.utils.OrientationUtils.nativeOrientationMapper
 import com.applicaster.ui.utils.OrientationUtils.normaliseOrientation
@@ -223,7 +226,7 @@ class MainActivity : HostActivityBase() {
         return when {
             hookPluginList == null || hookPluginList.isEmpty() -> Completable.complete()
             else -> Completable.create {
-                HookExecutor(this,
+                AppHookExecutor(this,
                         hookPluginList,
                         it,
                         isAppReady)
@@ -302,6 +305,7 @@ class MainActivity : HostActivityBase() {
         return createUIThreadCompletable { completableEmitter ->
             APLogger.debug(TAG, "UI ready...")
             initOrientationListener()
+            AnalyticsAgentUtil.logEvent(AnalyticsAgentUtil.APPLICATION_STARTED)
             setContentView(uiLayer!!.rootView) // simplistic approach, replace whole intro layout with RN layout
             completableEmitter.onComplete()
         }
@@ -311,6 +315,18 @@ class MainActivity : HostActivityBase() {
     private fun createUIThreadCompletable(action: (CompletableEmitter) -> Unit): Completable {
         return Completable.create {
             runOnUiThread { action(it) }
+        }
+    }
+
+    fun executeConsentHooks(): Completable {
+        val consentPlugins = ConsentManager.getConsentPlugins()
+        return when {
+            consentPlugins.isEmpty() -> Completable.complete()
+            else -> Completable.create {
+                ConsentHookExecutor(this,
+                        consentPlugins,
+                        it)
+            }
         }
     }
 
