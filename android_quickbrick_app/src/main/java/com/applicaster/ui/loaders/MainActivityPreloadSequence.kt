@@ -33,7 +33,7 @@ object MainActivityPreloadSequence {
                     activity.executeHooks(true),
                     PreloadStateManager.PreloadStep.LOAD_DATA)
 
-            addStep(PreloadStateManager.PreloadStep.CMP_HOOK,
+            addStep(PreloadStateManager.PreloadStep.CONSENT_HOOK,
                     activity.executeConsentHooks(),
                     PreloadStateManager.PreloadStep.VIDEO_INTRO,
                     PreloadStateManager.PreloadStep.APPLICATION_READY_HOOK)
@@ -44,7 +44,8 @@ object MainActivityPreloadSequence {
 
             addStep(PreloadStateManager.PreloadStep.RUNNING,
                     activity.showUI(),
-                    PreloadStateManager.PreloadStep.CMP_HOOK, PreloadStateManager.PreloadStep.UI_READY)
+                    PreloadStateManager.PreloadStep.CONSENT_HOOK,
+                    PreloadStateManager.PreloadStep.UI_READY)
             return this
         }
     }
