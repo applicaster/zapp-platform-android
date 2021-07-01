@@ -23,6 +23,7 @@ import com.applicaster.util.AppData;
 import com.applicaster.util.NetworkRequestListener;
 import com.applicaster.util.OSUtil;
 import com.applicaster.util.server.SSLPinner;
+import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.ReactRootView;
@@ -357,6 +358,7 @@ public class QuickBrickManager implements
         Lifecycle.State currentState = rootActivity.getLifecycle().getCurrentState();
 
         return ReactInstanceManager.builder()
+                .setJavaScriptExecutorFactory(new HermesExecutorFactory())
             .setApplication(application)
             .setCurrentActivity(rootActivity)
             .addPackages(reactPackagesManager.getAllReactPackages()) // packages: default, from plugins, extras

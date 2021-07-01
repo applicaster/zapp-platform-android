@@ -248,7 +248,20 @@ if (System.getenv("CIRCLECI")) {
     android.signingConfigs.debug.storeFile = file("../debug.keystore")
 }
 
+ext.react = [
+    enableHermes: true
+]
+
 dependencies {
+    // enable hermes
+    def enableHermes = project.ext.react.get("enableHermes", false);
+
+    if (enableHermes) {
+        def hermesPath = "../node_modules/hermes-engine/android/";
+        debugImplementation files(hermesPath + "hermes-debug.aar")
+        releaseImplementation files(hermesPath + "hermes-release.aar")
+    }
+
 <%= plugins_dependencies %>
     implementation (project(':android_quickbrick_app')) {
        exclude group: 'com.applicaster', module: 'react-native'
