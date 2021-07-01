@@ -5,6 +5,7 @@ import android.os.Build;
 import android.util.Log;
 
 import com.applicaster.app.APProperties;
+import com.applicaster.app.CustomApplication;
 import com.applicaster.audience.AudienceHelper;
 import com.applicaster.plugin_manager.push_plugin.PushManager;
 import com.applicaster.session.SessionStorage;
@@ -18,10 +19,7 @@ import com.applicaster.util.AppContext;
 import com.applicaster.util.AppData;
 import com.applicaster.util.ErrorMonitoringUtil;
 import com.applicaster.util.OSUtil;
-import com.applicaster.util.StringUtil;
 import com.facebook.soloader.SoLoader;
-
-import java.util.Locale;
 
 public class BaseApplication
         extends Application {
@@ -69,16 +67,7 @@ public class BaseApplication
     }
 
     private void initLocale() {
-        Locale locale = AppData.getLocale();
-        if (locale != null) {
-            return;
-        }
-        // No need to load the locale from the properties file if was already set / cached.
-        String localeProperty = AppData.getProperty(APProperties.LOCALE);
-        if (!StringUtil.isEmpty(localeProperty)) {
-            locale = new Locale(localeProperty);
-            AppData.setLocale(locale);
-        }
+        CustomApplication.initLocale();
     }
 
     private void reportAppPresented() {

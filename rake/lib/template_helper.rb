@@ -7,12 +7,13 @@ require "android_manifest_helper"
 require "yaml"
 require "workspace_helper"
 require "versionomy"
+require "json"
 
 class TemplateHelper
   include DependencyHelper
   include AndroidManifestHelper
 
-  SDK_DEFAULT_QB_VERSION = "5.0.0"
+  SDK_DEFAULT_QB_VERSION = "5.1.0"
   SDK_DEFAULT_MIN_SDK_VERSION = 19
 
   def render_template(template_path, dst_path, obj = {})
@@ -132,6 +133,10 @@ class TemplateHelper
 
   def locale
     ENV["locale"]
+  end
+
+  def languages
+    JSON.parse(ENV["languages"]).join(",")
   end
 
   def twitter_key

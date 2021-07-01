@@ -20,6 +20,7 @@ import com.applicaster.ui.utils.RTL_LOCALES;
 import com.applicaster.util.APDebugUtil;
 import com.applicaster.util.APLogger;
 import com.applicaster.util.AppData;
+import com.applicaster.util.NetworkRequestListener;
 import com.applicaster.util.OSUtil;
 import com.applicaster.util.server.SSLPinner;
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
@@ -34,6 +35,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.modules.network.OkHttpClientProvider;
+import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -266,6 +268,7 @@ public class QuickBrickManager implements
     private void initOkHttpClientProvider() {
         OkHttpClient.Builder builder = OkHttpClientProvider.createClientBuilder(application);
         SSLPinner.apply(builder);
+        builder.addInterceptor(new NetworkRequestListener("QBNetworkRequestLogger"));
         OkHttpClientProvider.setOkHttpClientFactory(builder::build);
     }
 
@@ -329,8 +332,13 @@ public class QuickBrickManager implements
         }
 
         return getQuickBrickReactManagerBuilder()
-            .setJSBundleFile("assets://" + JS_BUNDLE_PATH)
-            .build();
+                .setJSBundleFile("assets://" + JS_BUNDLE_PATH)
+                .setNativeModuleCallExceptionHandler(e -> {
+                    APLogger.error(TAG, "Exception in ReactInstanceManager: " + e.getMessage(), e);
+                    if (listener != null) listener.onError(e);
+                    throw new RuntimeException(e);
+                })
+                .build();
     }
 
     /**
@@ -369,7 +377,18 @@ public class QuickBrickManager implements
     @Override
     public void onReactContextInitialized(ReactContext context) {
         reactInstanceManager.removeReactInstanceEventListener(this);
-        reactRootView = new ReactRootView(context);
+        context.setNativeModuleCallExceptionHandler(e -> {
+            APLogger.error(TAG, "Exception in ReactContext" + e.getMessage(), e);
+            if (listener != null) listener.onError(e);
+            throw new RuntimeException(e); // this is what RN seems to do by default
+        });
+
+        if (OSUtil.isTv()) {
+            reactRootView = new ReactRootView(context); // Extends ReactRootView
+        } else {
+            reactRootView = new RNGestureHandlerEnabledRootView(rootActivity);
+        }
+
         initialized = true;
         reactRootView.startReactApplication(reactInstanceManager, REACT_NATIVE_MODULE_NAME, null);
     }
@@ -403,7 +422,7 @@ public class QuickBrickManager implements
                 break;
 
             default: {
-                Log.e(TAG, "Got unrecognized quickBrickEvent. eventName: " + eventName + " payload: " + payload.toString());
+                APLogger.error(TAG, "Got unrecognized quickBrickEvent. eventName: " + eventName + " payload: " + payload.toString());
                 break;
             }
         }

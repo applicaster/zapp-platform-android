@@ -58,6 +58,8 @@ android {
         exclude '**/libliquidcore.so'
 
         pickFirst 'META-INF/proguard/androidx-annotations.pro'
+
+        exclude 'META-INF/annotation-experimental_release.kotlin_module'
     }
 
     signingConfigs {

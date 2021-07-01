@@ -34,6 +34,7 @@ class MainActivityPreloadSequenceTest {
         PowerMockito.`when`(DataLoader.initialize(activity.applicationContext)).thenReturn(Completable.complete())
         PowerMockito.`when`(activity.executeHooks(true)).thenReturn(Completable.complete())
         PowerMockito.`when`(activity.initializeUILayer()).thenReturn(Completable.complete())
+        PowerMockito.`when`(activity.executeConsentHooks()).thenReturn(Completable.complete())
         PowerMockito.`when`(activity.showUI()).thenReturn(Completable.complete())
 
         val preloader = configure(activity, Schedulers.trampoline())

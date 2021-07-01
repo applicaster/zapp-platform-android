@@ -31,6 +31,8 @@ public class ApplicationPreloaderView extends FrameLayout implements LifecycleOb
 
     private WeakReference<LifecycleOwner> lifecycleOwnerWeakReference;
 
+    private static final String TAG = "ApplicationPreloaderView";
+
     public ApplicationPreloaderView(Context activity, AttributeSet attrs) {
         super(activity, attrs);
     }
@@ -71,21 +73,11 @@ public class ApplicationPreloaderView extends FrameLayout implements LifecycleOb
                     listener.onIntroVideoFinished();
                     APLogger.warn(getClass().getSimpleName(), "couldn't play intro video");
                 } else {
-                    player.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
                     player.setDisplay(holder);
                     player.setOnPreparedListener(mp -> {
-                        // VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING does not actually works,
-                        // fix it manually by scaling the view
-                        int videoHeight = player.getVideoHeight();
-                        int videoWidth = player.getVideoWidth();
-                        int width = videoView.getWidth();
-                        int height = videoView.getHeight();
-                        float ratioCorrection = (videoWidth / (float) videoHeight) / (width / (float) height);
-                        if (ratioCorrection > 1) {
-                            videoView.setScaleX(ratioCorrection);
-                        } else if (ratioCorrection < 1) {
-                            videoView.setScaleY(1 / ratioCorrection);
-                        }
+                        int viewWidth = videoView.getWidth();
+                        int viewHeight = videoView.getHeight();
+                        correctAspect(viewWidth, viewHeight, true);
                     });
                     player.setOnCompletionListener(mp -> {
                         videoView.getHolder().removeCallback(this);
@@ -99,6 +91,29 @@ public class ApplicationPreloaderView extends FrameLayout implements LifecycleOb
                     });
 
                     player.start();
+                }
+            }
+
+            private void correctAspect(int viewWidth, int viewHeight, boolean warnUser) {
+                if(0 == viewWidth || 0 == viewHeight) {
+                    return; // view is not yet ready
+                }
+                int videoHeight = player.getVideoHeight();
+                int videoWidth = player.getVideoWidth();
+                // VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING does not actually works on most devices,
+                // fix it manually by scaling the view. Scaling is ignored by the video itself, so it will just fill the view
+                if(0 == videoWidth || 0 == videoHeight) {
+                    // the video is broken
+                    if(warnUser) {
+                        APLogger.warn(TAG, "Failed to determine intro video dimensions. Probably its too large for this device");
+                    }
+                    return;
+                }
+                float ratioCorrection = (videoWidth / (float) videoHeight) / (viewWidth / (float) viewHeight);
+                if (ratioCorrection > 1) {
+                    videoView.setScaleX(ratioCorrection);
+                } else if (ratioCorrection < 1) {
+                    videoView.setScaleY(1 / ratioCorrection);
                 }
             }
 
@@ -122,7 +137,10 @@ public class ApplicationPreloaderView extends FrameLayout implements LifecycleOb
 
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-                // no op
+                if(null == player) {
+                    return;
+                }
+                correctAspect(width, height, false);
             }
 
             @Override

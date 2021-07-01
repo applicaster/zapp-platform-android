@@ -4,29 +4,31 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.OrientationEventListener
+import android.widget.Toast
 import androidx.annotation.RawRes
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import com.applicaster.analytics.AnalyticsAgentUtil
 import com.applicaster.plugin_manager.PluginManager
+import com.applicaster.plugin_manager.cmp.ConsentManager
 import com.applicaster.ui.R
 import com.applicaster.ui.interfaces.HostActivityBase
 import com.applicaster.ui.interfaces.IUILayerManager
 import com.applicaster.ui.loaders.MainActivityPreloadSequence
 import com.applicaster.ui.quickbrick.QuickBrickManager
-import com.applicaster.ui.utils.HookExecutor
+import com.applicaster.ui.utils.AppHookExecutor
+import com.applicaster.ui.utils.ConsentHookExecutor
 import com.applicaster.ui.utils.OrientationUtils.jsOrientationMapper
 import com.applicaster.ui.utils.OrientationUtils.nativeOrientationMapper
 import com.applicaster.ui.utils.OrientationUtils.normaliseOrientation
 import com.applicaster.ui.utils.OrientationUtils.supportOrientation
 import com.applicaster.ui.views.ApplicationPreloaderView
-import com.applicaster.util.APLogger
-import com.applicaster.util.AppData
-import com.applicaster.util.OSUtil
-import com.applicaster.util.UrlSchemeUtil
+import com.applicaster.util.*
 import com.applicaster.util.ui.APUIUtils
 import com.applicaster.util.ui.PreloaderListener
 import io.reactivex.Completable
@@ -72,7 +74,7 @@ class MainActivity : HostActivityBase() {
         return if (UrlSchemeUtil.isUrlScheme(url)) {
             // update intent in-place, and let caller proceed
             intent.data = uri
-            setIntent(intent)
+            setIntent(Intent(Intent.ACTION_VIEW, uri))
             APLogger.info(TAG, "Intent data was replaced with url extra: $url")
             false
         } else {
@@ -86,6 +88,7 @@ class MainActivity : HostActivityBase() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        setIntent(intent) // save new intent in any case
         if (routeOrUpdateIntent(intent)) {
             // This was probably intent from Firebase Console Firebase Push when app was not active.
             // User has first launched the app, and then clicked the notification
@@ -93,9 +96,9 @@ class MainActivity : HostActivityBase() {
         }
         // Update current intent in any case,
         // since QB may still be launching, and will only check it later.
-        setIntent(intent)
         if (true == uiLayer?.isReady) {
-            val uri = UrlSchemeUtil.getUrlSchemeData(intent)
+            // get intent back since routeOrUpdateIntent can update it
+            val uri = UrlSchemeUtil.getUrlSchemeData(getIntent())
             if (null != uri) {
                 uiLayer!!.handleURL(uri.toString())
             }
@@ -223,7 +226,7 @@ class MainActivity : HostActivityBase() {
         return when {
             hookPluginList == null || hookPluginList.isEmpty() -> Completable.complete()
             else -> Completable.create {
-                HookExecutor(this,
+                AppHookExecutor(this,
                         hookPluginList,
                         it,
                         isAppReady)
@@ -277,8 +280,15 @@ class MainActivity : HostActivityBase() {
                 override fun onReady() = completableEmitter.onComplete()
 
                 override fun onError(e: Exception?) {
-                    APLogger.error(TAG, "QuickBrickManager error", e)
-                    val handler = Handler()
+                    APLogger.error(TAG, "QuickBrickManager error: ${e ?: " (no exception)"}", e)
+                    val handler = Handler(Looper.getMainLooper())
+                    handler.post {
+                        // post on UI thread, some devices has issues with toasts on worker ones
+                        Toast.makeText(
+                                AppContext.get(), // use app context so toast will survive past activity finish
+                                "QuickBrickManager critical error: $e. The Application will now close.",
+                                Toast.LENGTH_LONG).show()
+                    }
                     handler.postDelayed({
                         finish() // Not very nice but we prefer failing hard and fast in this case
                     }, 1000)
@@ -295,12 +305,8 @@ class MainActivity : HostActivityBase() {
         return createUIThreadCompletable { completableEmitter ->
             APLogger.debug(TAG, "UI ready...")
             initOrientationListener()
+            AnalyticsAgentUtil.logEvent(AnalyticsAgentUtil.APPLICATION_STARTED)
             setContentView(uiLayer!!.rootView) // simplistic approach, replace whole intro layout with RN layout
-            val uri = UrlSchemeUtil.getUrlSchemeData(intent)
-            if (null != uri) {
-                APLogger.info(TAG, "Passing URI to UI Layer:$uri")
-                uiLayer!!.handleURL(uri.toString())
-            }
             completableEmitter.onComplete()
         }
     }
@@ -309,6 +315,18 @@ class MainActivity : HostActivityBase() {
     private fun createUIThreadCompletable(action: (CompletableEmitter) -> Unit): Completable {
         return Completable.create {
             runOnUiThread { action(it) }
+        }
+    }
+
+    fun executeConsentHooks(): Completable {
+        val consentPlugins = ConsentManager.getConsentPlugins()
+        return when {
+            consentPlugins.isEmpty() -> Completable.complete()
+            else -> Completable.create {
+                ConsentHookExecutor(this,
+                        consentPlugins,
+                        it)
+            }
         }
     }
 

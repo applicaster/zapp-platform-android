@@ -11,6 +11,7 @@ class PreloadStateManager(private val defaultScheduler: Scheduler) {
         LOAD_DATA,
         VIDEO_INTRO,
         APPLICATION_READY_HOOK,
+        CONSENT_HOOK,
         UI_READY,
         RUNNING
     }
