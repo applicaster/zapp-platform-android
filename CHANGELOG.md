@@ -7,7 +7,7 @@
 #### Gradle version: 6.3
 #### Android Studio Gradle Plugin version: 3.6.4
 #### QuickBrick version: v5.1.0
-#### Applicaster Android SDK Core version: 8.3.7
+#### Applicaster Android SDK Core version: 8.3.10
 #### Android target API: 29
 
 
@@ -23,7 +23,7 @@
 
 ### Improvements:
  - Local and Session storage react-native bridges were aligned to iOS [#1479](https://github.com/applicaster/applicaster-android-sdk/pull/1479)
- - New versions are now published to Aamzon S3 maven instead if Bintray [#1468](https://github.com/applicaster/applicaster-android-sdk/pull/1468)
+ - New versions are now published to Amazon S3 maven instead if Bintray [#1468](https://github.com/applicaster/applicaster-android-sdk/pull/1468)
  - `IUserConsent` interface added for user consent plugins [#1477](https://github.com/applicaster/applicaster-android-sdk/pull/1477)
 
 ### Fixes:
