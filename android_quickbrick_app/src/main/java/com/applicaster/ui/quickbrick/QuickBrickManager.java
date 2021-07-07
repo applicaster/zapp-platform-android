@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -380,11 +381,16 @@ public class QuickBrickManager implements
             if (listener != null) listener.onError(e);
             throw new RuntimeException(e); // this is what RN seems to do by default
         });
-
         if (OSUtil.isTv()) {
-            reactRootView = new ReactRootView(context); // Extends ReactRootView
+            // Android TVs report a high density which cause a mismatch vs tvOS and DOM
+            // By halving the density, each dp will match a pixel in 1920x1080 devices
+            // or 4 pixels in 4k devices (3840x2160).
+            Configuration configuration = new Configuration(rootActivity.getResources().getConfiguration());
+            configuration.densityDpi /= 2;
+            Context configurationContext = rootActivity.createConfigurationContext(configuration);
+            reactRootView = new ReactRootView(configurationContext);
         } else {
-            reactRootView = new RNGestureHandlerEnabledRootView(rootActivity);
+            reactRootView = new RNGestureHandlerEnabledRootView(rootActivity); // Extends ReactRootView
         }
 
         initialized = true;
