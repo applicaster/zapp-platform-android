@@ -1,5 +1,35 @@
 # Changelog
 
+## 7.0.0 (July 7, 2021)
+
+#### Minimum Android OS supported: 4.4.x
+#### React Native version: 0.62.2
+#### Gradle version: 6.3
+#### Android Studio Gradle Plugin version: 3.6.4
+#### QuickBrick version: v5.1.0
+#### Applicaster Android SDK Core version: 8.3.7
+#### Android target API: 29
+
+
+### Breaking changes:
+- Maven dependencies were moved to Amazon S3, Bintray maven was removed [#137](https://github.com/applicaster/zapp-platform-android/pull/137)
+- Gradle updated to 6.3 [#137](https://github.com/applicaster/zapp-platform-android/pull/137)
+
+## Improvements:
+ - Applicaster Android SDK Core updated to version 8.3.10 [#130](https://github.com/applicaster/zapp-platform-android/pull/130)
+ - User consent step was added to launch sequence [#138](https://github.com/applicaster/zapp-platform-android/pull/138)
+
+## Applicaster Android SDK Core changes:
+
+### Improvements:
+ - Local and Session storage react-native bridges were aligned to iOS [#1479](https://github.com/applicaster/applicaster-android-sdk/pull/1479)
+ - New versions are now published to Aamzon S3 maven instead if Bintray [#1468](https://github.com/applicaster/applicaster-android-sdk/pull/1468)
+ - `IUserConsent` interface added for user consent plugins [#1477](https://github.com/applicaster/applicaster-android-sdk/pull/1477)
+
+### Fixes:
+ - Plugin instantiation order fixed [#1478](https://github.com/applicaster/applicaster-android-sdk/pull/1478)
+
+
 ## 6.0.0 (June 17, 2021)
 
 #### Minimum Android OS supported: 4.4.x
