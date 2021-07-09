@@ -202,6 +202,8 @@ class MainActivity : HostActivityBase() {
             configuration.densityDpi /= 2
             val newContext: Context = base.createConfigurationContext(configuration)
             super.attachBaseContext(newContext)
+        } else {
+            super.attachBaseContext(base)
         }
     }
 
