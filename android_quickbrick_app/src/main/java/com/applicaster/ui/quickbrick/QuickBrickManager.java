@@ -2,9 +2,11 @@ package com.applicaster.ui.quickbrick;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -388,7 +390,13 @@ public class QuickBrickManager implements
             Configuration configuration = new Configuration(rootActivity.getResources().getConfiguration());
             configuration.densityDpi /= 2;
             Context configurationContext = rootActivity.createConfigurationContext(configuration);
-            reactRootView = new ReactRootView(configurationContext);
+            ContextWrapper contextWrapper = new ContextWrapper(rootActivity) {
+                @Override
+                public Resources getResources() {
+                    return configurationContext.getResources();
+                }
+            };
+            reactRootView = new ReactRootView(contextWrapper);
         } else {
             reactRootView = new RNGestureHandlerEnabledRootView(rootActivity); // Extends ReactRootView
         }
