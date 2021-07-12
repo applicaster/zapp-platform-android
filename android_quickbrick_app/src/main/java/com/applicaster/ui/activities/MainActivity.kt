@@ -8,6 +8,8 @@ import android.os.Looper
 import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.OrientationEventListener
+import android.widget.AbsoluteLayout
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.annotation.RawRes
 import androidx.lifecycle.Lifecycle
@@ -306,7 +308,29 @@ class MainActivity : HostActivityBase() {
             APLogger.debug(TAG, "UI ready...")
             initOrientationListener()
             AnalyticsAgentUtil.logEvent(AnalyticsAgentUtil.APPLICATION_STARTED)
-            setContentView(uiLayer!!.rootView) // simplistic approach, replace whole intro layout with RN layout
+            if (!OSUtil.isTv()) {
+                setContentView(uiLayer!!.rootView) // simplistic approach, replace whole intro layout with RN layout
+            } else {
+                // Android TVs report a high density which cause a mismatch vs tvOS and DOM
+                // We scale the react native view 2x to match 1920x1080 and wrap it in AbsoluteLayout
+                val rnView = uiLayer!!.rootView
+                // Arguments are already in physical pixels, no need to take DPI into account
+                // Always take entire screen
+                rnView.layoutParams = AbsoluteLayout.LayoutParams(
+                        resources.displayMetrics.widthPixels * 2,
+                        resources.displayMetrics.heightPixels * 2,
+                        0, 0)
+                rnView.scaleX = 0.5f
+                rnView.scaleY = 0.5f
+                rnView.pivotX = 0.0f
+                rnView.pivotY = 0.0f
+                val root = AbsoluteLayout(this)
+                root.layoutParams = FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT)
+                root.addView(rnView)
+                setContentView(root)
+            }
             completableEmitter.onComplete()
         }
     }

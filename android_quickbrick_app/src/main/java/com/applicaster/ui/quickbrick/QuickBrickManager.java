@@ -384,19 +384,7 @@ public class QuickBrickManager implements
             throw new RuntimeException(e); // this is what RN seems to do by default
         });
         if (OSUtil.isTv()) {
-            // Android TVs report a high density which cause a mismatch vs tvOS and DOM
-            // By halving the density, each dp will match a pixel in 1920x1080 devices
-            // or 4 pixels in 4k devices (3840x2160).
-            Configuration configuration = new Configuration(rootActivity.getResources().getConfiguration());
-            configuration.densityDpi /= 2;
-            Context configurationContext = rootActivity.createConfigurationContext(configuration);
-            ContextWrapper contextWrapper = new ContextWrapper(rootActivity) {
-                @Override
-                public Resources getResources() {
-                    return configurationContext.getResources();
-                }
-            };
-            reactRootView = new ReactRootView(contextWrapper);
+            reactRootView = new ReactRootView(rootActivity);
         } else {
             reactRootView = new RNGestureHandlerEnabledRootView(rootActivity); // Extends ReactRootView
         }
