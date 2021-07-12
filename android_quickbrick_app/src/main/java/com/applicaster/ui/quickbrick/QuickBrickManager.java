@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
@@ -380,11 +382,20 @@ public class QuickBrickManager implements
             if (listener != null) listener.onError(e);
             throw new RuntimeException(e); // this is what RN seems to do by default
         });
-
         if (OSUtil.isTv()) {
-            reactRootView = new ReactRootView(context); // Extends ReactRootView
+            reactRootView = new ReactRootView(rootActivity);
+            // Android TVs report a high density which cause a mismatch vs tvOS and DOM
+            // We scale the react native view 2x to match 1920x1080 and take entire screen
+            DisplayMetrics displayMetrics = rootActivity.getResources().getDisplayMetrics();
+            reactRootView.setLayoutParams(new FrameLayout.LayoutParams(
+                    displayMetrics.widthPixels * 2,
+                    displayMetrics.heightPixels * 2));
+            reactRootView.setScaleX(0.5f);
+            reactRootView.setScaleY(0.5f);
+            reactRootView.setPivotX(0.0f);
+            reactRootView.setPivotY(0.0f);
         } else {
-            reactRootView = new RNGestureHandlerEnabledRootView(rootActivity);
+            reactRootView = new RNGestureHandlerEnabledRootView(rootActivity); // Extends ReactRootView
         }
 
         initialized = true;
