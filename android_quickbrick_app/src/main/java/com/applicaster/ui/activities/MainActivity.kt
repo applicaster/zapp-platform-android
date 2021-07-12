@@ -1,6 +1,8 @@
 package com.applicaster.ui.activities
 
+import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -191,6 +193,20 @@ class MainActivity : HostActivityBase() {
     override fun onDestroy() {
         super.onDestroy()
         uiLayer?.onDestroy()
+    }
+
+    override fun attachBaseContext(base: Context) {
+        // Android TVs report a high density which cause a mismatch vs tvOS and DOM
+        // By halving the density, each dp will match a pixel in 1920x1080 devices
+        // or 4 pixels in 4k devices (3840x2160).
+        if (OSUtil.isTv()) {
+            val configuration = Configuration(base.getResources().getConfiguration())
+            configuration.densityDpi /= 2
+            val newContext: Context = base.createConfigurationContext(configuration)
+            super.attachBaseContext(newContext)
+        } else {
+            super.attachBaseContext(base)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
